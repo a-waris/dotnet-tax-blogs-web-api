@@ -12,7 +12,7 @@ using FluentAssertions;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-namespace Boilerplate.Api.IntegrationTests;
+namespace Taxbox.Api.IntegrationTests;
 
 public class UserControllerTests : BaseTest
 {
@@ -89,7 +89,7 @@ public class UserControllerTests : BaseTest
         // Act
         var response = await GetAsync<PaginatedList<GetUserResponse>>("/api/User", new GetUsersRequest()
         {
-            Email = "admin@boilerplate.com"
+            Email = "admin@taxbox.com"
         });
 
         // Assert
@@ -150,7 +150,7 @@ public class UserControllerTests : BaseTest
         // Act
         var loginData = new AuthenticateRequest()
         {
-            Email = "admin@boilerplate.com",
+            Email = "admin@taxbox.com",
             Password = "testpassword123"
         };
 
@@ -168,7 +168,7 @@ public class UserControllerTests : BaseTest
         // Act
         var loginData = new AuthenticateRequest()
         {
-            Email = "user@boilerplate.com",
+            Email = "user@taxbox.com",
             Password = "testpassword123"
         };
 
@@ -181,7 +181,7 @@ public class UserControllerTests : BaseTest
     }
 
     [Theory]
-    [InlineData("admin@boilerplate.com", "incorrect")]
+    [InlineData("admin@taxbox.com", "incorrect")]
     [InlineData("admin@incorrect.com", "testpassword123")]
     public async Task Authenticate_IncorretUserOrPassword(string email, string password)
     {
