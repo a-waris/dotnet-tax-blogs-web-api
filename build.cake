@@ -11,7 +11,7 @@ var configuration = Argument("configuration", "Debug");
 Task("Build")
     .Does(() =>
 {
-    DotNetBuild("WebApiTaxbox.sln", new DotNetBuildSettings
+    DotNetBuild("TaxboxApi.sln", new DotNetBuildSettings
     {
         Configuration = configuration,
     });
