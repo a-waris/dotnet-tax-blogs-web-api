@@ -82,12 +82,6 @@ After that, you can pass the jwt on the lock (if using swagger) or via the Autho
 		- This project contains the dbcontext, entities configuration and migrations.
 
 
-# Adopting to your project
-1. Remove/Rename all hero related stuff to your needs.
-2. Rename solution, projects, namespaces, and ruleset to your use.
-3. Change the dockerfile and docker-compose.yml to your new csproj/folder names.
-3. Give this repo a star!
-
 # Migrations
 1. To run migrations on this project, run the following command on the root folder: 
 	- ``dotnet ef migrations add InitialCreate --startup-project .\src\Taxbox.Api\ --project .\src\Taxbox.Infrastructure\``
