@@ -23,6 +23,7 @@ WORKDIR "/src/src/Taxbox.Api"
 
 FROM build AS publish
 RUN dotnet publish "Taxbox.Api.csproj" -c Release -o /app/publish
+RUN dotnet dev-certs https -ep https/aspnetapp.pfx -p yourpassword
 
 FROM base AS final
 WORKDIR /app
