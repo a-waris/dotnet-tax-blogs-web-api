@@ -19,3 +19,5 @@
 *.sh    text eol=lf
 # Batch scripts require CRLF
 *.bat   text eol=crlf
+
+.env
