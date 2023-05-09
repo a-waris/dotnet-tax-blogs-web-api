@@ -13,6 +13,9 @@ A ``.Net 7.0`` WebApi Taxbox / template project. MediatR, Swagger, Mapster, Seri
 2. Go to the src/Taxbox.Api folder and run ``dotnet run``, or, in visual studio set the api project as startup and run as console or docker (not IIS).
 3. Visit http://localhost:5000/api-docs or https://localhost:5001/api-docs to access the application's swagger.
 
+## ElasticSearch & Kibana (Docker)
+To run inside docker containers ``docker-compose up -d es-setup es01 kibana`` to start the elasticsearch and kibana containers.
+
 ## Docker
 1. Run ``docker-compose up -d`` in the root directory, or, in visual studio, set the docker-compose project as startup and run. This should start the application and DB.
  - 1. For docker-compose, you should run this command on the root folder: ``dotnet dev-certs https -ep https/aspnetapp.pfx -p yourpassword``
@@ -58,6 +61,7 @@ After that, you can pass the jwt on the lock (if using swagger) or via the Autho
 - Container support with [docker](src/Taxbox.Api/dockerfile) and [docker-compose](docker-compose.yml)
 - OpenTelemetry support (with jaeger as default exporter)
 - NuGet Central package management (CPM)
+- NEST (ElasticSearch) support
 
 # Project Structure
 1. Services
