@@ -361,3 +361,4 @@ https/
 tools/
 
 .idea/
+/.env
