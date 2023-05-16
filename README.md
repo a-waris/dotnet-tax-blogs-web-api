@@ -20,6 +20,38 @@ A `.Net 7.0` WebApi Taxbox / template project. MediatR, Swagger, Mapster, Serilo
 Create .env file at root from es_sample.env.
 To run inside docker containers run `docker-compose up -d es-setup es01 kibana` to start the elasticsearch and kibana containers.
 
+### Articles Index Mapping
+
+```
+PUT /articles
+{
+  "mappings": {
+    "properties": {
+      "title": {
+        "type": "text",
+        "analyzer": "standard"
+      },
+      "metadata": {
+        "type": "text"
+      },
+      "content": {
+        "type": "text",
+        "analyzer": "english"
+      },
+      "author": {
+        "type": "keyword"
+      },
+      "date": {
+        "type": "date"
+      },
+      "tags": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+```
+
 ## Docker
 
 1. Run `docker-compose up -d` in the root directory, or, in visual studio, set the docker-compose project as startup and run. This should start the application and DB.
