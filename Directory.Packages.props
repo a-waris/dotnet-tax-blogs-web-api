@@ -8,10 +8,10 @@
     <PackageVersion Include="Ardalis.Result" Version="7.0.0" />
     <PackageVersion Include="Ardalis.Result.AspNetCore" Version="7.0.0" />
     <PackageVersion Include="Ardalis.Result.FluentValidation" Version="7.0.0" />
-    <PackageVersion Include="Elasticsearch.Net" Version="7.17.5" />
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
     <PackageVersion Include="Mapster" Version="7.3.0" />
     <PackageVersion Include="Mapster.EFCore" Version="5.1.0" />
+    <PackageVersion Include="NEST" Version="7.17.5" />
     <PackageVersion Include="NewId" Version="4.0.1" />
     <PackageVersion Include="StronglyTypedId" Version="1.0.0-beta06" />
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />

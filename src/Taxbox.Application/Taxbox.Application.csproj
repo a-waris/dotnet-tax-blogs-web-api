@@ -10,6 +10,7 @@
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Ardalis.Result.FluentValidation" />
     <PackageReference Include="BCrypt.Net-Next" />
+    <PackageReference Include="Elasticsearch.Net" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="Mapster" />
     <PackageReference Include="Mapster.EFCore" />
@@ -22,6 +23,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Taxbox.Domain\Taxbox.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Update="NEST" Version="7.17.5" />
   </ItemGroup> 
 
 </Project>
