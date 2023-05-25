@@ -22,6 +22,15 @@ public partial struct HeroId : IGuid
 }
 
 [StronglyTypedId]
+public partial struct ArticleId : IGuid
+{
+    public static implicit operator ArticleId(Guid guid)
+    {
+        return new ArticleId(guid);
+    }
+}
+
+[StronglyTypedId]
 public partial struct UserId : IGuid
 {
     public static implicit operator UserId(Guid guid)
