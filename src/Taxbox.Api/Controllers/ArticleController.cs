@@ -9,6 +9,7 @@ using Taxbox.Application.Common;
 using Taxbox.Application.Features.Articles;
 using Taxbox.Application.Features.Articles.GetAllArticles;
 using Taxbox.Domain.Entities;
+using Taxbox.Infrastructure.ElasticSearch;
 using ISession = Taxbox.Domain.Auth.Interfaces.ISession;
 
 namespace Taxbox.Api.Controllers;

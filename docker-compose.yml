@@ -37,7 +37,7 @@ services:
             "    ip:\n"\
             "      - 127.0.0.1\n"\
             > config/certs/instances.yml;
-            bin/elasticsearch-certutil http --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+            bin/elasticsearch-certutil ca --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
             unzip config/certs/certs.zip -d config/certs;
           fi;
           echo "Setting file permissions"
@@ -147,23 +147,6 @@ services:
         interval: 10s
         timeout: 10s
         retries: 120
-#    elasticsearch:
-#        image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
-#        ports:
-#            - "9200:9200"
-#            - "9300:9300"
-#        volumes:
-#            - esdata:/usr/share/elasticsearch/data
-#        networks:
-#            - localdev
-#    kibana:
-#        image: docker.elastic.co/kibana/kibana:8.7.1
-#        ports:
-#            - "5601:5601"
-#        networks:
-#            - localdev
-#        depends_on:
-#            - elasticsearch
     db-server:
       image: mcr.microsoft.com/mssql/server:2017-latest
       container_name: mssql

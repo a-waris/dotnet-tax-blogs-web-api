@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Nest;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Transport;
 using System;
 using Taxbox.Application.Common;
 using Taxbox.Domain.Entities;
@@ -22,33 +23,43 @@ public static class ElasticSearchSetup
         var defaultIndex = appSettings.DefaultIndex;
         var user = appSettings.User;
         var password = appSettings.Password;
-        var settings = new ConnectionSettings(new Uri(url)).BasicAuthentication(user, password)
-                .CertificateFingerprint(
-                    "65:75:8E:22:62:31:47:70:45:8E:6F:8B:FA:46:DF:11:CC:DC:DA:BA:15:9C:27:E3:92:65:15:12:12:72:77:B5")
+        var settings = new ElasticsearchClientSettings(new Uri(url))
+        .CertificateFingerprint("65:75:8E:22:62:31:47:70:45:8E:6F:8B:FA:46:DF:11:CC:DC:DA:BA:15:9C:27:E3:92:65:15:12:12:72:77:B5")
+                .Authentication(new BasicAuthentication(user, password))
+            // .ClientCertificate("C:\\Users\\waris\\source\\repos\\taxbox-api\\certs\\es01.crt")
             // .DefaultIndex(defaultIndex)
             ;
 
-        // AddDefaultMappings(settings);
+        // AddDefaultMappings(settings, defaultIndex);
 
-        var client = new ElasticClient(settings);
+        var client = new ElasticClientContainer(settings);
         services.AddScoped(typeof(IElasticSearchService<>), typeof(ElasticSearchService<>));
-        services.AddSingleton<IElasticClient>(client);
+        services.AddSingleton<IElasticsearchClientSettings>(settings);
+        services.AddSingleton<IElasticClientContainer>(client);
 
         CreateIndex(client, defaultIndex);
 
         return services;
     }
 
-    private static void AddDefaultMappings(ConnectionSettings settings)
+    private static void AddDefaultMappings(ElasticsearchClientSettings settings, string defaultIndex)
     {
         settings
-            .DefaultMappingFor<Article>(m => m
-                // .Ignore(p => p.Price)
-            );
+            .DefaultMappingFor<Article>
+            (i => i
+                .IndexName(defaultIndex)
+                .IdProperty(a => a.Id)
+            )
+            // .EnableDebugMode()
+            .PrettyJson()
+            // .RequestTimeout(TimeSpan.FromMinutes(2))
+            ;
     }
 
-    private static async void CreateIndex(IElasticClient client, string indexName)
+    private static async void CreateIndex(IElasticClientContainer clientContainer, string indexName)
     {
+        var client = clientContainer.GetElasticClient();
+        var a = await client.Indices.ExistsAsync(indexName);
         // check if index exists
         if ((await client.Indices.ExistsAsync(indexName)).Exists)
         {
@@ -56,33 +67,18 @@ public static class ElasticSearchSetup
         }
 
         var createIndexResponse = await client.Indices.CreateAsync(indexName,
-            index => index.Map<Article>(x => x.AutoMap()
-                .Properties(p => p
-                    .Text(t => t
-                        .Name(n => n.Title)
-                        .Analyzer("standard")
-                    )
-                    .Text(t => t
-                        .Name(n => n.Metadata)
-                    )
-                    .Text(t => t
-                        .Name(n => n.Content)
-                        .Analyzer("english")
-                    )
-                    .Keyword(k => k
-                        .Name(n => n.Author)
-                    )
-                    .Date(d => d
-                        .Name(n => n.Date)
-                    )
-                    .Keyword(k => k
-                        .Name(n => n.Tags)
-                    )
+            index => index.Mappings(descriptor => descriptor.Properties<Article>(p => p
+                    .Text(t => t.Title)
+                    .Text(t => t.Metadata!)
+                    .Text(t => t.Content!)
+                    .Keyword(k => k.Author!)
+                    .Date(d => d.Date!)
+                    .Keyword(k => k.Tags!)
                 )
             )
         );
 
-        if (!createIndexResponse.IsValid)
+        if (!createIndexResponse.IsValidResponse)
         {
             throw new Exception(createIndexResponse.DebugInformation);
         }

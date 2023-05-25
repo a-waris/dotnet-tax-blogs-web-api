@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,20 +42,20 @@ public static class PaginatedListHelper
         return new PaginatedList<T>(items, count, currentPage, pageSize);
     }
 
-    public static async Task<PaginatedList<T>> ToPaginatedListAsync<T>(this ISearchRequest<T> searchRequest,
-        IElasticClient elasticClient, int currentPage, int pageSize)
-        where T : class
-    {
-        currentPage = currentPage > 0 ? currentPage : DefaultCurrentPage;
-        pageSize = pageSize > 0 ? pageSize : DefaultPageSize;
-
-        searchRequest.From = (currentPage - 1) * pageSize;
-        searchRequest.Size = pageSize;
-
-        var searchResponse = await elasticClient.SearchAsync<T>(searchRequest);
-        var count = (int)searchResponse.Total;
-        var items = searchResponse.Documents.ToList();
-
-        return new PaginatedList<T>(items, count, currentPage, pageSize);
-    }
+    // public static async Task<PaginatedList<T>> ToPaginatedListAsync<T>(this ISearchRequest<T> searchRequest,
+    //     IElasticClient elasticClient, int currentPage, int pageSize)
+    //     where T : class
+    // {
+    //     currentPage = currentPage > 0 ? currentPage : DefaultCurrentPage;
+    //     pageSize = pageSize > 0 ? pageSize : DefaultPageSize;
+    //
+    //     searchRequest.From = (currentPage - 1) * pageSize;
+    //     searchRequest.Size = pageSize;
+    //
+    //     var searchResponse = await elasticClient.SearchAsync<T>(searchRequest);
+    //     var count = (int)searchResponse.Total;
+    //     var items = searchResponse.Documents.ToList();
+    //
+    //     return new PaginatedList<T>(items, count, currentPage, pageSize);
+    // }
 }
