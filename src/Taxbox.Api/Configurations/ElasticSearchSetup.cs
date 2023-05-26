@@ -28,6 +28,8 @@ public static class ElasticSearchSetup
         var password = appSettings.Password;
         var debugMode = appSettings.EnableDebugMode;
         var clientCertificatePath = appSettings.ClientCertificatePath;
+        
+        //TODO: update appsettings.json to define all the nodes uris
         var nodes = new Uri[]
         {
             new(url),
@@ -36,16 +38,14 @@ public static class ElasticSearchSetup
         };
         var pool = new StaticNodePool(nodes);
         var settings = new ElasticsearchClientSettings(pool)
-                // .CertificateFingerprint(
-                //     "E2:E6:65:B8:F9:CB:C7:39:2D:8A:2B:9A:35:C3:68:8B:AD:B5:E6:2D:BE:21:8A:BF:71:15:25:77:A6:0D:A2:22"
-                // )
-                // .ServerCertificateValidationCallback(CertificateValidations.AllowAll)
+             
                 .CertificateFingerprint(GetSha2Thumbprint(new X509Certificate2(clientCertificatePath)))
                 .Authentication(new BasicAuthentication(user, password))
-                .DefaultIndex(defaultIndex)
-            ;
+                .DefaultIndex(defaultIndex);
         if (debugMode)
         {
+            // WARN - Not for production use
+            // settings.ServerCertificateValidationCallback(CertificateValidations.AllowAll);
             settings.EnableDebugMode();
         }
 
