@@ -1,4 +1,6 @@
-﻿namespace Taxbox.Application.Common;
+﻿using System.Security.Cryptography.X509Certificates;
+
+namespace Taxbox.Application.Common;
 
 public class ElasticSearchConfiguration
 {
@@ -7,4 +9,5 @@ public class ElasticSearchConfiguration
     public string User { get; init; } = null!;
     public string Password { get; init; } = null!;
     public bool EnableDebugMode { get; set; }
+    public string ClientCertificatePath { get; set; } = null!;
 }
