@@ -1,13 +1,13 @@
 using MediatR;
 using System;
 using System.Collections.Generic;
+using Taxbox.Application.Common.Requests;
 using Taxbox.Application.Common.Responses;
 using Taxbox.Domain.Entities;
-using Taxbox.Domain.Entities.Common;
 
 namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
-public class GetAllArticlesRequest : IRequest<IList<GetArticleResponse>>
+public record GetAllArticlesRequest : PaginatedRequest, IRequest<PaginatedList<GetArticleResponse>>
 {
     public string? Title { get; set; }
     public Metadata? Metadata { get; set; }

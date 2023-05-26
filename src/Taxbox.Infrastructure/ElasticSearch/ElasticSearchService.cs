@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Taxbox.Application.Common.Responses;
 using Taxbox.Domain.ElasticSearch.Interfaces;
 
 namespace Taxbox.Infrastructure.ElasticSearch;
@@ -76,13 +77,13 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         return searchResponse.IsValidResponse ? searchResponse.Documents.ToList() : default;
     }
 
-    public async Task<List<T>?> GetAllPaginated(QueryDescriptor<T> predicate, int currentPage, int pageSize)
+    public async Task<SearchResponse<T>?> GetAllPaginated(QueryDescriptor<T> predicate, int currentPage, int pageSize)
 
     {
         // return await searchRequest.ToPaginatedListAsync(_client, currentPage, pageSize);
         var searchResponse = await _client.SearchAsync<T>(s =>
             s.Index(_indexName).From((currentPage - 1) * pageSize).Size(pageSize).Query(predicate));
-        return searchResponse.IsValidResponse ? searchResponse.Documents.ToList() : default;
+        return searchResponse.IsValidResponse ? searchResponse : default;
     }
 
     public async Task<List<T>?> Query(QueryDescriptor<T> predicate)

@@ -1,5 +1,4 @@
 ﻿using Taxbox.Domain.Entities.Common;
-using Taxbox.Domain.Entities.Enums;
 using MassTransit;
 using System;
 using System.Collections.Generic;
@@ -11,11 +10,11 @@ public class Article : Entity<ArticleId>
     public override ArticleId Id { get; set; } = NewId.NextGuid();
     public string Title { get; set; } = null!;
     public Metadata? Metadata { get; set; }
-    public string? Content { get; set; } = null!;
-    public string? Author { get; set; } = null!;
+    public string? Content { get; set; }
+    public string? Author { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public IList<string>? Tags { get; set; } = null!;
+    public IList<string>? Tags { get; set; }
 }
 
 public class Metadata

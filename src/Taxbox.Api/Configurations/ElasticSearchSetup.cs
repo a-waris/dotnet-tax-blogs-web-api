@@ -26,6 +26,7 @@ public static class ElasticSearchSetup
         var defaultIndex = appSettings.DefaultIndex;
         var user = appSettings.User;
         var password = appSettings.Password;
+        var debugMode = appSettings.EnableDebugMode;
         var nodes = new Uri[]
         {
             new(url),
@@ -37,9 +38,13 @@ public static class ElasticSearchSetup
                 .CertificateFingerprint(
                     "E2:E6:65:B8:F9:CB:C7:39:2D:8A:2B:9A:35:C3:68:8B:AD:B5:E6:2D:BE:21:8A:BF:71:15:25:77:A6:0D:A2:22")
                 .Authentication(new BasicAuthentication(user, password))
-            // .ClientCertificate("C:\\Users\\waris\\source\\repos\\taxbox-api\\certs\\es01.crt")
-            // .DefaultIndex(defaultIndex)
+                // .ClientCertificate("C:\\Users\\waris\\source\\repos\\taxbox-api\\certs\\es01.crt")
+                .DefaultIndex(defaultIndex)
             ;
+        if (debugMode)
+        {
+            settings.EnableDebugMode();
+        }
 
         // AddDefaultMappings(settings, defaultIndex);
 
