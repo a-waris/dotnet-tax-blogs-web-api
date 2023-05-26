@@ -6,6 +6,9 @@ using System;
 using Taxbox.Application.Common;
 using Taxbox.Domain.Entities;
 using Taxbox.Infrastructure.ElasticSearch;
+using System.Collections.Generic;
+using Elastic.Clients.Elasticsearch.IndexManagement;
+using Taxbox.Domain.ElasticSearch.Interfaces;
 
 namespace Taxbox.Api.Configurations;
 
@@ -23,8 +26,16 @@ public static class ElasticSearchSetup
         var defaultIndex = appSettings.DefaultIndex;
         var user = appSettings.User;
         var password = appSettings.Password;
-        var settings = new ElasticsearchClientSettings(new Uri(url))
-        .CertificateFingerprint("65:75:8E:22:62:31:47:70:45:8E:6F:8B:FA:46:DF:11:CC:DC:DA:BA:15:9C:27:E3:92:65:15:12:12:72:77:B5")
+        var nodes = new Uri[]
+        {
+            new(url),
+            // new Uri("https://myserver2:9200"), 
+            // new Uri("https://myserver3:9200")
+        };
+        var pool = new StaticNodePool(nodes);
+        var settings = new ElasticsearchClientSettings(pool)
+                .CertificateFingerprint(
+                    "E2:E6:65:B8:F9:CB:C7:39:2D:8A:2B:9A:35:C3:68:8B:AD:B5:E6:2D:BE:21:8A:BF:71:15:25:77:A6:0D:A2:22")
                 .Authentication(new BasicAuthentication(user, password))
             // .ClientCertificate("C:\\Users\\waris\\source\\repos\\taxbox-api\\certs\\es01.crt")
             // .DefaultIndex(defaultIndex)
@@ -32,10 +43,10 @@ public static class ElasticSearchSetup
 
         // AddDefaultMappings(settings, defaultIndex);
 
-        var client = new ElasticClientContainer(settings);
-        services.AddScoped(typeof(IElasticSearchService<>), typeof(ElasticSearchService<>));
+        var client = new ElasticClientContainer(settings, defaultIndex);
         services.AddSingleton<IElasticsearchClientSettings>(settings);
         services.AddSingleton<IElasticClientContainer>(client);
+        services.AddScoped(typeof(IElasticSearchService<>), typeof(ElasticSearchService<>));
 
         CreateIndex(client, defaultIndex);
 
@@ -47,9 +58,17 @@ public static class ElasticSearchSetup
         settings
             .DefaultMappingFor<Article>
             (i => i
-                .IndexName(defaultIndex)
-                .IdProperty(a => a.Id)
+                    .IndexName(defaultIndex)
+                    .IdProperty(a => a.Id)
+
+                //.(p => p.Title, "title")
+                //.PropertyName(p => p.Metadata, "metadata")
+                //.PropertyName(p => p.Content, "content")
+                //.PropertyName(p => p.Author, "author")
+                //.PropertyName(p => p.Date, "date")
+                //.PropertyName(p => p.Tags, "tags")
             )
+
             // .EnableDebugMode()
             .PrettyJson()
             // .RequestTimeout(TimeSpan.FromMinutes(2))
@@ -59,20 +78,22 @@ public static class ElasticSearchSetup
     private static async void CreateIndex(IElasticClientContainer clientContainer, string indexName)
     {
         var client = clientContainer.GetElasticClient();
-        var a = await client.Indices.ExistsAsync(indexName);
+        var indexExists = await client.Indices.ExistsAsync(indexName);
         // check if index exists
-        if ((await client.Indices.ExistsAsync(indexName)).Exists)
+        if (indexExists.Exists)
         {
             return;
         }
 
+
         var createIndexResponse = await client.Indices.CreateAsync(indexName,
             index => index.Mappings(descriptor => descriptor.Properties<Article>(p => p
                     .Text(t => t.Title)
-                    .Text(t => t.Metadata!)
+                    .Object(o => o.Metadata!)
                     .Text(t => t.Content!)
                     .Keyword(k => k.Author!)
-                    .Date(d => d.Date!)
+                    .Date(d => d.CreatedAt!)
+                    .Date(d => d.UpdatedAt!)
                     .Keyword(k => k.Tags!)
                 )
             )

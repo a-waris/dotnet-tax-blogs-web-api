@@ -10,6 +10,7 @@
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Ardalis.Result.FluentValidation" />
     <PackageReference Include="BCrypt.Net-Next" />
+    <PackageReference Include="Elastic.Clients.Elasticsearch" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="Mapster" />
     <PackageReference Include="Mapster.EFCore" />

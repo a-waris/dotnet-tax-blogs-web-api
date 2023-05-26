@@ -22,7 +22,7 @@ public class UpdatePasswordHandler : IRequestHandler<UpdatePasswordRequest, Resu
     {
         // Guaranteed to be valid, because it comes from the session.
         var originalUser = await _context.Users
-            .FirstAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstAsync(x => Equals(x.Id, request.Id), cancellationToken);
         originalUser.Password = BC.HashPassword(request.Password);
         _context.Users.Update(originalUser);
         await _context.SaveChangesAsync(cancellationToken);

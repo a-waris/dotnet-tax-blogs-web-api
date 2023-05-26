@@ -1,8 +1,9 @@
 using Elastic.Clients.Elasticsearch;
 
-namespace Taxbox.Infrastructure.ElasticSearch;
+namespace Taxbox.Domain.ElasticSearch.Interfaces;
 
 public interface IElasticClientContainer
 {
     ElasticsearchClient GetElasticClient();
+    string GetIndexName();
 }

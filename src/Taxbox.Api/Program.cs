@@ -84,7 +84,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers()
-   .RequireAuthorization();
+    .RequireAuthorization();
 
 await app.Migrate();
 
