@@ -1,6 +1,6 @@
 # TaxBox Web Api
 
-A `.Net 7.0` WebApi Taxbox / template project. MediatR, Swagger, Mapster, Serilog and more implemented.
+A `.Net 7.0` WebApi Taxbox project with MediatR, Swagger, Mapster, Serilog, Elastic Search and more implemented.
 
 # How to run
 
