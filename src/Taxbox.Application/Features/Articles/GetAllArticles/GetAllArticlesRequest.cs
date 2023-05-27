@@ -16,4 +16,9 @@ public record GetAllArticlesRequest : PaginatedRequest, IRequest<PaginatedList<G
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public IList<string>? Tags { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Title} {Metadata} {Content} {Author} {CreatedAt} {UpdatedAt} {Tags}";
+    }
 }

@@ -2,6 +2,7 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Mapster;
 using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -25,20 +26,26 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
         CancellationToken cancellationToken)
     {
         var qd = new QueryDescriptor<Article>();
-        if (request.CreatedAt != null)
+        if (string.IsNullOrEmpty(request.ToString()) || string.IsNullOrWhiteSpace(request.ToString()))
         {
-            qd = qd.Range(
-                q => q.DateRange(dateRangeQueryDescriptor => dateRangeQueryDescriptor.Field(f => f.CreatedAt)
-                    .Gte(request.CreatedAt).Lte(request.CreatedAt)));
+            qd.MatchAll();
+        }
+        else
+        {
+            qd = BuildQueryDescriptor(request);
         }
 
-        if (request.UpdatedAt != null)
-        {
-            qd = qd.Range(
-                q => q.DateRange(dateRangeQueryDescriptor => dateRangeQueryDescriptor.Field(f => f.UpdatedAt)
-                    .Gte(request.UpdatedAt).Lte(request.UpdatedAt)));
-        }
+        
+        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize);
+        return resp != null
+            ? new PaginatedList<GetArticleResponse>(resp?.Documents.ToList().Adapt<List<GetArticleResponse>>(),
+                (int)resp!.Total, request.CurrentPage, request.PageSize)
+            : new PaginatedList<GetArticleResponse>();
+    }
 
+    private QueryDescriptor<Article> BuildQueryDescriptor(GetAllArticlesRequest request)
+    {
+        var qd = new QueryDescriptor<Article>();
         if (!string.IsNullOrEmpty(request.Title))
         {
             qd = qd.Match(m => m.Field(f => f.Title).Query(request.Title));
@@ -60,10 +67,20 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             qd = qd.Terms(t => t.Field(f => f.Tags).Terms(terms));
         }
 
-        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize);
-        return resp != null
-            ? new PaginatedList<GetArticleResponse>(resp?.Documents.ToList().Adapt<List<GetArticleResponse>>(),
-                (int)resp!.Total, request.CurrentPage, request.PageSize)
-            : new PaginatedList<GetArticleResponse>();
+        if (request.CreatedAt != null)
+        {
+            qd = qd.Range(
+                q => q.DateRange(dateRangeQueryDescriptor => dateRangeQueryDescriptor.Field(f => f.CreatedAt)
+                    .Gte(request.CreatedAt).Lte(request.CreatedAt)));
+        }
+
+        if (request.UpdatedAt != null)
+        {
+            qd = qd.Range(
+                q => q.DateRange(dateRangeQueryDescriptor => dateRangeQueryDescriptor.Field(f => f.UpdatedAt)
+                    .Gte(request.UpdatedAt).Lte(request.UpdatedAt)));
+        }
+
+        return qd;
     }
 }

@@ -28,4 +28,9 @@ public class Metadata
     public string? Category { get; set; }
     public string? Language { get; set; }
     public int? Views { get; set; }
+
+    public override string ToString()
+    {
+        return $"{Category} {Language} {Views}";
+    }
 }
