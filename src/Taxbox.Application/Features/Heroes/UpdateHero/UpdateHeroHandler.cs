@@ -21,7 +21,7 @@ public class UpdateHeroHandler : IRequestHandler<UpdateHeroRequest, Result<GetHe
         CancellationToken cancellationToken)
     {
         var originalHero = await _context.Heroes
-            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(x => Equals(x.Id, request.Id), cancellationToken);
         if (originalHero == null) return Result.NotFound();
 
         originalHero.Name = request.Name;

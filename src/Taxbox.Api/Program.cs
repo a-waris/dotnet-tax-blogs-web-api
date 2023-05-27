@@ -31,6 +31,9 @@ builder.Services.AddAuthSetup(builder.Configuration);
 // Swagger
 builder.Services.AddSwaggerSetup();
 
+// ElasticSearch
+builder.Services.AddElasticSearchSetup(builder.Configuration);
+
 // Persistence
 builder.Services.AddPersistenceSetup(builder.Configuration);
 
@@ -40,7 +43,7 @@ builder.Services.AddApplicationSetup();
 // Request response compression
 builder.Services.AddCompressionSetup();
 
-// HttpContextAcessor
+// HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
 // Mediator
@@ -81,7 +84,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers()
-   .RequireAuthorization();
+    .RequireAuthorization();
 
 await app.Migrate();
 

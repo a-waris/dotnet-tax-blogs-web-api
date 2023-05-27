@@ -362,3 +362,4 @@ tools/
 
 .idea/
 /.env
+/certs/

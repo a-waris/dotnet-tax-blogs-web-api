@@ -14,7 +14,7 @@ public record PaginatedList<T>
 
     public List<T> Result { get; init; } = new List<T>();
 
-    public PaginatedList(List<T> items, int count, int currentPage, int pageSize)
+    public PaginatedList(List<T>? items, int count, int currentPage, int pageSize)
     {
         CurrentPage = currentPage;
         TotalPages = (int)Math.Ceiling(count / (double)pageSize);
@@ -24,17 +24,16 @@ public record PaginatedList<T>
 
     public PaginatedList()
     {
-
     }
 }
 
-public static class PaginatedListHelper 
+public static class PaginatedListHelper
 {
-
     public const int DefaultPageSize = 15;
     public const int DefaultCurrentPage = 1;
 
-    public static async Task<PaginatedList<T>> ToPaginatedListAsync<T>(this IQueryable<T> source, int currentPage, int pageSize)
+    public static async Task<PaginatedList<T>> ToPaginatedListAsync<T>(this IQueryable<T> source, int currentPage,
+        int pageSize)
     {
         currentPage = currentPage > 0 ? currentPage : DefaultCurrentPage;
         pageSize = pageSize > 0 ? pageSize : DefaultPageSize;
@@ -42,4 +41,21 @@ public static class PaginatedListHelper
         var items = await source.Skip((currentPage - 1) * pageSize).Take(pageSize).ToListAsync();
         return new PaginatedList<T>(items, count, currentPage, pageSize);
     }
+
+    // public static async Task<PaginatedList<T>> ToPaginatedListAsync<T>(this ISearchRequest<T> searchRequest,
+    //     IElasticClient elasticClient, int currentPage, int pageSize)
+    //     where T : class
+    // {
+    //     currentPage = currentPage > 0 ? currentPage : DefaultCurrentPage;
+    //     pageSize = pageSize > 0 ? pageSize : DefaultPageSize;
+    //
+    //     searchRequest.From = (currentPage - 1) * pageSize;
+    //     searchRequest.Size = pageSize;
+    //
+    //     var searchResponse = await elasticClient.SearchAsync<T>(searchRequest);
+    //     var count = (int)searchResponse.Total;
+    //     var items = searchResponse.Documents.ToList();
+    //
+    //     return new PaginatedList<T>(items, count, currentPage, pageSize);
+    // }
 }

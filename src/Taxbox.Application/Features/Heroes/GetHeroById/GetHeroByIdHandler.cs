@@ -19,7 +19,7 @@ public class GetHeroByIdHandler : IRequestHandler<GetHeroByIdRequest, Result<Get
     }
     public async Task<Result<GetHeroResponse>> Handle(GetHeroByIdRequest request, CancellationToken cancellationToken)
     {
-        var hero = await _context.Heroes.FirstOrDefaultAsync(x => x.Id == request.Id,
+        var hero = await _context.Heroes.FirstOrDefaultAsync(x => Equals(x.Id, request.Id),
             cancellationToken: cancellationToken);
         if (hero is null) return Result.NotFound();
         return hero.Adapt<GetHeroResponse>();
