@@ -3,7 +3,7 @@ version: '3'
 services:
 
   mssql-server:
-    container_name: mssql-servers
+    container_name: mssql
     image: mcr.microsoft.com/mssql/server:2017-latest
     networks:
       - localdev
@@ -224,15 +224,19 @@ services:
     networks:
       - localdev
 
-  taxbox-api:
-    container_name: taxbox-api
-    image: taxbox-api:local
+  dotnet-api:
+    container_name: dotnet-api
+    image: dotnet-api:local
     entrypoint: ["./wait-for.sh", "mssql:1433", "-t", "120", "--", "dotnet", "Taxbox.Api.dll"]
     build:
       context: .
       dockerfile: src/Taxbox.Api/Dockerfile
     depends_on:
-      - mssql-server
+      es-setup:
+        condition: service_completed_successfully 
+      mssql-server: 
+        condition: service_started
+        
     networks:
       - localdev
     volumes:

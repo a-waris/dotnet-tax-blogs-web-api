@@ -8,7 +8,7 @@ services:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Yourpassword123
 
-  taxbox-api:
+  dotnet-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
@@ -19,11 +19,11 @@ services:
       - Jaeger__AgentPort=6831
       - ElasticSearchConfiguration__ClientCertificatePath=/app/certs/es01/es01.crt
       - ElasticSearchConfiguration__DefaultIndex=articles
-      - ElasticSearchConfiguration__Url=https://localhost:9200/
+      - ElasticSearchConfiguration__Url=https://es01:9200
       - ElasticSearchConfiguration__User=elastic
       - ElasticSearchConfiguration__Password=es123456
       - ElasticSearchConfiguration__EnableDebugMode=true
-      
+
     ports:
       - "5000:80"
       - "5001:443"
