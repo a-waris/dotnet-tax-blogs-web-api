@@ -32,7 +32,7 @@ builder.Services.AddAuthSetup(builder.Configuration);
 builder.Services.AddSwaggerSetup();
 
 // ElasticSearch
-builder.Services.AddElasticSearchSetup(builder.Configuration);
+builder.Services.AddElasticSearchSetup(builder);
 
 // Persistence
 builder.Services.AddPersistenceSetup(builder.Configuration);

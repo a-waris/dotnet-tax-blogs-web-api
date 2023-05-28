@@ -2,6 +2,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 using System;
 using Taxbox.Application.Common;
 using Taxbox.Domain.Entities;
@@ -15,9 +17,9 @@ namespace Taxbox.Api.Configurations;
 public static class ElasticSearchSetup
 {
     public static IServiceCollection AddElasticSearchSetup(this IServiceCollection services,
-        IConfiguration configuration)
+        WebApplicationBuilder builder)
     {
-        var esConfig = configuration.GetRequiredSection("ElasticSearchConfiguration");
+        var esConfig = builder.Configuration.GetRequiredSection("ElasticSearchConfiguration");
         services.Configure<ElasticSearchConfiguration>(esConfig);
 
         var appSettings = esConfig.Get<ElasticSearchConfiguration>();
@@ -29,7 +31,7 @@ public static class ElasticSearchSetup
 
         var defaultIndex = appSettings.DefaultIndex;
         var debugMode = appSettings.EnableDebugMode;
-        var settings = EsSettings(appSettings);
+        var settings = EsSettings(appSettings, builder);
         if (debugMode)
         {
             settings.EnableDebugMode();
@@ -47,11 +49,11 @@ public static class ElasticSearchSetup
         return services;
     }
 
-    private static ElasticsearchClientSettings EsSettings(ElasticSearchConfiguration esConfig)
+    private static ElasticsearchClientSettings EsSettings(ElasticSearchConfiguration esConfig,
+        WebApplicationBuilder builder)
     {
-        var isProduction = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production";
         var auth = new BasicAuthentication(esConfig.User, esConfig.Password);
-        if (isProduction)
+        if (builder.Environment.IsProduction())
         {
             return new ElasticsearchClientSettings(esConfig.CloudId, auth)
                 .DefaultIndex(esConfig.DefaultIndex);
