@@ -1,10 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Transport;
 using System;
-using System.Collections.Generic;
 using Taxbox.Application.Common;
 using Taxbox.Domain.Entities;
 using Taxbox.Infrastructure.ElasticSearch;
