@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-
-namespace Taxbox.Application.Common;
+﻿namespace Taxbox.Application.Common;
 
 public class ElasticSearchConfiguration
 {
@@ -10,4 +8,5 @@ public class ElasticSearchConfiguration
     public string Password { get; init; } = null!;
     public bool EnableDebugMode { get; set; }
     public string ClientCertificatePath { get; set; } = null!;
+    public string CloudId { get; set; } = null!;
 }

@@ -11,7 +11,7 @@ public interface IElasticSearchService<T> where T : class
     Task<bool> AddOrUpdateBulk(IEnumerable<T> documents);
     // Task<bool> AddOrUpdate(T document);
     Task<T> AddOrUpdate(T document);
-    Task<T?> Get(string key);
+    Task<GetResponse<T>> Get(string key);
     Task<List<T>?> GetAll();
     Task<List<T>?> Query(QueryDescriptor<T> predicate);
     Task<bool> Remove(string key);

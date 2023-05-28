@@ -22,12 +22,11 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Result
         CancellationToken cancellationToken)
     {
         var existingArticle = await _eSservice.Get(request.Id.Adapt<string>());
-        if (existingArticle == null)
+        if (existingArticle.Source == null)
         {
             return Result.NotFound();
         }
-
-        var result = await _eSservice.AddOrUpdate(request.Adapt(existingArticle));
+        var result = await _eSservice.AddOrUpdate(request.Adapt(existingArticle.Source));
         return result.Adapt<GetArticleResponse>();
     }
 }
