@@ -65,10 +65,9 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         return document;
     }
 
-    public async Task<T?> Get(string key)
+    public async Task<GetResponse<T>> Get(string key)
     {
-        GetResponse<T> response = await _client.GetAsync<T>(key, g => g.Index(_indexName));
-        return response.Source;
+        return await _client.GetAsync<T>(key, g => g.Index(_indexName));
     }
 
     public async Task<List<T>?> GetAll()

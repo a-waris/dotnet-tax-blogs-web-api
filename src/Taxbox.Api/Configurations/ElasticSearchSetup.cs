@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Transport;
 using System;
+using System.Collections.Generic;
 using Taxbox.Application.Common;
 using Taxbox.Domain.Entities;
 using Taxbox.Infrastructure.ElasticSearch;
@@ -22,30 +24,16 @@ public static class ElasticSearchSetup
 
         var appSettings = esConfig.Get<ElasticSearchConfiguration>();
 
-        var url = appSettings!.Url;
-        var defaultIndex = appSettings.DefaultIndex;
-        var user = appSettings.User;
-        var password = appSettings.Password;
-        var debugMode = appSettings.EnableDebugMode;
-        var clientCertificatePath = appSettings.ClientCertificatePath;
-        
-        //TODO: update appsettings.json to define all the nodes uris
-        var nodes = new Uri[]
+        if (appSettings == null)
         {
-            new(url),
-            // new Uri("https://myserver2:9200"), 
-            // new Uri("https://myserver3:9200")
-        };
-        var pool = new StaticNodePool(nodes);
-        var settings = new ElasticsearchClientSettings(pool)
-             
-                .CertificateFingerprint(GetSha2Thumbprint(new X509Certificate2(clientCertificatePath)))
-                .Authentication(new BasicAuthentication(user, password))
-                .DefaultIndex(defaultIndex);
+            throw new Exception("ElasticSearchConfiguration is not configured");
+        }
+
+        var defaultIndex = appSettings.DefaultIndex;
+        var debugMode = appSettings.EnableDebugMode;
+        var settings = EsSettings(appSettings);
         if (debugMode)
         {
-            // WARN - Not for production use
-            // settings.ServerCertificateValidationCallback(CertificateValidations.AllowAll);
             settings.EnableDebugMode();
         }
 
@@ -59,6 +47,24 @@ public static class ElasticSearchSetup
         CreateIndex(client, defaultIndex);
 
         return services;
+    }
+
+    private static ElasticsearchClientSettings EsSettings(ElasticSearchConfiguration esConfig)
+    {
+        var isProduction = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production";
+        var auth = new BasicAuthentication(esConfig.User, esConfig.Password);
+        if (isProduction)
+        {
+            return new ElasticsearchClientSettings(esConfig.CloudId, auth)
+                .DefaultIndex(esConfig.DefaultIndex);
+        }
+
+        var nodes = new Uri[] { new(esConfig.Url) };
+        var pool = new StaticNodePool(nodes);
+        return new ElasticsearchClientSettings(pool)
+            .CertificateFingerprint(GetSha2Thumbprint(new X509Certificate2(esConfig.ClientCertificatePath)))
+            .Authentication(auth)
+            .DefaultIndex(esConfig.DefaultIndex);
     }
 
     private static void AddDefaultMappings(ElasticsearchClientSettings settings, string defaultIndex)
@@ -76,7 +82,6 @@ public static class ElasticSearchSetup
     {
         var client = clientContainer.GetElasticClient();
         var indexExists = await client.Indices.ExistsAsync(indexName);
-        // check if index exists
         if (!indexExists.IsValidResponse)
         {
             throw new Exception(indexExists.DebugInformation);

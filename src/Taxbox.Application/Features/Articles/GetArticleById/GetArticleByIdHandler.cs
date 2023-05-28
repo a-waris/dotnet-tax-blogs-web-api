@@ -25,6 +25,13 @@ public class GetArticleByIdHandler : IRequestHandler<GetArticleByIdRequest, Resu
         CancellationToken cancellationToken)
     {
         var result = await _eSservice.Get(request.Id.ToString()!);
-        return result != null ? result.Adapt<GetArticleResponse>() : Result.NotFound();
+        if (result.Source == null)
+        {
+            return Result.NotFound();
+        }
+
+        result.Source.Id = Guid.Parse(result.Id);
+        return result.Source.Adapt<GetArticleResponse>();
+
     }
 }

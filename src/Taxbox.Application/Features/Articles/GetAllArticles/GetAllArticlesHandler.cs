@@ -35,12 +35,24 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             qd = BuildQueryDescriptor(request);
         }
 
-        
         var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize);
-        return resp != null
-            ? new PaginatedList<GetArticleResponse>(resp?.Documents.ToList().Adapt<List<GetArticleResponse>>(),
-                (int)resp!.Total, request.CurrentPage, request.PageSize)
-            : new PaginatedList<GetArticleResponse>();
+
+        var list = new List<GetArticleResponse>();
+        if (resp?.Hits != null)
+        {
+            foreach (var hit in resp.Hits)
+            {
+                if (hit.Source == null) continue;
+
+                hit.Source.Id = Guid.Parse(hit.Id);
+                list.Add(hit.Source.Adapt<GetArticleResponse>());
+            }
+
+            return new PaginatedList<GetArticleResponse>(list,
+                (int)resp!.Total, request.CurrentPage, request.PageSize);
+        }
+
+        return new PaginatedList<GetArticleResponse>();
     }
 
     private QueryDescriptor<Article> BuildQueryDescriptor(GetAllArticlesRequest request)

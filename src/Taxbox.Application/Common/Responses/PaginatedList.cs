@@ -14,7 +14,7 @@ public record PaginatedList<T>
 
     public List<T> Result { get; init; } = new List<T>();
 
-    public PaginatedList(List<T>? items, int count, int currentPage, int pageSize)
+    public PaginatedList(IEnumerable<T> items, int count, int currentPage, int pageSize)
     {
         CurrentPage = currentPage;
         TotalPages = (int)Math.Ceiling(count / (double)pageSize);
