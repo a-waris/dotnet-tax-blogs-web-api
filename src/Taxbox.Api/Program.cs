@@ -29,7 +29,7 @@ builder.Services
 builder.Services.AddAuthSetup(builder.Configuration);
 
 // Swagger
-builder.Services.AddSwaggerSetup();
+builder.Services.AddSwaggerSetup(builder);
 
 // ElasticSearch
 builder.Services.AddElasticSearchSetup(builder);
@@ -75,7 +75,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware(typeof(ExceptionHandlerMiddleware));
 
-app.UseSwaggerSetup();
+app.UseSwaggerSetup(builder.Configuration);
 
 app.UseResponseCompression();
 app.UseHttpsRedirection();

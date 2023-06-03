@@ -5,8 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <!--    add your PackageVersion nodes here -->
-    <PackageVersion Include="Ardalis.Result" Version="7.0.0" />
-    <PackageVersion Include="Ardalis.Result.AspNetCore" Version="7.0.0" />
+    <PackageVersion Include="Ardalis.Result" Version="7.1.0" />
+    <PackageVersion Include="Ardalis.Result.AspNetCore" Version="7.1.0" />
     <PackageVersion Include="Ardalis.Result.FluentValidation" Version="7.1.0" />
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
     <PackageVersion Include="Mapster" Version="7.3.0" />
@@ -29,7 +29,7 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
     <PackageVersion Include="Respawn" Version="6.0.0" />
-    <PackageVersion Include="Testcontainers.MsSql" Version="3.1.0" />
+    <PackageVersion Include="Testcontainers.MsSql" Version="3.2.0" />
     <PackageVersion Include="xunit" Version="2.4.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageVersion Include="Ben.Demystifier" Version="0.4.1" />
