@@ -1,9 +1,9 @@
 ﻿using Ardalis.Result;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using Taxbox.Domain.Entities;
-using Taxbox.Domain.Entities.Enums;
 
 namespace Taxbox.Application.Features.Articles.CreateArticle;
 
@@ -16,4 +16,17 @@ public record CreateArticleRequest : IRequest<Result<GetArticleResponse>>
     public DateTime? CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; } = DateTime.Now;
     public IList<string>? Tags { get; set; }
+    public bool? IsPublic { get; set; } = false;
+    public IFormFile? CoverImage { get; set; }
+    public IList<ArticleAttachmentRequest>? Attachments { get; set; }
+}
+
+public record ArticleAttachmentRequest
+{
+    public IFormFile File { get; set; } = null!;
+    public string Type { get; set; } = null!;
+}
+
+public enum AttachmentType
+{
 }

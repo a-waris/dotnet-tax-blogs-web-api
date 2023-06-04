@@ -38,6 +38,7 @@ public class ArticleController : ControllerBase
 
     [HttpGet]
     [Route("list")]
+    [AllowAnonymous]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult<IEnumerable<GetArticleResponse>>> GetList(
@@ -50,7 +51,7 @@ public class ArticleController : ControllerBase
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult<GetArticleResponse>> Create(
-        [FromBody] CreateArticleRequest request)
+        [FromForm] CreateArticleRequest request)
     {
         return Ok(await _mediator.Send(request));
     }

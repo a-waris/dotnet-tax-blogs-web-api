@@ -1,18 +1,13 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using Ardalis.Result;
+﻿using Ardalis.Result;
 using Taxbox.Domain.Entities;
 using Mapster;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
-using System.IO;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Taxbox.Application.Common;
-using Taxbox.Domain.Entities.Common;
+using Taxbox.Domain.ElasticSearch.Interfaces;
 using BC = BCrypt.Net.BCrypt;
 
 namespace Taxbox.Application.Features.Users.CreateUser;
@@ -20,14 +15,14 @@ namespace Taxbox.Application.Features.Users.CreateUser;
 public class CreateUserHandler : IRequestHandler<CreateUserRequest, Result<GetUserResponse>>
 {
     private readonly IContext _context;
-    private readonly IAmazonS3 _s3Client;
+    private readonly IS3Service _s3Service;
     private readonly IOptions<AWSConfiguration> _appSettings;
 
 
-    public CreateUserHandler(IContext context, IAmazonS3 s3Client, IOptions<AWSConfiguration> appSettings)
+    public CreateUserHandler(IContext context, IS3Service s3Service, IOptions<AWSConfiguration> appSettings)
     {
         _context = context;
-        _s3Client = s3Client;
+        _s3Service = s3Service;
         _appSettings = appSettings;
     }
 
@@ -37,51 +32,25 @@ public class CreateUserHandler : IRequestHandler<CreateUserRequest, Result<GetUs
         var created = request.Adapt<User>();
         _context.Users.Add(created);
         created.Password = BC.HashPassword(request.Password);
-
-        var extension = request.DisplayPicture?.FileName.Split('.')[1];
-
-        // Upload display picture to S3
-        var uploadResult = await UploadDisplayPictureToS3(request.DisplayPicture, created.Id, timeStamp, extension,
-            cancellationToken);
-        if (!uploadResult.IsSuccess)
+        if (created.DisplayPicture != null)
         {
-            return Result<GetUserResponse>.Error("Error uploading display picture");
-        }
-
-        created.DisplayPicture = uploadResult.Value;
-
-        await _context.SaveChangesAsync(cancellationToken);
-        return created.Adapt<GetUserResponse>();
-    }
-
-    private async Task<Result<string>> UploadDisplayPictureToS3(IFormFile? file, UserId userId, string timeStamp,
-        string? extension, CancellationToken cancellationToken)
-    {
-        if (file == null)
-        {
-            return Result<string>.Error("No display picture provided");
-        }
-
-        var uploadKey = $"{_appSettings.Value.S3BucketKeyForProfilePictures}/{userId}_{timeStamp}.{extension}";
-
-        await using (Stream? fileStream = file.OpenReadStream())
-        {
-            var uploadRequest = new PutObjectRequest
+            var extension = request.DisplayPicture?.FileName.Split('.')[1];
+            var uploadKey = $"{_appSettings.Value.S3BucketKeyForProfilePictures}/{created.Id}_{timeStamp}.{extension}";
+            // Upload display picture to S3
+            try
             {
-                BucketName = _appSettings.Value.S3BucketName,
-                Key = uploadKey,
-                InputStream = fileStream,
-                ContentType = file.ContentType
-            };
-
-            var response = await _s3Client.PutObjectAsync(uploadRequest, cancellationToken);
-            if (response.HttpStatusCode != HttpStatusCode.OK)
+                var uploadResult =
+                    await _s3Service.UploadFileToS3(request.DisplayPicture, uploadKey, cancellationToken);
+                created.DisplayPicture = uploadResult;
+            }
+            catch (Exception e)
             {
-                return Result<string>.Error("Error uploading display picture");
+                Console.WriteLine(e);
+                throw new Exception("Error uploading display picture");
             }
         }
 
-        var s3ImageUrl = $"{_appSettings.Value.S3BucketUrl}/{uploadKey}";
-        return Result<string>.Success(s3ImageUrl);
+        await _context.SaveChangesAsync(cancellationToken);
+        return created.Adapt<GetUserResponse>();
     }
 }
