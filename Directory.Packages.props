@@ -8,6 +8,8 @@
     <PackageVersion Include="Ardalis.Result" Version="7.1.0" />
     <PackageVersion Include="Ardalis.Result.AspNetCore" Version="7.1.0" />
     <PackageVersion Include="Ardalis.Result.FluentValidation" Version="7.1.0" />
+    <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.7" />
+    <PackageVersion Include="AWSSDK.S3" Version="3.7.104.27" />
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
     <PackageVersion Include="Mapster" Version="7.3.0" />
     <PackageVersion Include="Mapster.EFCore" Version="5.1.0" />
@@ -52,6 +54,5 @@
     <PackageVersion Include="Swashbuckle.AspNetCore.Filters" Version="7.0.6" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.1.1" />
-    
   </ItemGroup>
 </Project>
