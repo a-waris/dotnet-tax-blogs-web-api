@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Taxbox.Infrastructure.Context;
 
@@ -11,9 +12,11 @@ using Taxbox.Infrastructure.Context;
 namespace Taxbox.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230604170001_AddNewFieldsToUsers")]
+    partial class AddNewFieldsToUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -75,21 +78,6 @@ namespace Taxbox.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("687d9fd5-2752-4a96-93d5-0f33a49913c6"),
-                            Email = "admin@taxbox.com",
-                            Password = "$2a$11$oNUUOd3qRUAGD55pG/VBR.p3kn4kgdk5qJ6ArL5UybYMI0kFOlX4i",
-                            Role = "Admin"
-                        },
-                        new
-                        {
-                            Id = new Guid("6648c89f-e894-42bb-94f0-8fd1059c86b4"),
-                            Email = "user@taxbox.com",
-                            Password = "$2a$11$COfh6eYz/zaenoTtBexF7ueQmxbUo5PJJPdyR/HYoqDmolhWpZ3ui",
-                            Role = "User"
-                        });
                 });
 #pragma warning restore 612, 618
         }

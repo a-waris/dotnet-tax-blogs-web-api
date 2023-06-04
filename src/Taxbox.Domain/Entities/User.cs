@@ -11,4 +11,7 @@ public class User : Entity<UserId>
     public string Password { get; set; } = null!;
 
     public string Role { get; set; } = null!;
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? DisplayPictureUrl { get; set; }
 }

@@ -136,7 +136,9 @@ After that, you can pass the jwt on the lock (if using swagger) or via the Autho
    - `dotnet ef migrations add InitialCreate --startup-project .\src\Taxbox.Api\ --project .\src\Taxbox.Infrastructure\`
 
 2. This command will set the entrypoint for the migration (the responsible to selecting the dbprovider { sqlserver, mysql, etc } and the connection string) and the selected project will be "Taxbox.Infrastructure", which is where the dbcontext is.
+3. To update the database, run the following command on the root folder:
 
+   - `dotnet ef database update --startup-project .\src\Taxbox.Api\ --project .\src\Taxbox.Infrastructure\`
 # About
 
 [MIT license](LICENSE).
