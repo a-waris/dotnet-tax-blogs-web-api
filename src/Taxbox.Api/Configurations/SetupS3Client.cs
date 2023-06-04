@@ -4,6 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Taxbox.Application.Common;
+using Taxbox.Domain.ElasticSearch.Interfaces;
+using Taxbox.Infrastructure.AWSServices;
 
 namespace Taxbox.Api.Configurations;
 
@@ -27,6 +29,7 @@ public static class SetupS3Client
             Amazon.RegionEndpoint.GetBySystemName(appSettings.Region));
 
         services.AddSingleton<IAmazonS3>(client);
+        services.AddScoped<IS3Service, S3Service>();
         return services;
     }
 }

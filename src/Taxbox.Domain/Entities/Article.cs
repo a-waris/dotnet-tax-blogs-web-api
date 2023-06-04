@@ -15,6 +15,17 @@ public class Article : Entity<ArticleId>
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public IList<string>? Tags { get; set; }
+    public bool? IsPublic { get; set; } = false;
+    public string? CoverImage { get; set; }
+
+    public IList<ArticleAttachment>? Attachments { get; set; }
+}
+
+public class ArticleAttachment
+{
+    public string File { get; set; } = null!;
+    //TODO: add enum and a converter to map to the string value for the enum
+    public string Type { get; set; } = null!;
 }
 
 public class Metadata

@@ -75,7 +75,7 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
 
         if (request.Tags is { Count: > 0 })
         {
-            var terms = new TermsQueryField(request.Tags.Select(id => FieldValue.String(id)).ToArray());
+            var terms = new TermsQueryField(request.Tags.Select(FieldValue.String).ToArray());
             qd = qd.Terms(t => t.Field(f => f.Tags).Terms(terms));
         }
 
@@ -91,6 +91,11 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             qd = qd.Range(
                 q => q.DateRange(dateRangeQueryDescriptor => dateRangeQueryDescriptor.Field(f => f.UpdatedAt)
                     .Gte(request.UpdatedAt).Lte(request.UpdatedAt)));
+        }
+
+        if (request.IsPublic != null)
+        {
+            qd = qd.Term(t => t.Field(f => f.IsPublic).Value((bool)request.IsPublic));
         }
 
         return qd;

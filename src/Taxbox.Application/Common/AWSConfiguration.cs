@@ -9,4 +9,5 @@ public class AWSConfiguration
     public string S3BucketUrl { get; init; } = null!;
 
     public string S3BucketKeyForProfilePictures { get; init; } = null!;
+    public string S3BucketKeyForArticleIndex { get; init; } = null!;
 }

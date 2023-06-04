@@ -1,5 +1,6 @@
 using Ardalis.Result;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -17,4 +18,6 @@ public record UpdateArticleRequest : IRequest<Result<GetArticleResponse>>
     public string? Author { get; set; }
     public DateTime? UpdatedAt { get; set; } = DateTime.Now;
     public IList<string>? Tags { get; set; }
+    public bool? IsPublic { get; set; } = false;
+    public IFormFile? CoverImage { get; set; }
 }

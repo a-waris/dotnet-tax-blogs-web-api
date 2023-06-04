@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Elastic.Clients.Elasticsearch" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="NewId" />
     <PackageReference Include="StronglyTypedId" />
