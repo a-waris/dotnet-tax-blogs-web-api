@@ -89,6 +89,16 @@ public class UserController : ControllerBase
         var result = await _mediator.Send(request);
         return result;
     }
+    
+    [HttpPost("Signup")]
+    [AllowAnonymous]
+    [TranslateResultToActionResult]
+    [ExpectedFailures(ResultStatus.Invalid)]
+    public async Task<Result<GetUserResponse>> CreateUserPublic([FromForm] CreateUserRequest request)
+    {
+        var result = await _mediator.Send(request);
+        return result;
+    }
 
     [HttpPatch("password")]
     [TranslateResultToActionResult]

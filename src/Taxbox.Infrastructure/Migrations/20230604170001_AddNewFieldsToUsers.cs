@@ -16,7 +16,7 @@ namespace Taxbox.Infrastructure.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "FirstName",
                 table: "Users",
-                nullable: true, 
+                nullable: false, 
                 type: "nvarchar(254)",
                 maxLength: 254
                 );
@@ -24,13 +24,13 @@ namespace Taxbox.Infrastructure.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "LastName",
                 table: "Users",
-                nullable: true,
+                nullable: false,
                 type: "nvarchar(254)",
                 maxLength: 254
                 );
 
             migrationBuilder.AddColumn<string>(
-                name: "DisplayPictureUrl",
+                name: "DisplayPicture",
                 table: "Users",
                 nullable: true,
                 type: "nvarchar(2048)",
@@ -50,7 +50,7 @@ namespace Taxbox.Infrastructure.Migrations
                 table: "Users");
             
             migrationBuilder.DropColumn(
-                name: "DisplayPictureUrl",
+                name: "DisplayPicture",
                 table: "Users");
         }
     }

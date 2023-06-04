@@ -1,8 +1,10 @@
+using Amazon.S3;
 using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using Taxbox.Api.Common;
 using Taxbox.Api.Configurations;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -62,6 +64,9 @@ if (builder.Environment.EnvironmentName != "Testing")
 
 // Add opentelemetry
 builder.AddOpenTemeletrySetup();
+
+// Add S3 client
+builder.Services.AddS3Setup(builder);
 
 var app = builder.Build();
 

@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Ardalis.Result" />
     <PackageReference Include="Ardalis.Result.FluentValidation" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" />
+    <PackageReference Include="AWSSDK.S3" />
     <PackageReference Include="BCrypt.Net-Next" />
     <PackageReference Include="Elastic.Clients.Elasticsearch" />
     <PackageReference Include="FluentValidation" />

@@ -1,5 +1,6 @@
 ﻿using Taxbox.Domain.Entities.Common;
 using MassTransit;
+using Microsoft.AspNetCore.Http;
 
 namespace Taxbox.Domain.Entities;
 
@@ -11,7 +12,7 @@ public class User : Entity<UserId>
     public string Password { get; set; } = null!;
 
     public string Role { get; set; } = null!;
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
-    public string? DisplayPictureUrl { get; set; }
+    public string FirstName { get; set; } = null!;
+    public string LastName { get; set; } = null!;
+    public string? DisplayPicture { get; set; }
 }

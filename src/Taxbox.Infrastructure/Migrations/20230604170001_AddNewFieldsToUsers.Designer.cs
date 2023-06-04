@@ -72,6 +72,17 @@ namespace Taxbox.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(254);
+                    
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(254);
+
+                    b.Property<string>("DisplayPicture")
+                        .HasMaxLength(2048);
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
