@@ -4,6 +4,7 @@ using Taxbox.Infrastructure.Configuration;
 using EntityFramework.Exceptions.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Taxbox.Infrastructure.Context;
 
@@ -23,7 +24,15 @@ public class ApplicationDbContext : DbContext, IContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        base.OnConfiguring(optionsBuilder);
+        if (!optionsBuilder.IsConfigured)
+        {
+            var cx = _configuration?.GetConnectionString("DefaultConnection");
+            optionsBuilder.UseSqlServer(cx, builder =>
+            {
+                builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            });
+            base.OnConfiguring(optionsBuilder);
+        }
 
         optionsBuilder.UseExceptionProcessor();
     }
