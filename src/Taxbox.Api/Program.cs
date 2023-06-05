@@ -1,4 +1,3 @@
-using Amazon.S3;
 using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using Taxbox.Api.Common;
