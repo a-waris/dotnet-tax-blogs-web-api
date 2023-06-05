@@ -14,5 +14,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Id).HasConversion<UserId.EfCoreValueConverter>();
         builder.Property(x => x.Email).IsRequired().HasMaxLength(254);
         builder.HasIndex(x => x.Email).IsUnique();
+        builder.Property(x => x.FirstName).HasMaxLength(254);
+        builder.Property(x => x.LastName).HasMaxLength(254);
+        builder.Property(x => x.DisplayPicture).HasMaxLength(2048);
     }
 }
