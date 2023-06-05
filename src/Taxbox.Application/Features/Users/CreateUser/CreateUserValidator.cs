@@ -12,11 +12,9 @@ public class CreateUserValidator : AbstractValidator<CreateUserRequest>
         ClassLevelCascadeMode = CascadeMode.Stop;
 
         RuleFor(x => x.FirstName)
-            .NotEmpty()
             .MaximumLength(254);
 
         RuleFor(x => x.LastName)
-            .NotEmpty()
             .MaximumLength(254);
 
         RuleFor(x => x.Password)
@@ -33,7 +31,7 @@ public class CreateUserValidator : AbstractValidator<CreateUserRequest>
             .MaximumLength(254)
             .EmailAddress()
             .MustAsync(async (email, ct) => !await context.Users.AnyAsync(y =>
-                string.Equals(y.Email, email)))
+                string.Equals(y.Email, email), cancellationToken: ct))
             .WithMessage("A user with this email already exists.");
     }
 }

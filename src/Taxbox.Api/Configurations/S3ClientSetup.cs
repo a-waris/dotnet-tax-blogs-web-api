@@ -9,7 +9,7 @@ using Taxbox.Infrastructure.AWSServices;
 
 namespace Taxbox.Api.Configurations;
 
-public static class SetupS3Client
+public static class S3ClientSetup
 {
     public static IServiceCollection AddS3Setup(this IServiceCollection services,
         WebApplicationBuilder builder)

@@ -16,8 +16,8 @@ namespace Taxbox.Infrastructure.Migrations
                     Email = table.Column<string>(type: "nvarchar(254)", maxLength: 254, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FirstName= table.Column<string>(name: "FirstName",nullable: false, type: "nvarchar(254)", maxLength: 254),
-                    LastName=table.Column<string>(name: "LastName",nullable: false,type: "nvarchar(254)", maxLength: 254),
+                    FirstName= table.Column<string>(name: "FirstName",nullable: true, type: "nvarchar(254)", maxLength: 254),
+                    LastName=table.Column<string>(name: "LastName",nullable: true,type: "nvarchar(254)", maxLength: 254),
                     DisplayPicture=table.Column<string>( name: "DisplayPicture", nullable: true, type: "nvarchar(2048)", maxLength: 2048)
                 },
                 constraints: table =>
