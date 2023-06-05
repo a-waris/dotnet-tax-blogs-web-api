@@ -68,6 +68,22 @@ builder.AddOpenTemeletrySetup();
 // Add S3 client
 builder.Services.AddS3Setup(builder);
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigins",
+        corsPolicyBuilder =>
+        {
+            corsPolicyBuilder.WithOrigins(
+                "http://localhost:3000",
+                "http://localhost:4200"
+                // TODO: LIVE https URL OF FRONT END HERE
+            );
+            corsPolicyBuilder.AllowAnyHeader();
+            corsPolicyBuilder.AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
