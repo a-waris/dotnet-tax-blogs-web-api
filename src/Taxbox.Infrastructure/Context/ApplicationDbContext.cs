@@ -26,14 +26,13 @@ public class ApplicationDbContext : DbContext, IContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            var cx = _configuration?.GetConnectionString("DefaultConnection");
-            if (cx is not null)
+            // var cx = _configuration?.GetConnectionString("DefaultConnection");
+            var cx = "Server=EC2AMAZ-R7QCMS9\\SQLEXPRESS;Database=TaxboxDB;User Id=admin;Password=1234;TrustServerCertificate=true";
+
+            optionsBuilder.UseSqlServer(cx, builder =>
             {
-                optionsBuilder.UseSqlServer(cx, builder =>
-                {
-                    builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-                });
-            }
+                builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            });
 
             base.OnConfiguring(optionsBuilder);
         }
