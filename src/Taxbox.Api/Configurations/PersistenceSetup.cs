@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Taxbox.Api.Configurations;
 
-public static class PersistanceSetup
+public static class PersistenceSetup
 {
     public static IServiceCollection AddPersistenceSetup(this IServiceCollection services, IConfiguration configuration)
     {
