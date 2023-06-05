@@ -38,13 +38,23 @@ public class ArticleController : ControllerBase
 
     [HttpGet]
     [Route("list")]
-    [AllowAnonymous]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult<IEnumerable<GetArticleResponse>>> GetList(
         [FromQuery] GetAllArticlesRequest request)
     {
         return Ok(await _mediator.Send(request));
+    }    
+    
+    [HttpGet]
+    [Route("public/list")]
+    [AllowAnonymous]
+    [TranslateResultToActionResult]
+    [ExpectedFailures(ResultStatus.Invalid)]
+    public async Task<ActionResult<IEnumerable<GetArticleResponse>>> GetListPublic(
+        [FromQuery] GetAllArticlesRequest request)
+    {
+        return Ok(await _mediator.Send(request with { IsPublic = true }));
     }
 
     [HttpPost]
