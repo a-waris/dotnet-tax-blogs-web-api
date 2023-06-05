@@ -13,10 +13,7 @@ public static class PersistenceSetup
     {
 
         services.AddScoped<ISession, Session>();
-        services.AddDbContext<ApplicationDbContext>(o =>
-        {
-            o.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
-        });
+        services.AddDbContext<ApplicationDbContext>();
 
         return services;
     }

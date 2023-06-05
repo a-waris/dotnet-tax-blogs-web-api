@@ -74,8 +74,7 @@ builder.Services.AddCors(options =>
         corsPolicyBuilder =>
         {
             corsPolicyBuilder.WithOrigins(
-                "http://localhost:3000",
-                "http://localhost:4200"
+                "http://*"
                 // TODO: LIVE https URL OF FRONT END HERE
             );
             corsPolicyBuilder.AllowAnyHeader();
