@@ -4,8 +4,6 @@ using MediatR;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Taxbox.Application.Features.Heroes;
-using Taxbox.Application.Features.Heroes.GetHeroById;
 using Taxbox.Domain.ElasticSearch.Interfaces;
 using Taxbox.Domain.Entities;
 
