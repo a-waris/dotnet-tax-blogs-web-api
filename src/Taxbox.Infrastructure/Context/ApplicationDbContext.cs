@@ -27,10 +27,14 @@ public class ApplicationDbContext : DbContext, IContext
         if (!optionsBuilder.IsConfigured)
         {
             var cx = _configuration?.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseSqlServer(cx, builder =>
+            if (cx is not null)
             {
-                builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            });
+                optionsBuilder.UseSqlServer(cx, builder =>
+                {
+                    builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                });
+            }
+
             base.OnConfiguring(optionsBuilder);
         }
 
