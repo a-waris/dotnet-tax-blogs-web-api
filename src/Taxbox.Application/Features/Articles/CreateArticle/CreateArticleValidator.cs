@@ -22,16 +22,15 @@ public class CreateArticleValidator : AbstractValidator<CreateArticleRequest>
 
         RuleFor(x => x.CoverImage)
             .Must(x => x == null || x.ContentType.Contains("image"))
-            .WithMessage("CoverImage must be an image.");        
-        
+            .WithMessage("CoverImage must be an image.");
+
         RuleFor(x => x.ThumbnailImage)
             .Must(x => x == null || x.ContentType.Contains("image"))
             .WithMessage("ThumbnailImage must be an image.");
 
 
         RuleFor(x => x.Attachments)
-            //TODO: check for attachment type?
-            .Must(x => x == null || x is not { Count: > 5 })
+            .Must(x => x == null || x.Count <= 5)
             .WithMessage("Attachments must be less than or equal to 5.");
     }
 }

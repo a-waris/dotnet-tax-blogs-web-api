@@ -42,7 +42,7 @@ public class S3Service : IS3Service
             }
         }
 
-        return $"{bucketName}/{uploadKey}";
+        return $"{uploadKey}";
     }
 
     public async Task<Stream> GetFile(string bucketName, string key, CancellationToken cancellationToken)

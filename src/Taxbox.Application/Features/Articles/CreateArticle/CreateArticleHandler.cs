@@ -41,42 +41,44 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleRequest, Result
         {
             if (request.CoverImage != null)
             {
-                article.CoverImage = await S3Utils.UploadImage(_s3Service, request.CoverImage, article.Id,
+                var coverImgUrl = await S3Utils.UploadImage(_s3Service, request.CoverImage, article.Id,
                     _appSettings.Value.S3BucketName,
-                    _appSettings.Value.S3BucketKeyForArticleIndex +
-                    "coverimages", cancellationToken);
+                    $"{_appSettings.Value.S3BucketKeyForArticleIndex}/coverimages", cancellationToken);
+                article.CoverImage = $"{_appSettings.Value.S3BucketUrl}/{coverImgUrl}";
+            }
 
-                if (request.ThumbnailImage != null)
+            if (request.ThumbnailImage != null)
+            {
+                var thumbnailUrl = await S3Utils.UploadImage(_s3Service, request.ThumbnailImage, article.Id,
+                    _appSettings.Value.S3BucketName,
+                    $"{_appSettings.Value.S3BucketKeyForArticleIndex}/thumbnailimages", cancellationToken);
+                article.ThumbnailImage = $"{_appSettings.Value.S3BucketUrl}/{thumbnailUrl}";
+            }
+
+
+            if (request.Attachments is { Count: > 0 })
+            {
+                var attachments = new List<ArticleAttachment>();
+                foreach (var attachment in request.Attachments)
                 {
-                    article.ThumbnailImage = await S3Utils.UploadImage(_s3Service, request.ThumbnailImage, article.Id,
-                        _appSettings.Value.S3BucketName,
-                        _appSettings.Value.S3BucketKeyForArticleIndex +
-                        "thumbnailimages", cancellationToken);
-                }
-
-
-                if (request.Attachments is { Count: > 0 })
-                {
-                    var attachments = new List<ArticleAttachment>();
-                    foreach (var attachment in request.Attachments)
+                    try
                     {
-                        try
+                        var attachmentUrl = await S3Utils.UploadImage(_s3Service, attachment.File, article.Id,
+                            _appSettings.Value.S3BucketName,
+                            $"{_appSettings.Value.S3BucketKeyForArticleIndex}/attachments", cancellationToken);
+                        if (attachmentUrl == null) continue;
+                        attachments.Add(new ArticleAttachment
                         {
-                            var attachmentUrl = await S3Utils.UploadImage(_s3Service, attachment.File, article.Id,
-                                _appSettings.Value.S3BucketName,
-                                _appSettings.Value.S3BucketKeyForArticleIndex +
-                                "attachments", cancellationToken);
-                            if (attachmentUrl == null) continue;
-                            attachments.Add(new ArticleAttachment { File = attachmentUrl, Type = attachment.Type });
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e);
-                        }
+                            File = $"{_appSettings.Value.S3BucketUrl}/{attachmentUrl}", Type = attachment.Type
+                        });
                     }
-
-                    article.Attachments = attachments;
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
                 }
+
+                article.Attachments = attachments;
             }
         }
 

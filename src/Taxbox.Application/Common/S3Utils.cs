@@ -13,7 +13,7 @@ public static class S3Utils
         , string bucketName, string folderName,
         CancellationToken cancellationToken)
     {
-        var uploadKey = GetUploadKey(file, id, bucketName, folderName);
+        var uploadKey = GetUploadKey(file, id, folderName);
         try
         {
             // var fileExists = await s3Service.CheckIfFileExists(bucketName,
@@ -43,10 +43,10 @@ public static class S3Utils
         }
     }
 
-    public static string GetUploadKey(IFormFile file, IGuid id, string bucketName, string folderName)
+    public static string GetUploadKey(IFormFile file, IGuid id, string folderName)
     {
         var extension = file.FileName.Split('.')[1];
         var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
-        return $"{bucketName}/{folderName}/{id}_{timeStamp}.{extension}";
+        return $"{folderName}/{id}_{timeStamp}.{extension}";
     }
 }

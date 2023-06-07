@@ -60,10 +60,10 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Result
                     }
                 }
 
-                article.CoverImage = await S3Utils.UploadImage(_s3Service, request.CoverImage, article.Id,
+                var coverImgUrl = await S3Utils.UploadImage(_s3Service, request.CoverImage, article.Id,
                     _appSettings.Value.S3BucketName,
-                    _appSettings.Value.S3BucketKeyForArticleIndex +
-                    "coverimages", cancellationToken);
+                    $"{_appSettings.Value.S3BucketKeyForArticleIndex}/coverimages", cancellationToken);
+                article.CoverImage = $"{_appSettings.Value.S3BucketUrl}/{coverImgUrl}";
             }
 
             if (request.ThumbnailImage != null)
@@ -81,10 +81,10 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Result
                     }
                 }
 
-                article.ThumbnailImage = await S3Utils.UploadImage(_s3Service, request.ThumbnailImage, article.Id,
+                var thumbnailUrl = await S3Utils.UploadImage(_s3Service, request.ThumbnailImage, article.Id,
                     _appSettings.Value.S3BucketName,
-                    _appSettings.Value.S3BucketKeyForArticleIndex +
-                    "thumbnailimages", cancellationToken);
+                    $"{_appSettings.Value.S3BucketKeyForArticleIndex}/thumbnailimages", cancellationToken);
+                article.ThumbnailImage = $"{_appSettings.Value.S3BucketUrl}/{thumbnailUrl}";
             }
 
 
@@ -121,10 +121,9 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Result
 
                         var attachmentUrl = await S3Utils.UploadImage(_s3Service, attachment.File, article.Id,
                             _appSettings.Value.S3BucketName,
-                            _appSettings.Value.S3BucketKeyForArticleIndex +
-                            "attachments", cancellationToken);
+                            $"{_appSettings.Value.S3BucketKeyForArticleIndex}/attachments", cancellationToken);
                         if (attachmentUrl == null) continue;
-                        attachments.Add(new ArticleAttachment { File = attachmentUrl, Type = attachment.Type });
+                        attachments.Add(new ArticleAttachment { File =  $"{_appSettings.Value.S3BucketUrl}/{attachmentUrl}", Type = attachment.Type });
                     }
                     catch (Exception e)
                     {
