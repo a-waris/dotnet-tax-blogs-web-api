@@ -8,7 +8,6 @@ namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
 public record GetAllArticlesResponse
 {
-    
     public ArticleId Id { get; init; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -40,6 +39,9 @@ public record GetAllArticlesResponse
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? CoverImage { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? ThumbnailImage { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IList<ArticleAttachment>? Attachments { get; set; }
