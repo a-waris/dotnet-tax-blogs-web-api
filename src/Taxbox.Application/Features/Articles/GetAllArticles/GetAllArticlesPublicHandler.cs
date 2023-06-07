@@ -36,6 +36,16 @@ public class
             qd = BuildQueryDescriptor(request);
         }
 
+        if (request.CurrentPage <= 0) 
+        {
+            request.CurrentPage = 1;
+        }
+        
+        if (request.PageSize <= 0) 
+        {
+            request.PageSize = 10;
+        }
+
         var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize);
 
         var list = new List<GetArticleResponse>();
