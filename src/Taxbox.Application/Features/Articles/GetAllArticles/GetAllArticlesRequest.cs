@@ -7,7 +7,7 @@ using Taxbox.Domain.Entities;
 
 namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
-public record GetAllArticlesRequest : PaginatedRequest, IRequest<PaginatedList<GetArticleResponse>>
+public record GetAllArticlesRequest : PaginatedRequest, IRequest<PaginatedList<GetAllArticlesResponse>>
 {
     public string? Title { get; set; }
     public Metadata? Metadata { get; set; }

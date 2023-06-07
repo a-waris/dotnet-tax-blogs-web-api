@@ -7,7 +7,7 @@ using Taxbox.Domain.Entities;
 
 namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
-public record GetAllArticlesPublicRequest : PaginatedRequest, IRequest<PaginatedList<GetArticleResponse>>
+public record GetAllArticlesPublicRequest : PaginatedRequest, IRequest<PaginatedList<GetAllArticlesResponse>>
 {
     private const bool IsPublic = true;
     public string? Title { get; set; }

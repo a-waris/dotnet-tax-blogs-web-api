@@ -15,7 +15,7 @@ using Taxbox.Domain.Entities;
 namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
 public class
-    GetAllArticlesPublicHandler : IRequestHandler<GetAllArticlesPublicRequest, PaginatedList<GetArticleResponse>>
+    GetAllArticlesPublicHandler : IRequestHandler<GetAllArticlesPublicRequest, PaginatedList<GetAllArticlesResponse>>
 {
     private readonly IElasticSearchService<Article> _eSservice;
 
@@ -24,7 +24,7 @@ public class
         _eSservice = eSservice;
     }
 
-    public async Task<PaginatedList<GetArticleResponse>> Handle(GetAllArticlesPublicRequest request,
+    public async Task<PaginatedList<GetAllArticlesResponse>> Handle(GetAllArticlesPublicRequest request,
         CancellationToken cancellationToken)
     {
         var qd = new QueryDescriptor<Article>();
@@ -57,7 +57,7 @@ public class
 
         var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, validFields.ToArray());
 
-        var list = new List<GetArticleResponse>();
+        var list = new List<GetAllArticlesResponse>();
         if (resp?.Hits != null)
         {
             foreach (var hit in resp.Hits)
@@ -66,14 +66,14 @@ public class
 
                 hit.Source.Id = Guid.Parse(hit.Id);
                 
-                list.Add(hit.Source.Adapt<GetArticleResponse>());
+                list.Add(hit.Source.Adapt<GetAllArticlesResponse>());
             }
 
-            return new PaginatedList<GetArticleResponse>(list,
+            return new PaginatedList<GetAllArticlesResponse>(list,
                 (int)resp!.Total, request.CurrentPage, request.PageSize);
         }
 
-        return new PaginatedList<GetArticleResponse>();
+        return new PaginatedList<GetAllArticlesResponse>();
     }
 
     private Func<Article, Article> CreateFieldProjection(IEnumerable<string> fields)

@@ -13,7 +13,7 @@ using Taxbox.Domain.Entities;
 
 namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
-public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, PaginatedList<GetArticleResponse>>
+public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, PaginatedList<GetAllArticlesResponse>>
 {
     private readonly IElasticSearchService<Article> _eSservice;
 
@@ -22,7 +22,7 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
         _eSservice = eSservice;
     }
 
-    public async Task<PaginatedList<GetArticleResponse>> Handle(GetAllArticlesRequest request,
+    public async Task<PaginatedList<GetAllArticlesResponse>> Handle(GetAllArticlesRequest request,
         CancellationToken cancellationToken)
     {
         var qd = new QueryDescriptor<Article>();
@@ -49,7 +49,7 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
 
         var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields);
 
-        var list = new List<GetArticleResponse>();
+        var list = new List<GetAllArticlesResponse>();
         if (resp?.Hits != null)
         {
             foreach (var hit in resp.Hits)
@@ -57,14 +57,14 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
                 if (hit.Source == null) continue;
 
                 hit.Source.Id = Guid.Parse(hit.Id);
-                list.Add(hit.Source.Adapt<GetArticleResponse>());
+                list.Add(hit.Source.Adapt<GetAllArticlesResponse>());
             }
 
-            return new PaginatedList<GetArticleResponse>(list,
+            return new PaginatedList<GetAllArticlesResponse>(list,
                 (int)resp!.Total, request.CurrentPage, request.PageSize);
         }
 
-        return new PaginatedList<GetArticleResponse>();
+        return new PaginatedList<GetAllArticlesResponse>();
     }
 
     private QueryDescriptor<Article> BuildQueryDescriptor(GetAllArticlesRequest request)
