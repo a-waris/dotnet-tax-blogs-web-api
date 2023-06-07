@@ -11,6 +11,7 @@ public record CreateArticleRequest : IRequest<Result<GetArticleResponse>>
 {
     public string Title { get; set; } = null!;
     public Metadata? Metadata { get; set; }
+    public string HtmlContent { get; set; } = null!;
     public string Content { get; set; } = null!;
     public string Author { get; set; } = null!;
     public DateTime? CreatedAt { get; set; } = DateTime.Now;
@@ -19,6 +20,7 @@ public record CreateArticleRequest : IRequest<Result<GetArticleResponse>>
     public bool? IsPublic { get; set; } = false;
     public bool? IsPublished { get; set; } = false;
     public IFormFile? CoverImage { get; set; }
+    public IFormFile? ThumbnailImage { get; set; }
     public IList<ArticleAttachmentRequest>? Attachments { get; set; }
 }
 

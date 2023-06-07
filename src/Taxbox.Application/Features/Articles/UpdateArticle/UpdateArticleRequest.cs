@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Taxbox.Application.Features.Articles.CreateArticle;
 using Taxbox.Domain.Entities;
 using Taxbox.Domain.Entities.Common;
 
@@ -14,6 +15,7 @@ public record UpdateArticleRequest : IRequest<Result<GetArticleResponse>>
     [JsonIgnore] public ArticleId Id { get; init; }
     public string? Title { get; set; }
     public Metadata? Metadata { get; set; }
+    public string? HtmlContent { get; set; }
     public string? Content { get; set; }
     public string? Author { get; set; }
     public DateTime? UpdatedAt { get; set; } = DateTime.Now;
@@ -21,4 +23,6 @@ public record UpdateArticleRequest : IRequest<Result<GetArticleResponse>>
     public bool? IsPublic { get; set; } = false;
     public bool? IsPublished { get; set; } = false;
     public IFormFile? CoverImage { get; set; }
+    public IFormFile? ThumbnailImage { get; set; }
+    public IList<ArticleAttachmentRequest>? Attachments { get; set; }
 }

@@ -36,12 +36,12 @@ public class
             qd = BuildQueryDescriptor(request);
         }
 
-        if (request.CurrentPage <= 0) 
+        if (request.CurrentPage <= 0)
         {
             request.CurrentPage = 1;
         }
-        
-        if (request.PageSize <= 0) 
+
+        if (request.PageSize <= 0)
         {
             request.PageSize = 10;
         }
@@ -69,15 +69,28 @@ public class
     private QueryDescriptor<Article> BuildQueryDescriptor(GetAllArticlesPublicRequest request)
     {
         var qd = new QueryDescriptor<Article>().Term(t => t.Field(f => f.IsPublic).Value(true));
-        if (!string.IsNullOrEmpty(request.Title))
+        
+        // if both title and content are not empty then search both fields using bool should query
+        if (!string.IsNullOrEmpty(request.Title) && !string.IsNullOrEmpty(request.Content))
+        {
+            qd = qd.Bool(b =>
+                b.Should(
+                        m => m.Match(matchQueryDescriptor =>
+                            matchQueryDescriptor.Field(f => f.Title).Query(request.Title)),
+                        m => m.Match(matchQueryDescriptor =>
+                            matchQueryDescriptor.Field(f => f.Content).Query(request.Content)))
+                    .MinimumShouldMatch(1));
+        }
+        else if (!string.IsNullOrEmpty(request.Title))
         {
             qd = qd.Match(m => m.Field(f => f.Title).Query(request.Title));
         }
 
-        if (!string.IsNullOrEmpty(request.Content))
+        else if (!string.IsNullOrEmpty(request.Content))
         {
             qd = qd.Match(m => m.Field(f => f.Content).Query(request.Content));
         }
+
 
         if (!string.IsNullOrEmpty(request.Author))
         {

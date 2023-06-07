@@ -14,15 +14,13 @@ namespace Taxbox.Infrastructure.AWSServices;
 public class S3Service : IS3Service
 {
     private readonly IAmazonS3 _s3Client;
-    private readonly IOptions<AWSConfiguration> _appSettings;
 
-    public S3Service(IAmazonS3 s3Client, IOptions<AWSConfiguration> appSettings)
+    public S3Service(IAmazonS3 s3Client)
     {
         _s3Client = s3Client;
-        _appSettings = appSettings;
     }
 
-    public async Task<string> UploadFileToS3(IFormFile? file, string uploadKey,
+    public async Task<string> UploadFile(IFormFile? file, string bucketName, string uploadKey,
         CancellationToken cancellationToken)
     {
         if (file == null)
@@ -34,10 +32,7 @@ public class S3Service : IS3Service
         {
             var uploadRequest = new PutObjectRequest
             {
-                BucketName = _appSettings.Value.S3BucketName,
-                Key = uploadKey,
-                InputStream = fileStream,
-                ContentType = file.ContentType
+                BucketName = bucketName, Key = uploadKey, InputStream = fileStream, ContentType = file.ContentType
             };
 
             var response = await _s3Client.PutObjectAsync(uploadRequest, cancellationToken);
@@ -47,6 +42,29 @@ public class S3Service : IS3Service
             }
         }
 
-        return $"{_appSettings.Value.S3BucketUrl}/{uploadKey}";
+        return $"{bucketName}/{uploadKey}";
+    }
+
+    public async Task<Stream> GetFile(string bucketName, string key, CancellationToken cancellationToken)
+    {
+        var response = await _s3Client.GetObjectAsync(bucketName, key, cancellationToken);
+        if (response.HttpStatusCode != HttpStatusCode.OK)
+        {
+            throw new AmazonS3Exception("Error getting file from S3");
+        }
+
+        return response.ResponseStream;
+    }
+
+    public async Task<bool> CheckIfFileExists(string bucketName, string key, CancellationToken cancellationToken)
+    {
+        var response = await _s3Client.GetObjectAsync(bucketName, key, cancellationToken);
+        return response.HttpStatusCode == HttpStatusCode.OK;
+    }
+
+    public async Task<bool> DeleteFile(string bucketName, string key, CancellationToken cancellationToken)
+    {
+        var response = await _s3Client.DeleteObjectAsync(bucketName, key, cancellationToken);
+        return response.HttpStatusCode == HttpStatusCode.OK;
     }
 }

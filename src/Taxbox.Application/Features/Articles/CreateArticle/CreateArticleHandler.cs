@@ -37,55 +37,50 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleRequest, Result
         article.CreatedAt = DateTime.Now.Date;
         article.UpdatedAt = DateTime.Now.Date;
 
-        if (request.CoverImage != null || request.Attachments is { Count: > 0 })
+        if (request.CoverImage != null || request.ThumbnailImage != null || request.Attachments is { Count: > 0 })
         {
             if (request.CoverImage != null)
             {
-                var uploadKey = GetUploadKey(request.CoverImage, article.Id, "coverimages");
-                try
+                article.CoverImage = await S3Utils.UploadImage(_s3Service, request.CoverImage, article.Id,
+                    _appSettings.Value.S3BucketName,
+                    _appSettings.Value.S3BucketKeyForArticleIndex +
+                    "coverimages", cancellationToken);
+
+                if (request.ThumbnailImage != null)
                 {
-                    var uploadResult =
-                        await _s3Service.UploadFileToS3(request.CoverImage, uploadKey, cancellationToken);
-                    article.CoverImage = uploadResult;
+                    article.ThumbnailImage = await S3Utils.UploadImage(_s3Service, request.ThumbnailImage, article.Id,
+                        _appSettings.Value.S3BucketName,
+                        _appSettings.Value.S3BucketKeyForArticleIndex +
+                        "thumbnailimages", cancellationToken);
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    return Result<GetArticleResponse>.Error("Error uploading cover image.");
-                }
-            }
 
 
-            if (request.Attachments is { Count: > 0 })
-            {
-                var attachments = new List<ArticleAttachment>();
-                foreach (var attachment in request.Attachments)
+                if (request.Attachments is { Count: > 0 })
                 {
-                    var uploadKey = GetUploadKey(attachment.File, article.Id, "attachments");
-                    var uploadResult = await _s3Service.UploadFileToS3(attachment.File, uploadKey,
-                        cancellationToken);
-                    try
+                    var attachments = new List<ArticleAttachment>();
+                    foreach (var attachment in request.Attachments)
                     {
-                        attachments.Add(new ArticleAttachment { File = uploadResult, Type = attachment.Type });
+                        try
+                        {
+                            var attachmentUrl = await S3Utils.UploadImage(_s3Service, attachment.File, article.Id,
+                                _appSettings.Value.S3BucketName,
+                                _appSettings.Value.S3BucketKeyForArticleIndex +
+                                "attachments", cancellationToken);
+                            if (attachmentUrl == null) continue;
+                            attachments.Add(new ArticleAttachment { File = attachmentUrl, Type = attachment.Type });
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
-                }
 
-                article.Attachments = attachments;
+                    article.Attachments = attachments;
+                }
             }
         }
 
         var created = await _esService.AddOrUpdate(article);
         return created.Adapt<GetArticleResponse>();
-    }
-
-    private string GetUploadKey(IFormFile file, ArticleId id, string folderName)
-    {
-        var extension = file.FileName.Split('.')[1];
-        var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
-        return $"{_appSettings.Value.S3BucketKeyForArticleIndex}/{folderName}/{id}_{timeStamp}.{extension}";
     }
 }

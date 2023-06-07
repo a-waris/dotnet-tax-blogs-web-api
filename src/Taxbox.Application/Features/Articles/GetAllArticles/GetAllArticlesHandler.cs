@@ -108,6 +108,11 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             qd = qd.Term(t => t.Field(f => f.IsPublic).Value((bool)request.IsPublic));
         }
 
+        if (request.IsPublished != null)
+        {
+            qd = qd.Term(t => t.Field(f => f.IsPublished).Value((bool)request.IsPublished));
+        }
+
         return qd;
     }
 }

@@ -28,26 +28,23 @@ public class CreateUserHandler : IRequestHandler<CreateUserRequest, Result<GetUs
 
     public async Task<Result<GetUserResponse>> Handle(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
         var created = request.Adapt<User>();
         _context.Users.Add(created);
         created.Password = BC.HashPassword(request.Password);
-        if (created.DisplayPicture != null)
+        try
         {
-            var extension = request.DisplayPicture?.FileName.Split('.')[1];
-            var uploadKey = $"{_appSettings.Value.S3BucketKeyForProfilePictures}/{created.Id}_{timeStamp}.{extension}";
             // Upload display picture to S3
-            try
+            if (request.DisplayPicture != null)
             {
-                var uploadResult =
-                    await _s3Service.UploadFileToS3(request.DisplayPicture, uploadKey, cancellationToken);
-                created.DisplayPicture = uploadResult;
+                created.DisplayPicture = S3Utils.UploadImage(_s3Service, request.DisplayPicture, created.Id,
+                    _appSettings.Value.S3BucketName,
+                    _appSettings.Value.S3BucketKeyForProfilePictures, cancellationToken).Result;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new Exception("Error uploading display picture");
-            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Error uploading display picture");
         }
 
         await _context.SaveChangesAsync(cancellationToken);
