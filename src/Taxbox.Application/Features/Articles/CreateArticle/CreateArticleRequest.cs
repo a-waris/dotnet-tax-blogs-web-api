@@ -17,6 +17,7 @@ public record CreateArticleRequest : IRequest<Result<GetArticleResponse>>
     public DateTime? UpdatedAt { get; set; } = DateTime.Now;
     public IList<string>? Tags { get; set; }
     public bool? IsPublic { get; set; } = false;
+    public bool? IsPublished { get; set; } = false;
     public IFormFile? CoverImage { get; set; }
     public IList<ArticleAttachmentRequest>? Attachments { get; set; }
 }

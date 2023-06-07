@@ -16,8 +16,8 @@ public class Article : Entity<ArticleId>
     public DateTime? UpdatedAt { get; set; }
     public IList<string>? Tags { get; set; }
     public bool? IsPublic { get; set; } = false;
+    public bool? IsPublished { get; set; } = false;
     public string? CoverImage { get; set; }
-
     public IList<ArticleAttachment>? Attachments { get; set; }
 }
 

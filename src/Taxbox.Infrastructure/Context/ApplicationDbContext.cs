@@ -26,8 +26,8 @@ public class ApplicationDbContext : DbContext, IContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            // var cx = _configuration?.GetConnectionString("DefaultConnection");
-            var cx = "Server=DESKTOP-KI6EKBL;Database=TaxboxDB;User=root;Password=1234;TrustServerCertificate=True";
+            var cx = _configuration?.GetConnectionString("DefaultConnection");
+            // var cx = "Server=DESKTOP-KI6EKBL;Database=TaxboxDB;User=root;Password=1234;TrustServerCertificate=True";
 
             optionsBuilder.UseSqlServer(cx, builder =>
             {
