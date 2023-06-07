@@ -59,9 +59,10 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         var indexResponse =
             await _client.IndexAsync(document, idx => idx.Index(_indexName));
         if (!indexResponse.IsValidResponse)
-        {   
+        {
             throw new Exception(indexResponse.DebugInformation);
         }
+
         return document;
     }
 
@@ -76,12 +77,22 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         return searchResponse.IsValidResponse ? searchResponse.Documents.ToList() : default;
     }
 
-    public async Task<SearchResponse<T>?> GetAllPaginated(QueryDescriptor<T> predicate, int currentPage, int pageSize)
+    public async Task<SearchResponse<T>?> GetAllPaginated(QueryDescriptor<T> predicate, int currentPage, int pageSize,
+        string[]? sourceFields = null)
 
     {
-        // return await searchRequest.ToPaginatedListAsync(_client, currentPage, pageSize);
-        var searchResponse = await _client.SearchAsync<T>(s =>
-            s.Index(_indexName).From((currentPage - 1) * pageSize).Size(pageSize).Query(predicate));
+        var searchRequestDescriptor = new SearchRequestDescriptor<T>();
+        searchRequestDescriptor.Query(predicate);
+        searchRequestDescriptor.Index(_indexName);
+        searchRequestDescriptor.From((currentPage - 1) * pageSize);
+        searchRequestDescriptor.Size(pageSize);
+
+        if (sourceFields != null && sourceFields.Any())
+        {
+            searchRequestDescriptor.SourceIncludes(sourceFields);
+        }
+
+        var searchResponse = await _client.SearchAsync(searchRequestDescriptor);
         return searchResponse.IsValidResponse ? searchResponse : default;
     }
 

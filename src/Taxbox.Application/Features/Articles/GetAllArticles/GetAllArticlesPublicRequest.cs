@@ -18,10 +18,11 @@ public record GetAllArticlesPublicRequest : PaginatedRequest, IRequest<Paginated
     public DateTime? UpdatedAt { get; set; }
     public IList<string>? Tags { get; set; }
     public bool? IsPublished { get; set; }
+    public string? SourceFields { get; set; }
 
     public override string ToString()
     {
         return
-            $"{CurrentPage} {PageSize} {CurrentPage} {PageSize} {Title} {Metadata} {Content} {Author} {CreatedAt} {UpdatedAt} {Tags} {IsPublic} {IsPublished}";
+            $"{CurrentPage} {PageSize} {CurrentPage} {PageSize} {Title} {Metadata} {Content} {Author} {CreatedAt} {UpdatedAt} {Tags} {IsPublic} {IsPublished} {SourceFields}";
     }
 }

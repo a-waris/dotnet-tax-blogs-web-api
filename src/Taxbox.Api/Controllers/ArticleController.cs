@@ -61,7 +61,8 @@ public class ArticleController : ControllerBase
     [AllowAnonymous]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
-    public async Task<ActionResult<IEnumerable<GetArticleResponse>>> GetListPublic([FromQuery] GetAllArticlesPublicRequest request)
+    public async Task<ActionResult<IEnumerable<GetArticleResponse>>> GetListPublic(
+        [FromQuery] GetAllArticlesPublicRequest request)
     {
         return Ok(await _mediator.Send(request));
     }

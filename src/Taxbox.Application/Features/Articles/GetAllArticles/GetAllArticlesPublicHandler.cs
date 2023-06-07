@@ -5,6 +5,7 @@ using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Taxbox.Application.Common.Responses;
@@ -46,7 +47,15 @@ public class
             request.PageSize = 10;
         }
 
-        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize);
+
+        var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
+        // Filter the fields to include only the properties that exist in YourModel
+        var availableFields = typeof(Article).GetProperties().Select(p => p.Name);
+
+        // Filter the requested fields to include only the available fields
+        var validFields = fields.Intersect(availableFields, StringComparer.OrdinalIgnoreCase);
+
+        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, validFields.ToArray());
 
         var list = new List<GetArticleResponse>();
         if (resp?.Hits != null)
@@ -56,6 +65,7 @@ public class
                 if (hit.Source == null) continue;
 
                 hit.Source.Id = Guid.Parse(hit.Id);
+                
                 list.Add(hit.Source.Adapt<GetArticleResponse>());
             }
 
@@ -66,10 +76,21 @@ public class
         return new PaginatedList<GetArticleResponse>();
     }
 
+    private Func<Article, Article> CreateFieldProjection(IEnumerable<string> fields)
+    {
+        // Create an expression tree to project only the requested fields
+        // using System.Linq.Expressions.Expression
+        var param = Expression.Parameter(typeof(Article), "x");
+        var properties = fields.Select(field => Expression.Property(param, field));
+        var projection = Expression.MemberInit(Expression.New(typeof(Article)), properties.Cast<MemberBinding>());
+        var lambda = Expression.Lambda<Func<Article, Article>>(projection, param);
+        return lambda.Compile();
+    }
+
     private QueryDescriptor<Article> BuildQueryDescriptor(GetAllArticlesPublicRequest request)
     {
         var qd = new QueryDescriptor<Article>().Term(t => t.Field(f => f.IsPublic).Value(true));
-        
+
         // if both title and content are not empty then search both fields using bool should query
         if (!string.IsNullOrEmpty(request.Title) && !string.IsNullOrEmpty(request.Content))
         {
@@ -121,6 +142,7 @@ public class
         {
             qd = qd.Term(t => t.Field(f => f.IsPublished).Value((bool)request.IsPublished));
         }
+
 
         return qd;
     }
