@@ -38,6 +38,7 @@ public class ArticleController : ControllerBase
 
     [HttpGet]
     [Route("public/{id}")]
+    [AllowAnonymous]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult<GetArticleResponse>> GetByIdPublic(ArticleId id)
