@@ -37,6 +37,15 @@ public class ArticleController : ControllerBase
     }
 
     [HttpGet]
+    [Route("public/{id}")]
+    [TranslateResultToActionResult]
+    [ExpectedFailures(ResultStatus.Invalid)]
+    public async Task<ActionResult<GetArticleResponse>> GetByIdPublic(ArticleId id)
+    {
+        return Ok(await _mediator.Send(new GetArticleByIdRequest(Id: id, IsPublic: true)));
+    }
+
+    [HttpGet]
     [Route("list")]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
@@ -44,8 +53,8 @@ public class ArticleController : ControllerBase
         [FromQuery] GetAllArticlesRequest request)
     {
         return Ok(await _mediator.Send(request));
-    }    
-    
+    }
+
     [HttpGet]
     [Route("public/list")]
     [AllowAnonymous]
@@ -53,7 +62,7 @@ public class ArticleController : ControllerBase
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult<IEnumerable<GetArticleResponse>>> GetListPublic()
     {
-        return Ok(await _mediator.Send(new GetAllArticlesRequest{ IsPublic = true }));
+        return Ok(await _mediator.Send(new GetAllArticlesRequest { IsPublic = true }));
     }
 
     [HttpPost]
