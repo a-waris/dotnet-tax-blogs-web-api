@@ -14,8 +14,7 @@ public class CreateArticleValidator : AbstractValidator<CreateArticleRequest>
             .MaximumLength(StringSizes.Max);
 
         RuleFor(x => x.Content)
-            .NotEmpty()
-            .MaximumLength(StringSizes.Max);
+            .NotEmpty();
 
         RuleFor(x => x.Author)
             .NotEmpty()
@@ -28,7 +27,7 @@ public class CreateArticleValidator : AbstractValidator<CreateArticleRequest>
 
         RuleFor(x => x.Attachments)
             //TODO: check for attachment type?
-            .Must(x => x is not { Count: > 5 })
+            .Must(x => x == null || x is not { Count: > 5 })
             .WithMessage("Attachments must be less than or equal to 5.");
     }
 }
