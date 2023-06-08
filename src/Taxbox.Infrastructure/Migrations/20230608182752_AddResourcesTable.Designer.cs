@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Taxbox.Infrastructure.Context;
 
@@ -11,9 +12,11 @@ using Taxbox.Infrastructure.Context;
 namespace Taxbox.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230608182752_AddResourcesTable")]
+    partial class AddResourcesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,7 +46,35 @@ namespace Taxbox.Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
-          
+            modelBuilder.Entity("Taxbox.Domain.Entities.Hero", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HeroType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Individuality")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nickname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Team")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hero");
+                });
+
             modelBuilder.Entity("Taxbox.Domain.Entities.Resource", b =>
                 {
                     b.Property<Guid>("Id")

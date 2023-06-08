@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using Taxbox.Domain.Entities;
 using Taxbox.Domain.Entities.Common;
 

@@ -1,7 +1,6 @@
 ﻿using Ardalis.Result;
 using Mapster;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 using Taxbox.Application.Common;
 using Taxbox.Domain.ElasticSearch.Interfaces;
 using Taxbox.Domain.Entities;
-using Taxbox.Domain.Entities.Common;
 
 namespace Taxbox.Application.Features.Articles.CreateArticle;
 
