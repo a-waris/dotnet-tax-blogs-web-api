@@ -19,6 +19,7 @@ public record GetAllArticlesPublicRequest : PaginatedRequest, IRequest<Paginated
     public IList<string>? Tags { get; set; }
     public bool? IsPublished { get; set; }
     public string? SourceFields { get; set; }
+    public string? FreeTextSearch { get; set; }
 
     public override string ToString()
     {

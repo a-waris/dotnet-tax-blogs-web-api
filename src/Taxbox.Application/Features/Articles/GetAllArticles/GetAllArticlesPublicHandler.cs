@@ -91,23 +91,23 @@ public class
     {
         var qd = new QueryDescriptor<Article>().Term(t => t.Field(f => f.IsPublic).Value(true));
 
-        // if both title and content are not empty then search both fields using bool should query
-        if (!string.IsNullOrEmpty(request.Title) && !string.IsNullOrEmpty(request.Content))
+        if (!string.IsNullOrEmpty(request.FreeTextSearch))
         {
             qd = qd.Bool(b =>
                 b.Should(
                         m => m.Match(matchQueryDescriptor =>
-                            matchQueryDescriptor.Field(f => f.Title).Query(request.Title)),
+                            matchQueryDescriptor.Field(f => f.Title).Query(request.FreeTextSearch)),
                         m => m.Match(matchQueryDescriptor =>
-                            matchQueryDescriptor.Field(f => f.Content).Query(request.Content)))
+                            matchQueryDescriptor.Field(f => f.Content).Query(request.FreeTextSearch)))
                     .MinimumShouldMatch(1));
         }
-        else if (!string.IsNullOrEmpty(request.Title))
+        
+        if (!string.IsNullOrEmpty(request.Title))
         {
             qd = qd.Match(m => m.Field(f => f.Title).Query(request.Title));
         }
 
-        else if (!string.IsNullOrEmpty(request.Content))
+        if (!string.IsNullOrEmpty(request.Content))
         {
             qd = qd.Match(m => m.Field(f => f.Content).Query(request.Content));
         }
