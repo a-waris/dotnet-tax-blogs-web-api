@@ -21,6 +21,8 @@ public class ApplicationDbContext : DbContext, IContext
     }
 
     public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Resource> Resources { get; set; } = null!;
+    public DbSet<Category> Categories { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -42,6 +44,8 @@ public class ApplicationDbContext : DbContext, IContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly)
+            .ApplyConfigurationsFromAssembly(typeof(ResourceConfiguration).Assembly)
+            .ApplyConfigurationsFromAssembly(typeof(CategoryConfiguration).Assembly);
     }
 }

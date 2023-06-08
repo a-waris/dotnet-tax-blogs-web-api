@@ -5,7 +5,6 @@ using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Taxbox.Application.Common.Responses;
@@ -74,17 +73,6 @@ public class
         }
 
         return new PaginatedList<GetAllArticlesResponse>();
-    }
-
-    private Func<Article, Article> CreateFieldProjection(IEnumerable<string> fields)
-    {
-        // Create an expression tree to project only the requested fields
-        // using System.Linq.Expressions.Expression
-        var param = Expression.Parameter(typeof(Article), "x");
-        var properties = fields.Select(field => Expression.Property(param, field));
-        var projection = Expression.MemberInit(Expression.New(typeof(Article)), properties.Cast<MemberBinding>());
-        var lambda = Expression.Lambda<Func<Article, Article>>(projection, param);
-        return lambda.Compile();
     }
 
     private QueryDescriptor<Article> BuildQueryDescriptor(GetAllArticlesPublicRequest request)
