@@ -19,12 +19,13 @@ public record GetAllArticlesRequest : PaginatedRequest, IRequest<PaginatedList<G
     public bool? IsPublic { get; set; }
     public bool? IsPublished { get; set; }
     public string? SourceFields { get; set; }
-
     public string? FreeTextSearch { get; set; }
+    public DateTime? PublishedAt { get; set; }
+    public bool? IsDraft { get; set; }
 
     public override string ToString()
     {
         return
-            $"{Title} {Metadata} {Content} {AuthorIds} {CreatedAt} {UpdatedAt} {Tags} {IsPublic} {IsPublished} {SourceFields}";
+            $"{CurrentPage} {PageSize} {CurrentPage} {PageSize} {Title} {Metadata} {Content} {AuthorIds} {CreatedAt} {UpdatedAt} {Tags} {IsPublic} {IsPublished} {SourceFields} {FreeTextSearch} {IsDraft} {PublishedAt}";
     }
 }
