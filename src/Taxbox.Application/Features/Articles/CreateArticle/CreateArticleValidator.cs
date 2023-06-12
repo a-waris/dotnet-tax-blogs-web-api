@@ -16,9 +16,8 @@ public class CreateArticleValidator : AbstractValidator<CreateArticleRequest>
         RuleFor(x => x.Content)
             .NotEmpty();
 
-        RuleFor(x => x.Author)
-            .NotEmpty()
-            .MaximumLength(StringSizes.Max);
+        RuleFor(x => x.AuthorIds)
+            .NotEmpty();
 
         RuleFor(x => x.CoverImage)
             .Must(x => x == null || x.ContentType.Contains("image"))

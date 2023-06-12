@@ -1,4 +1,5 @@
 using Ardalis.Result;
+using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Mapping;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -20,6 +21,6 @@ public record UpdateAuthorRequest : IRequest<Result<GetAuthorResponse>>
     public string Email { get; set; } = null!;
     public string Bio { get; set; } = null!;
     public SocialMedia? SocialMedia { get; set; }
-    public GeoPointProperty? Location { get; set; }
+    public GeoLocation? Location { get; set; }
     public DateTime? JoinDate { get; set; }
 }

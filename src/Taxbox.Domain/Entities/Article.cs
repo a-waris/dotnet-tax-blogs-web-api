@@ -24,6 +24,7 @@ public class Article : Entity<ArticleId>
     public IList<Author>? Authors { get; set; } = new List<Author>();
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public DateTime? PublishedAt { get; set; }
     public IList<string>? Tags { get; set; }
     public bool IsPublic { get; set; } = false;
     public bool IsPublished { get; set; } = false;

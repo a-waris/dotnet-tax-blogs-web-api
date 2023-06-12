@@ -20,7 +20,7 @@ public record GetAllArticlesResponse
     public string Content { get; set; } = null!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Author { get; set; } = null!;
+    public IList<string> AuthorIds { get; set; } = null!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTime? CreatedAt { get; set; }
@@ -29,13 +29,19 @@ public record GetAllArticlesResponse
     public DateTime? UpdatedAt { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DateTime? PublishedAt { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IList<string>? Tags { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public bool IsPublic { get; set; } = false;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public bool IsPublished { get; set; } = false;
+    public bool IsPublished { get; set; } = false;    
+    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool IsDraft { get; set; } = false;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? CoverImage { get; set; }

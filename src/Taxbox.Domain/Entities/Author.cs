@@ -1,4 +1,5 @@
-﻿using Elastic.Clients.Elasticsearch.Mapping;
+﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Mapping;
 using Taxbox.Domain.Entities.Common;
 using MassTransit;
 using System;
@@ -20,7 +21,7 @@ public class Author : Entity<AuthorId>
     public string Email { get; set; } = null!;
     public string Bio { get; set; } = null!;
     public SocialMedia? SocialMedia { get; set; }
-    public GeoPointProperty? Location { get; set; }
+    public GeoLocation? Location { get; set; }
     public DateTime? JoinDate { get; set; }
 }
 
