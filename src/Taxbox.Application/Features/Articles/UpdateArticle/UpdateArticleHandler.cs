@@ -39,7 +39,6 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Result
             return Result.NotFound();
         }
 
-        article.CreatedAt = DateTime.Now.Date;
         article.UpdatedAt = DateTime.Now.Date;
 
 
