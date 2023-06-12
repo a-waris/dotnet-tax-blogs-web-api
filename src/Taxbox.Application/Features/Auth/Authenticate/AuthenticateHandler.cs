@@ -1,5 +1,4 @@
 ﻿using Ardalis.Result;
-using Taxbox.Application.Common.Responses;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -67,16 +66,6 @@ public class AuthenticateHandler : IRequestHandler<AuthenticateRequest, Result<A
         };
         var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        return new AuthenticateResponse
-        {
-            Token = tokenHandler.WriteToken(token),
-            ExpDate = expDate,
-            Id = user.Id,
-            Email = user.Email,
-            IsAdmin = user.Role == "Admin",
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            DisplayPicture = user.DisplayPicture
-        };
+        return new AuthenticateResponse { Token = tokenHandler.WriteToken(token), ExpDate = expDate, User = user };
     }
 }
