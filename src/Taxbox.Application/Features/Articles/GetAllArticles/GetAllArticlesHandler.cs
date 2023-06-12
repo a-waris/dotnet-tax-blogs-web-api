@@ -80,9 +80,10 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             qd = qd.Match(m => m.Field(f => f.Content).Query(request.Content));
         }
 
-        if (!string.IsNullOrEmpty(request.Author))
+        if (request.AuthorIds is { Count: > 0 })
         {
-            qd = qd.Match(m => m.Field(f => f.Author).Query(request.Author));
+            var terms = new TermsQueryField(request.AuthorIds.Select(FieldValue.String).ToArray());
+            qd = qd.Terms(t => t.Field(f => f.AuthorIds).Terms(terms));
         }
 
         if (request.Tags is { Count: > 0 })

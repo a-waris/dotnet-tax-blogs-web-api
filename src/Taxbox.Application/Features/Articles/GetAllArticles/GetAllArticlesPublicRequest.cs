@@ -13,7 +13,7 @@ public record GetAllArticlesPublicRequest : PaginatedRequest, IRequest<Paginated
     public string? Title { get; set; }
     public Metadata? Metadata { get; set; }
     public string? Content { get; set; }
-    public string? Author { get; set; }
+    public IList<string>? AuthorIds { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public IList<string>? Tags { get; set; }
@@ -24,6 +24,6 @@ public record GetAllArticlesPublicRequest : PaginatedRequest, IRequest<Paginated
     public override string ToString()
     {
         return
-            $"{CurrentPage} {PageSize} {CurrentPage} {PageSize} {Title} {Metadata} {Content} {Author} {CreatedAt} {UpdatedAt} {Tags} {IsPublic} {IsPublished} {SourceFields}";
+            $"{CurrentPage} {PageSize} {CurrentPage} {PageSize} {Title} {Metadata} {Content} {AuthorIds} {CreatedAt} {UpdatedAt} {Tags} {IsPublic} {IsPublished} {SourceFields}";
     }
 }

@@ -2,11 +2,13 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Mapster;
 using MediatR;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Taxbox.Application.Common;
 using Taxbox.Application.Common.Responses;
 using Taxbox.Domain.ElasticSearch.Interfaces;
 using Taxbox.Domain.Entities;
@@ -16,10 +18,13 @@ namespace Taxbox.Application.Features.Authors.GetAllAuthor;
 public class GetAllAuthorsHandler : IRequestHandler<GetAllAuthorsRequest, PaginatedList<GetAuthorResponse>>
 {
     private readonly IElasticSearchService<Author> _eSservice;
+    private readonly IOptions<ElasticSearchConfiguration> _appSettings;
 
-    public GetAllAuthorsHandler(IElasticSearchService<Author> eSservice)
+    public GetAllAuthorsHandler(IElasticSearchService<Author> eSservice,
+        IOptions<ElasticSearchConfiguration> appSettings)
     {
         _eSservice = eSservice;
+        _appSettings = appSettings;
     }
 
     public async Task<PaginatedList<GetAuthorResponse>> Handle(GetAllAuthorsRequest request,
@@ -47,7 +52,8 @@ public class GetAllAuthorsHandler : IRequestHandler<GetAllAuthorsRequest, Pagina
 
         var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
 
-        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields);
+        var resp = await _eSservice.Index(_appSettings.Value.AuthorsIndex)
+            .GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields);
 
         var list = new List<GetAuthorResponse>();
         if (resp?.Hits != null)

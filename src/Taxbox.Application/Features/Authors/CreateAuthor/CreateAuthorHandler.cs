@@ -14,14 +14,12 @@ namespace Taxbox.Application.Features.Authors.CreateAuthor;
 public class CreateAuthorHandler : IRequestHandler<CreateAuthorRequest, Result<GetAuthorResponse>>
 {
     private readonly IElasticSearchService<Author> _esService;
-    private readonly IS3Service _s3Service;
-    private readonly IOptions<AWSConfiguration> _appSettings;
+    private readonly IOptions<ElasticSearchConfiguration> _appSettings;
 
-    public CreateAuthorHandler(IElasticSearchService<Author> esService, IS3Service s3Service,
-        IOptions<AWSConfiguration> appSettings)
+    public CreateAuthorHandler(IElasticSearchService<Author> esService,
+        IOptions<ElasticSearchConfiguration> appSettings)
     {
         _esService = esService;
-        _s3Service = s3Service;
         _appSettings = appSettings;
     }
 
@@ -32,7 +30,7 @@ public class CreateAuthorHandler : IRequestHandler<CreateAuthorRequest, Result<G
         var author = request.Adapt<Author>();
         author.JoinDate = DateTime.Now.Date;
 
-        var created = await _esService.AddOrUpdate(author);
+        var created = await _esService.Index(_appSettings.Value.AuthorsIndex).AddOrUpdate(author);
         return created.Adapt<GetAuthorResponse>();
     }
 }

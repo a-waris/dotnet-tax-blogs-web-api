@@ -9,7 +9,7 @@ namespace Taxbox.Application.Features.Authors;
 
 public record GetAuthorResponse
 {
-    public AuthorId Id { get; init; }
+    public AuthorId AuthorId { get; init; }
     public string Name { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string Bio { get; set; } = null!;

@@ -14,14 +14,12 @@ namespace Taxbox.Application.Features.Authors.UpdateAuthor;
 public class UpdateAuthorHandler : IRequestHandler<UpdateAuthorRequest, Result<GetAuthorResponse>>
 {
     private readonly IElasticSearchService<Author> _eSservice;
-    private readonly IS3Service _s3Service;
-    private readonly IOptions<AWSConfiguration> _appSettings;
+    private readonly IOptions<ElasticSearchConfiguration> _appSettings;
 
-    public UpdateAuthorHandler(IElasticSearchService<Author> eSservice, IS3Service s3Service,
-        IOptions<AWSConfiguration> appSettings)
+    public UpdateAuthorHandler(IElasticSearchService<Author> eSservice,
+        IOptions<ElasticSearchConfiguration> appSettings)
     {
         _eSservice = eSservice;
-        _s3Service = s3Service;
         _appSettings = appSettings;
     }
 
@@ -31,7 +29,7 @@ public class UpdateAuthorHandler : IRequestHandler<UpdateAuthorRequest, Result<G
     {
         var article = request.Adapt<Author>();
 
-        var existingAuthor = await _eSservice.Get(request.Id.Adapt<string>());
+        var existingAuthor = await _eSservice.Index(_appSettings.Value.AuthorsIndex).Get(request.Id.Adapt<string>());
         if (existingAuthor.Source == null)
         {
             return Result.NotFound();
@@ -40,7 +38,8 @@ public class UpdateAuthorHandler : IRequestHandler<UpdateAuthorRequest, Result<G
         article.JoinDate = DateTime.Now.Date;
 
 
-        var result = await _eSservice.AddOrUpdate(request.Adapt(existingAuthor.Source));
+        var result = await _eSservice.Index(_appSettings.Value.AuthorsIndex)
+            .AddOrUpdate(request.Adapt(existingAuthor.Source));
         return result.Adapt<GetAuthorResponse>();
     }
 }

@@ -7,7 +7,7 @@ namespace Taxbox.Application.Features.Articles;
 
 public record GetArticleResponse
 {
-    public ArticleId Id { get; init; }
+    public ArticleId ArticleId { get; init; }
 
     public string Title { get; set; } = null!;
 
@@ -15,7 +15,8 @@ public record GetArticleResponse
 
     public string Content { get; set; } = null!;
 
-    public string Author { get; set; } = null!;
+    public IList<string>? AuthorIds { get; set; } = new List<string>();
+    public IList<Author>? Authors { get; set; } = new List<Author>();
 
     public DateTime? CreatedAt { get; set; }
 

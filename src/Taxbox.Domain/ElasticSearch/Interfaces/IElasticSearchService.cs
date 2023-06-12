@@ -7,13 +7,14 @@ namespace Taxbox.Domain.ElasticSearch.Interfaces;
 
 public interface IElasticSearchService<T> where T : class
 {
+    IElasticSearchService<T> Index(string indexName);
     Task CreateIndexIfNotExists(string indexName);
     Task<bool> AddOrUpdateBulk(IEnumerable<T> documents);
     // Task<bool> AddOrUpdate(T document);
     Task<T> AddOrUpdate(T document);
     Task<GetResponse<T>> Get(string key);
     Task<List<T>?> GetAll();
-    Task<List<T>?> Query(QueryDescriptor<T> predicate);
+    Task<SearchResponse<T>> Query(QueryDescriptor<T> predicate);
     Task<bool> Remove(string key);
     Task<long> RemoveAll();
     Task<bool> RemoveIndex(string indexName);

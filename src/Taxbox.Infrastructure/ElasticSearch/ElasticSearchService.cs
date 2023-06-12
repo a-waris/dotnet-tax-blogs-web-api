@@ -21,7 +21,7 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         _indexName = clientContainer.GetIndexName();
     }
 
-    public ElasticSearchService<T> Index(string indexName)
+    public IElasticSearchService<T> Index(string indexName)
     {
         _indexName = indexName;
         return this;
@@ -96,10 +96,10 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         return searchResponse.IsValidResponse ? searchResponse : default;
     }
 
-    public async Task<List<T>?> Query(QueryDescriptor<T> predicate)
+    public async Task<SearchResponse<T>> Query(QueryDescriptor<T> predicate)
     {
         var searchResponse = await _client.SearchAsync<T>(s => s.Index(_indexName).Query(predicate));
-        return searchResponse.IsValidResponse ? searchResponse.Documents.ToList() : default;
+        return searchResponse;
     }
 
     public async Task<bool> Remove(string key)

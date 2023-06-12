@@ -8,16 +8,26 @@ namespace Taxbox.Domain.Entities;
 public class Article : Entity<ArticleId>
 {
     public override ArticleId Id { get; set; } = NewId.NextGuid();
+
+    public ArticleId ArticleId
+    {
+        get => Id;
+
+        set => Id = value;
+    }
+
     public string Title { get; set; } = null!;
     public Metadata? Metadata { get; set; }
     public string? HtmlContent { get; set; }
     public string? Content { get; set; }
-    public string? Author { get; set; }
+    public IList<string>? AuthorIds { get; set; } = new List<string>();
+    public IList<Author>? Authors { get; set; } = new List<Author>();
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public IList<string>? Tags { get; set; }
     public bool IsPublic { get; set; } = false;
     public bool IsPublished { get; set; } = false;
+    public bool IsDraft { get; set; } = false;
     public string? CoverImage { get; set; }
     public string? ThumbnailImage { get; set; }
     public IList<ArticleAttachment>? Attachments { get; set; }

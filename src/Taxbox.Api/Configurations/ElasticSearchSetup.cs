@@ -44,7 +44,7 @@ public static class ElasticSearchSetup
         services.AddSingleton<IElasticClientContainer>(client);
         services.AddScoped(typeof(IElasticSearchService<>), typeof(ElasticSearchService<>));
 
-        CreateIndex(client, defaultIndex);
+        // CreateIndex(client, defaultIndex);
 
         return services;
     }
@@ -98,7 +98,7 @@ public static class ElasticSearchSetup
                     .Text(t => t.Title)
                     .Object(o => o.Metadata!)
                     .Text(t => t.Content!)
-                    .Keyword(k => k.Author!)
+                    .Keyword(k => k.AuthorIds!)
                     .Date(d => d.CreatedAt!)
                     .Date(d => d.UpdatedAt!)
                     .Keyword(k => k.Tags!)

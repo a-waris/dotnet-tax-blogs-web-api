@@ -64,7 +64,7 @@ public class
                 if (hit.Source == null) continue;
 
                 hit.Source.Id = Guid.Parse(hit.Id);
-                
+
                 list.Add(hit.Source.Adapt<GetAllArticlesResponse>());
             }
 
@@ -89,7 +89,7 @@ public class
                             matchQueryDescriptor.Field(f => f.Content).Query(request.FreeTextSearch)))
                     .MinimumShouldMatch(1));
         }
-        
+
         if (!string.IsNullOrEmpty(request.Title))
         {
             qd = qd.Match(m => m.Field(f => f.Title).Query(request.Title));
@@ -101,9 +101,10 @@ public class
         }
 
 
-        if (!string.IsNullOrEmpty(request.Author))
+        if (request.AuthorIds is { Count: > 0 })
         {
-            qd = qd.Match(m => m.Field(f => f.Author).Query(request.Author));
+            var terms = new TermsQueryField(request.AuthorIds.Select(FieldValue.String).ToArray());
+            qd = qd.Terms(t => t.Field(f => f.AuthorIds).Terms(terms));
         }
 
         if (request.Tags is { Count: > 0 })
