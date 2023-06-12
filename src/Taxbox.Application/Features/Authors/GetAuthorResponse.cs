@@ -1,7 +1,5 @@
 ﻿using Elastic.Clients.Elasticsearch.Mapping;
-using MassTransit;
 using System;
-using System.Collections.Generic;
 using Taxbox.Domain.Entities;
 using Taxbox.Domain.Entities.Common;
 

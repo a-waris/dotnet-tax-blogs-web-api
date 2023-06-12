@@ -8,6 +8,14 @@ namespace Taxbox.Domain.Entities;
 public class Author : Entity<AuthorId>
 {
     public override AuthorId Id { get; set; } = NewId.NextGuid();
+
+    public AuthorId AuthorId
+    {
+        get => Id;
+
+        set => Id = value;
+    }
+
     public string Name { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string Bio { get; set; } = null!;
