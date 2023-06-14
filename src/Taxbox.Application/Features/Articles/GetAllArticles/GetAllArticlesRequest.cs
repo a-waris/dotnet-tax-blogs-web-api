@@ -26,6 +26,6 @@ public record GetAllArticlesRequest : PaginatedRequest, IRequest<PaginatedList<G
     public override string ToString()
     {
         return
-            $"{CurrentPage} {PageSize} {CurrentPage} {PageSize} {Title} {Metadata} {Content} {AuthorIds} {CreatedAt} {UpdatedAt} {Tags} {IsPublic} {IsPublished} {SourceFields} {FreeTextSearch} {IsDraft} {PublishedAt}";
+            $"{Title} {Metadata} {Content} {AuthorIds} {CreatedAt} {UpdatedAt} {Tags} {IsPublic} {IsPublished} {SourceFields} {FreeTextSearch} {IsDraft} {PublishedAt}";
     }
 }
