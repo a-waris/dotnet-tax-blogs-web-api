@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Taxbox.Application.Common.Responses;
 using Taxbox.Domain.ElasticSearch.Interfaces;
+using Taxbox.Domain.Entities;
 
 namespace Taxbox.Infrastructure.ElasticSearch;
 
@@ -78,7 +79,7 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
     }
 
     public async Task<SearchResponse<T>?> GetAllPaginated(QueryDescriptor<T> predicate, int currentPage, int pageSize,
-        string[]? sourceFields = null)
+        string[]? sourceFields = null, SortOptionsDescriptor<T>? sortDescriptor = null)
 
     {
         var searchRequestDescriptor = new SearchRequestDescriptor<T>();
@@ -86,6 +87,12 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         searchRequestDescriptor.Index(_indexName);
         searchRequestDescriptor.From((currentPage - 1) * pageSize);
         searchRequestDescriptor.Size(pageSize);
+
+        if (sortDescriptor != null)
+        {
+            searchRequestDescriptor.Sort(sortDescriptor);
+        }
+
 
         if (sourceFields != null && sourceFields.Any())
         {

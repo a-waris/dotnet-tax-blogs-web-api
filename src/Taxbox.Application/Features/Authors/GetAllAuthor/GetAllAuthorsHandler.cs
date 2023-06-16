@@ -52,6 +52,7 @@ public class GetAllAuthorsHandler : IRequestHandler<GetAllAuthorsRequest, Pagina
 
         var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
 
+
         var resp = await _eSservice.Index(_appSettings.Value.AuthorsIndex)
             .GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields);
 

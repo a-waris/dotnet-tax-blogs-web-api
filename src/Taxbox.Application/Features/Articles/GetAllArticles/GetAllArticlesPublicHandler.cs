@@ -54,7 +54,10 @@ public class
         // Filter the requested fields to include only the available fields
         var validFields = fields.Intersect(availableFields, StringComparer.OrdinalIgnoreCase);
 
-        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, validFields.ToArray());
+        var sort = new SortOptionsDescriptor<Article>().Field(article => article.UpdatedAt!,
+            descriptor => descriptor.Order(SortOrder.Desc));
+        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, validFields.ToArray(),
+            sort);
 
         var list = new List<GetAllArticlesResponse>();
         if (resp?.Hits != null)

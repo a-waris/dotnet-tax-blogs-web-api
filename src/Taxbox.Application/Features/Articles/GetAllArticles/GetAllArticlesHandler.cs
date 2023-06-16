@@ -47,7 +47,9 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
 
         var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
 
-        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields);
+        var sort = new SortOptionsDescriptor<Article>().Field(article => article.UpdatedAt!, descriptor => descriptor.Order(SortOrder.Desc));
+
+        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields, sort);
 
         var list = new List<GetAllArticlesResponse>();
         if (resp?.Hits != null)

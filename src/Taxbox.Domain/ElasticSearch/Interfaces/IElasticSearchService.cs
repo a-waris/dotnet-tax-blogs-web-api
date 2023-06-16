@@ -24,5 +24,6 @@ public interface IElasticSearchService<T> where T : class
     Task<bool> RemoveAlias(string aliasName, string indexName);
     Task<bool> ReIndex(string sourceIndexName, string destinationIndexName);
 
-    Task<SearchResponse<T>?> GetAllPaginated(QueryDescriptor<T> predicate, int currentPage, int pageSize, string[]? sourceFields = null);
+    Task<SearchResponse<T>?> GetAllPaginated(QueryDescriptor<T> predicate, int currentPage, int pageSize,
+        string[]? sourceFields = null, SortOptionsDescriptor<T>? sortDescriptor = null);
 }
