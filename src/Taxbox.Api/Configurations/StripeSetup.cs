@@ -16,6 +16,7 @@ public static class StripeSetup
         builder.Services.AddScoped<TokenService>();
         builder.Services.AddScoped<CustomerService>();
         builder.Services.AddScoped<ChargeService>();
+        builder.Services.AddScoped<PaymentIntentService>();
         StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("StripeOptions:SecretKey");
 
         builder.Services.AddScoped<IStripeService, StripeService>();

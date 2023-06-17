@@ -8,11 +8,14 @@ namespace Taxbox.Domain.PaymentGateway.Interfaces;
 public interface IStripeService
 {
     Task<CustomerResource> CreateCustomer(CreateCustomerResource resource, CancellationToken cancellationToken);
-    Task<Customer> RetrieveCustomer(string customerId, CancellationToken cancellationToken);
+    Task<CustomerResource> RetrieveCustomer(string customerId, CancellationToken cancellationToken);
 
-    Task<Customer> UpdateCustomer(string customerId, UpdateCustomerResource resource,
+    Task<CustomerResource> UpdateCustomer(string customerId, UpdateCustomerResource resource,
         CancellationToken cancellationToken);
 
-    Task<Customer> DeleteCustomer(string customerId, CancellationToken cancellationToken);
+    Task<bool> DeleteCustomer(string customerId, CancellationToken cancellationToken);
     Task<ChargeResource> CreateCharge(CreateChargeResource resource, CancellationToken cancellationToken);
+
+    Task<IntentResource> CreatePaymentIntent(CreatePaymentIntentResource resource,
+        CancellationToken cancellationToken);
 }

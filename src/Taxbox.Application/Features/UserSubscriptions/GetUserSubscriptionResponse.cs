@@ -22,4 +22,5 @@ public record GetUserSubscriptionResponse
     public Subscription? Subscription { get; set; }
     public UserId UserId { get; set; }
     public User? User { get; set; }
+    public string? CustomerId { get; set; }
 }

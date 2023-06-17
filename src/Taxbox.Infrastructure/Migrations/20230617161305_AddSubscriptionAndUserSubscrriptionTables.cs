@@ -45,7 +45,8 @@ namespace Taxbox.Infrastructure.Migrations
                     TrialEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CancellationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     SubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CustomerId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -73,10 +74,10 @@ namespace Taxbox.Infrastructure.Migrations
                     table.CheckConstraint("CK_UserSubscriptions_SubscriptionStartDate_SubscriptionEndDate", "((SubscriptionStartDate IS NULL AND SubscriptionEndDate IS NULL) OR (SubscriptionStartDate IS NOT NULL AND SubscriptionEndDate IS NOT NULL))");
                     
                     // add a constraint to ensure that next billing date is not null if subscription start date and subscription end date are both not null
-                    table.CheckConstraint("CK_UserSubscriptions_NextBillingDate_SubscriptionEndDate", "((NextBillingDate IS NULL AND SubscriptionEndDate IS NULL) OR (NextBillingDate IS NOT NULL AND SubscriptionEndDate IS NOT NULL))");
+                    table.CheckConstraint("CK_UserSubscriptions_NextBillingDate_SubscriptionStartDate_SubscriptionEndDate", "((NextBillingDate IS NULL AND SubscriptionStartDate IS NULL AND SubscriptionEndDate IS NULL) OR (NextBillingDate IS NOT NULL AND SubscriptionStartDate IS NOT NULL AND SubscriptionEndDate IS NOT NULL))");
                     
-                    // add a constraint to ensure that next billing date is greater than subscription start date 
-                    table.CheckConstraint("CK_UserSubscriptions_NextBillingDate_SubscriptionStartDate", "((NextBillingDate IS NULL AND SubscriptionStartDate IS NULL) OR (NextBillingDate IS NOT NULL AND SubscriptionStartDate IS NOT NULL AND NextBillingDate > SubscriptionStartDate))");
+                    // add a constraint to ensure that next billing date is greater than subscription end date 
+                    table.CheckConstraint("CK_UserSubscriptions_NextBillingDate_SubscriptionEndDate", "((NextBillingDate IS NULL AND SubscriptionEndDate IS NULL) OR (NextBillingDate IS NOT NULL AND SubscriptionEndDate IS NOT NULL AND NextBillingDate > SubscriptionEndDate))");
                     
                     // add a constraint to ensure that subscription end date is greater than subscription start date
                     table.CheckConstraint("CK_UserSubscriptions_SubscriptionEndDate_SubscriptionStartDate", "((SubscriptionEndDate IS NULL AND SubscriptionStartDate IS NULL) OR (SubscriptionEndDate IS NOT NULL AND SubscriptionStartDate IS NOT NULL AND SubscriptionEndDate > SubscriptionStartDate))");
@@ -125,7 +126,7 @@ namespace Taxbox.Infrastructure.Migrations
             migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_TrialStartDate_TrialEndDate", "UserSubscriptions");
             migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_SubscriptionStartDate_SubscriptionEndDate", "UserSubscriptions");
             migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_NextBillingDate_SubscriptionEndDate", "UserSubscriptions");
-            migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_NextBillingDate_SubscriptionStartDate", "UserSubscriptions");
+            migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_NextBillingDate_SubscriptionStartDate_SubscriptionEndDate", "UserSubscriptions");
             migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_SubscriptionEndDate_SubscriptionStartDate", "UserSubscriptions");
             migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_TrialEndDate_TrialStartDate", "UserSubscriptions");
             
