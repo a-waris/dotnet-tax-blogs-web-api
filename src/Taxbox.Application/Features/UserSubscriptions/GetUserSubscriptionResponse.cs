@@ -1,15 +1,12 @@
-using MassTransit;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using Taxbox.Domain.Entities;
 using Taxbox.Domain.Entities.Common;
 
-namespace Taxbox.Domain.Entities;
+namespace Taxbox.Application.Features.UserSubscriptions;
 
-[Table("UserSubscriptions")]
-public class UserSubscription : Entity<UserSubscriptionId>
+public record GetUserSubscriptionResponse
 {
-    public override UserSubscriptionId Id { get; set; } = NewId.NextGuid();
-
+    public UserSubscriptionId Id { get; set; }
     public DateTime SubscriptionStartDate { get; set; }
     public DateTime SubscriptionEndDate { get; set; }
     public DateTime NextBillingDate { get; set; }
@@ -21,9 +18,8 @@ public class UserSubscription : Entity<UserSubscriptionId>
     public DateTime TrialEndDate { get; set; }
     public DateTime? CancellationDate { get; set; }
 
-    [ForeignKey(nameof(SubscriptionId))] public SubscriptionId SubscriptionId { get; set; }
+    public SubscriptionId SubscriptionId { get; set; }
     public Subscription? Subscription { get; set; }
-    [ForeignKey(nameof(UserId))] public UserId UserId { get; set; }
+    public UserId UserId { get; set; }
     public User? User { get; set; }
-
 }

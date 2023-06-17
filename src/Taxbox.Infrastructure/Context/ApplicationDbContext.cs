@@ -23,6 +23,8 @@ public class ApplicationDbContext : DbContext, IContext
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Resource> Resources { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<Subscription> Subscriptions { get; } = null!;
+    public DbSet<UserSubscription> UserSubscriptions { get; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
