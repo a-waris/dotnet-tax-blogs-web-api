@@ -9,7 +9,9 @@ public interface IElasticSearchService<T> where T : class
 {
     IElasticSearchService<T> Index(string indexName);
     Task CreateIndexIfNotExists(string indexName);
+
     Task<BulkResponse> AddOrUpdateBulk(IEnumerable<T> documents);
+
     // Task<bool> AddOrUpdate(T document);
     Task<T> AddOrUpdate(T document);
     Task<BulkResponse> AddBulk(IList<T> documents);
@@ -18,7 +20,8 @@ public interface IElasticSearchService<T> where T : class
     Task<SearchResponse<T>> Query(QueryDescriptor<T> predicate);
     Task<SearchResponse<T>?> Query(SearchRequestDescriptor<T> searchRequestDescriptor);
     Task<bool> Remove(string key);
-    Task<long> RemoveAll();
+    Task<DeleteByQueryResponse> BulkRemove(QueryDescriptor<T> queryDescriptor);
+
     Task<bool> RemoveIndex(string indexName);
     Task<bool> IndexExists(string indexName);
     Task<bool> AliasExists(string aliasName);

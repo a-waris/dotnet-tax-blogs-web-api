@@ -12,6 +12,6 @@ public class Resource : Entity<ResourceId>
     public string DisplayName { get; set; } = null!;
     public string FileUrl { get; set; } = null!;
     public ResourceType ResourceType { get; set; }
-    public CategoryId CategoryId { get; set; }
-    [ForeignKey(nameof(CategoryId))] public Category? Category { get; init; }
+    [ForeignKey(nameof(CategoryId))] public CategoryId CategoryId { get; set; }
+    public Category? Category { get; init; }
 }

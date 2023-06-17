@@ -66,3 +66,39 @@ public partial struct CategoryId : IGuid
         return new CategoryId(guid);
     }
 }
+
+[StronglyTypedId]
+public partial struct UserSubscriptionId : IGuid
+{
+    public static implicit operator UserSubscriptionId(Guid guid)
+    {
+        return new UserSubscriptionId(guid);
+    }
+}
+
+[StronglyTypedId]
+public partial struct SubscriptionId : IGuid
+{
+    public static implicit operator SubscriptionId(Guid guid)
+    {
+        return new SubscriptionId(guid);
+    }
+}
+
+[StronglyTypedId]
+public partial struct UserPaymentMethodId : IGuid
+{
+    public static implicit operator UserPaymentMethodId(Guid guid)
+    {
+        return new UserPaymentMethodId(guid);
+    }
+}
+
+[StronglyTypedId]
+public partial struct BillingAddressId : IGuid
+{
+    public static implicit operator BillingAddressId(Guid guid)
+    {
+        return new BillingAddressId(guid);
+    }
+}

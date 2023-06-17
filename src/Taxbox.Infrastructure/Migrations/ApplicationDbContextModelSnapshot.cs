@@ -43,7 +43,6 @@ namespace Taxbox.Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
-          
             modelBuilder.Entity("Taxbox.Domain.Entities.Resource", b =>
                 {
                     b.Property<Guid>("Id")

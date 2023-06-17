@@ -131,13 +131,12 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         return response.IsValidResponse;
     }
 
-    public async Task<long> RemoveAll()
+    public async Task<DeleteByQueryResponse> BulkRemove(QueryDescriptor<T> queryDescriptor)
     {
         var response = await _client.DeleteByQueryAsync<T>(_indexName, q => q.Query(
-            qd => qd.MatchAll()
+            queryDescriptor
         ));
-
-        return (long)(response.IsValidResponse ? response.Deleted! : 0);
+        return response;
     }
 
     public Task<bool> RemoveIndex(string indexName)
