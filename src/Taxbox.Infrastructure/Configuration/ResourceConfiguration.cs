@@ -13,5 +13,8 @@ public class ResourceConfiguration : IEntityTypeConfiguration<Resource>
 
         builder.Property(x => x.Id)
             .HasConversion<ResourceId.EfCoreValueConverter>();
+
+        builder.Property(x => x.CategoryId)
+            .HasConversion<CategoryId.EfCoreValueConverter>();
     }
 }

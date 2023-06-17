@@ -13,5 +13,14 @@ public class UserSubscriptionConfiguration : IEntityTypeConfiguration<UserSubscr
 
         builder.Property(x => x.Id)
             .HasConversion<UserSubscriptionId.EfCoreValueConverter>();
+        builder.Property(x => x.SubscriptionId)
+            .HasConversion<SubscriptionId.EfCoreValueConverter>();
+        builder.Property(x => x.UserId)
+            .HasConversion<UserId.EfCoreValueConverter>();
+        builder.Property(x => x.UserPaymentMethodId)
+            .HasConversion<UserPaymentMethodId.EfCoreValueConverter>();
+
+        builder.Property(x => x.DiscountAmount)
+            .HasColumnType("decimal(18,2)");
     }
 }

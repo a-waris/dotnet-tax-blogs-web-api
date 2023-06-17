@@ -1,7 +1,6 @@
 ﻿using Ardalis.Result;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
-using Mapster;
 using MediatR;
 using System.Linq;
 using System.Threading;
@@ -27,7 +26,7 @@ public class BulkRemoveArticlesHandler : IRequestHandler<BulkRemoveArticlesReque
         var resp = new BulkRemoveArticlesResponse();
         var qd = new QueryDescriptor<Article>();
         var terms = new TermsQueryField(request.ArticleIds.Select(FieldValue.String).ToArray());
-        qd.Terms(article => article.Field("id").Terms(terms));
+        qd.Terms(article => article.Field("_id").Terms(terms));
         var bulkResponse = await _esService.BulkRemove(qd);
         resp.RemovedArticles = bulkResponse.Deleted;
         resp.TotalArticles = bulkResponse.Total;
