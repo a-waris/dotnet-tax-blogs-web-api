@@ -23,11 +23,11 @@ public class
     public async Task<PaginatedList<GetSubscriptionResponse>> Handle(GetAllSubscriptionsRequest request,
         CancellationToken cancellationToken)
     {
-        var resources = _context.Subscriptions
+        var subs = _context.Subscriptions
             .WhereIf(!string.IsNullOrEmpty(request.Name),
                 x => EF.Functions.Like(x.Name, $"%{request.Name}%"))
             .WhereIf(!string.IsNullOrEmpty(request.Description),
-                x => EF.Functions.Like(x.Description, $"%{request.Description}%"))
+                x => x.Description != null && EF.Functions.Like(x.Description, $"%{request.Description}%"))
             .WhereIf(request.Status != null, x => x.Status == request.Status)
             .WhereIf(request.Currency != null, x => x.Currency == request.Currency)
             .WhereIf(request.Amount != null, x => x.Amount == request.Amount)
@@ -35,7 +35,7 @@ public class
             .WhereIf(request.ValidityPeriodType != null, x => x.ValidityPeriodType == request.ValidityPeriodType);
 
 
-        return await resources.ProjectToType<GetSubscriptionResponse>()
+        return await subs.ProjectToType<GetSubscriptionResponse>()
             .OrderBy(x => x.Name)
             .ToPaginatedListAsync(request.CurrentPage, request.PageSize);
     }
