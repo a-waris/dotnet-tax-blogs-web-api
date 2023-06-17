@@ -29,7 +29,8 @@ public class BulkRemoveArticlesHandler : IRequestHandler<BulkRemoveArticlesReque
         qd.Terms(article => article.Field("_id").Terms(terms));
         var bulkResponse = await _esService.BulkRemove(qd);
         resp.RemovedArticles = bulkResponse.Deleted;
-        resp.TotalArticles = bulkResponse.Total;
+        resp.TotalArticlesFound = bulkResponse.Total;
+        resp.ArticlesNotFound = bulkResponse.Noops;
         resp.Message = "Articles removed successfully";
 
         return resp;

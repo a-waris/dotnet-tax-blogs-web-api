@@ -4,5 +4,6 @@ public record BulkRemoveArticlesResponse
 {
     public long? RemovedArticles { get; set; }
     public string Message { get; set; } = null!;
-    public long? TotalArticles { get; set; }
+    public long? TotalArticlesFound { get; set; }
+    public long? ArticlesNotFound { get; set; }
 }
