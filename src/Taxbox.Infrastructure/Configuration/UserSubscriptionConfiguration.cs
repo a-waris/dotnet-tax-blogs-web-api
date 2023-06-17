@@ -10,16 +10,12 @@ public class UserSubscriptionConfiguration : IEntityTypeConfiguration<UserSubscr
     public void Configure(EntityTypeBuilder<UserSubscription> builder)
     {
         builder.HasKey(x => x.Id);
-
         builder.Property(x => x.Id)
             .HasConversion<UserSubscriptionId.EfCoreValueConverter>();
         builder.Property(x => x.SubscriptionId)
             .HasConversion<SubscriptionId.EfCoreValueConverter>();
         builder.Property(x => x.UserId)
             .HasConversion<UserId.EfCoreValueConverter>();
-        builder.Property(x => x.UserPaymentMethodId)
-            .HasConversion<UserPaymentMethodId.EfCoreValueConverter>();
-
         builder.Property(x => x.DiscountAmount)
             .HasColumnType("decimal(18,2)");
     }

@@ -25,8 +25,4 @@ public class UserSubscription : Entity<UserSubscriptionId>
     [ForeignKey(nameof(UserId))] public UserId UserId { get; set; }
     public User? User { get; set; }
 
-    [ForeignKey(nameof(UserPaymentMethodId))]
-    public UserPaymentMethodId UserPaymentMethodId { get; set; }
-
-    public UserPaymentMethod? UserPaymentMethod { get; set; }
 }

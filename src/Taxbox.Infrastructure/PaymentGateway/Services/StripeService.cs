@@ -36,29 +36,49 @@ public class StripeService : IStripeService
                 Cvc = resource.Card.Cvc
             }
         };
-        var token = await _tokenService.CreateAsync(tokenOptions, null, cancellationToken);
+        var token = await _tokenService.CreateAsync(tokenOptions, cancellationToken: cancellationToken);
 
         var customerOptions = new CustomerCreateOptions
         {
             Email = resource.Email, Name = resource.Name, Source = token.Id
         };
-        var customer = await _customerService.CreateAsync(customerOptions, null, cancellationToken);
+        var customer = await _customerService.CreateAsync(customerOptions, cancellationToken: cancellationToken);
 
         return new CustomerResource(customer.Id, customer.Email, customer.Name);
     }
 
+    public async Task<Customer> RetrieveCustomer(string customerId,
+        CancellationToken cancellationToken)
+    {
+        return await _customerService.GetAsync(customerId, cancellationToken: cancellationToken);
+    }
+
+    public async Task<Customer> UpdateCustomer(string customerId, UpdateCustomerResource resource,
+        CancellationToken cancellationToken)
+    {
+        Customer customer = await _customerService.UpdateAsync(customerId, resource.CustomerUpdateOptions,
+            cancellationToken: cancellationToken);
+
+        return customer;
+    }
+
+    public async Task<Customer> DeleteCustomer(string customerId, CancellationToken cancellationToken)
+    {
+        return await _customerService.DeleteAsync(customerId, cancellationToken: cancellationToken);
+    }
+
     public async Task<ChargeResource> CreateCharge(CreateChargeResource resource, CancellationToken cancellationToken)
     {
-        var chargeOptions = new ChargeCreateOptions
-        {
-            Currency = resource.Currency,
-            Amount = resource.Amount,
-            ReceiptEmail = resource.ReceiptEmail,
-            Customer = resource.CustomerId,
-            Description = resource.Description
-        };
+        // var chargeOptions = new ChargeCreateOptions
+        // {
+        //     Currency = resource.Currency,
+        //     Amount = resource.Amount,
+        //     ReceiptEmail = resource.ReceiptEmail,
+        //     Customer = resource.CustomerId,
+        //     Description = resource.Description
+        // };
 
-        var charge = await _chargeService.CreateAsync(chargeOptions, null, cancellationToken);
+        var charge = await _chargeService.CreateAsync(resource.ChargeCreateOptions, null, cancellationToken);
 
         return new ChargeResource(
             charge.Id,

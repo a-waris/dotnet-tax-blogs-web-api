@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using System.Threading;
 using System.Threading.Tasks;
 using Taxbox.Domain.Entities.PaymentGatewayResources.Stripe;
@@ -24,6 +25,34 @@ public class PaymentController : ControllerBase
         CancellationToken cancellationToken)
     {
         var response = await _stripeService.CreateCustomer(resource, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpGet("customer")]
+    [Route("{customerId}")]
+    public async Task<ActionResult<Customer>> GetCustomer(string customerId,
+        CancellationToken cancellationToken)
+    {
+        var response = await _stripeService.RetrieveCustomer(customerId, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpPut("customer")]
+    [Route("{customerId}")]
+    public async Task<ActionResult<Customer>> UpdateCustomer(string customerId,
+        [FromQuery] UpdateCustomerResource resource,
+        CancellationToken cancellationToken)
+    {
+        var response = await _stripeService.UpdateCustomer(customerId, resource, cancellationToken);
+        return Ok(response);
+    }
+
+    [HttpDelete("customer")]
+    [Route("{customerId}")]
+    public async Task<ActionResult<Customer>> DeleteCustomer(string customerId,
+        CancellationToken cancellationToken)
+    {
+        var response = await _stripeService.DeleteCustomer(customerId, cancellationToken);
         return Ok(response);
     }
 

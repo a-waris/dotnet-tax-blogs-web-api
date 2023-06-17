@@ -48,8 +48,6 @@ public class ApplicationDbContext : DbContext, IContext
             .ApplyConfigurationsFromAssembly(typeof(ResourceConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(CategoryConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(SubscriptionConfiguration).Assembly)
-            .ApplyConfigurationsFromAssembly(typeof(BillingAddressConfiguration).Assembly)
-            .ApplyConfigurationsFromAssembly(typeof(UserPaymentMethodConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(UserSubscriptionConfiguration).Assembly);
     }
 }
