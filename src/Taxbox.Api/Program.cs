@@ -7,7 +7,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Stripe;
 using System.Net;
+using Taxbox.Domain.PaymentGateway.Interfaces;
+using Taxbox.Infrastructure.PaymentGateway.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +69,9 @@ builder.AddOpenTemeletrySetup();
 
 // Add S3 client
 builder.Services.AddS3Setup(builder);
+
+// Add Stripe Services
+builder.Services.AddStripeSetup(builder);
 
 // Add CORS
 builder.Services.AddCors(options =>
