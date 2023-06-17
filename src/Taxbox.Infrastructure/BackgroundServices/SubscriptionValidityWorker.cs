@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,49 +26,49 @@ public class SubscriptionValidityWorker : BackgroundService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            // Get all active user subscriptions
-            var activeUserSubscriptions = await _context.UserSubscriptions
-                .Include(us => us.Subscription)
-                .Where(us => us.IsActive)
-                .ToListAsync(cancellationToken: cancellationToken);
+            var activeUserSubscriptions = await GetActiveUserSubscriptionsAsync(cancellationToken);
 
-            foreach (var userSubscription in activeUserSubscriptions.Where(userSubscription =>
-                         !IsSubscriptionValid(userSubscription.Subscription, userSubscription.SubscriptionEndDate)))
+            foreach (var userSubscription in activeUserSubscriptions)
             {
-                // Subscription is no longer valid, set IsActive to false
-                userSubscription.IsActive = false;
+                if (!IsSubscriptionValid(userSubscription.Subscription, userSubscription.SubscriptionEndDate))
+                {
+                    userSubscription.IsActive = false;
+                }
             }
 
             await _context.SaveChangesAsync(cancellationToken);
-            await Task.Delay(TimeSpan.FromDays(1), cancellationToken); // Check validity daily
+            await Task.Delay(TimeSpan.FromDays(1), cancellationToken);
         }
     }
 
-    private bool IsSubscriptionValid(Subscription? subscription, DateTime? subscriptionDate)
+    private async Task<List<UserSubscription>> GetActiveUserSubscriptionsAsync(CancellationToken cancellationToken)
     {
-        if (subscription != null)
-        {
-            var expiryDate =
-                CalculateExpiryDate(subscriptionDate, subscription.ValidityPeriod, subscription.ValidityPeriodType);
-            return DateTime.Now < expiryDate;
-        }
-
-        return false;
+        return await _context.UserSubscriptions
+            .Include(us => us.Subscription)
+            .Where(us => us.IsActive)
+            .ToListAsync(cancellationToken);
     }
 
-    private DateTime? CalculateExpiryDate(DateTime? startDate, int validityPeriod, string validityPeriodType)
+    private static bool IsSubscriptionValid(Subscription? subscription, DateTime? subscriptionDate)
     {
-        if (startDate != null)
+        if (subscription == null || subscriptionDate == null)
         {
-            return validityPeriodType.ToLower() switch
-            {
-                "days" => startDate.Value.AddDays(validityPeriod),
-                "months" => startDate.Value.AddMonths(validityPeriod),
-                _ => throw new ArgumentException("Invalid validity period type.")
-            };
+            return false;
         }
 
-        _logger.LogError("Subscription start date is null.");
-        return null;
+        var expiryDate = CalculateExpiryDate(subscriptionDate.Value, subscription.ValidityPeriod,
+            subscription.ValidityPeriodType);
+        return DateTime.Now < expiryDate;
+
+    }
+
+    private static DateTime CalculateExpiryDate(DateTime startDate, int validityPeriod, string validityPeriodType)
+    {
+        return validityPeriodType.ToLower() switch
+        {
+            "days" => startDate.AddDays(validityPeriod),
+            "months" => startDate.AddMonths(validityPeriod),
+            _ => throw new ArgumentException("Invalid validity period type.")
+        };
     }
 }
