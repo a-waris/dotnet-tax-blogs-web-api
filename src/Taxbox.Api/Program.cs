@@ -3,14 +3,11 @@ using Ardalis.Result.AspNetCore;
 using Taxbox.Api.Common;
 using Taxbox.Api.Configurations;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Stripe;
 using System.Net;
-using Taxbox.Domain.PaymentGateway.Interfaces;
-using Taxbox.Infrastructure.PaymentGateway.Services;
+using Taxbox.Infrastructure.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +69,9 @@ builder.Services.AddS3Setup(builder);
 
 // Add Stripe Services
 builder.Services.AddStripeSetup(builder);
+
+// Add Background Services
+builder.Services.AddHostedService<SubscriptionValidityWorker>();
 
 // Add CORS
 builder.Services.AddCors(options =>
