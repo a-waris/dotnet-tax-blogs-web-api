@@ -101,9 +101,16 @@ public class StripeService : IStripeService
             Currency = resource.Currency,
             Amount = resource.Amount,
             ReceiptEmail = resource.ReceiptEmail,
-            Customer = resource.CustomerId,
             Description = resource.Description
         };
+        if (_configuration.GetSection("StripeOptions")["Mode"] == "live")
+        {
+            chargeOptions.Customer = resource.CustomerId;
+        }
+        else
+        {
+            chargeOptions.Source = "tok_visa";
+        }
 
 
         var charge = await _chargeService.CreateAsync(chargeOptions, null, cancellationToken);

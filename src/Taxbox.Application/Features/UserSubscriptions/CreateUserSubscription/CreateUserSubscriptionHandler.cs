@@ -116,21 +116,21 @@ public class
             // set customer id
             created.CustomerId = customer.CustomerId;
 
-            if (_configuration.GetSection("StripeOptions")["Mode"] == "live")
-            {
-                var charge = await _stripeService.CreateCharge(new CreateChargeResource(
-                    Currency: sub.Currency,
-                    Amount: (long)(sub.Amount * 100),
-                    Description: "Subscription charge for " + sub.Name,
-                    CustomerId: customer.CustomerId,
-                    ReceiptEmail: user.Email), cancellationToken);
-            }
-
-            var intent = await _stripeService.CreatePaymentIntent(new CreatePaymentIntentResource(
+            // if (_configuration.GetSection("StripeOptions")["Mode"] == "live")
+            // {
+            var charge = await _stripeService.CreateCharge(new CreateChargeResource(
                 Currency: sub.Currency,
                 Amount: (long)(sub.Amount * 100),
                 Description: "Subscription charge for " + sub.Name,
+                CustomerId: customer.CustomerId,
                 ReceiptEmail: user.Email), cancellationToken);
+            // }
+            //
+            // var intent = await _stripeService.CreatePaymentIntent(new CreatePaymentIntentResource(
+            //     Currency: sub.Currency,
+            //     Amount: (long)(sub.Amount * 100),
+            //     Description: "Subscription charge for " + sub.Name,
+            //     ReceiptEmail: user.Email), cancellationToken);
         }
         catch (Exception e)
         {
