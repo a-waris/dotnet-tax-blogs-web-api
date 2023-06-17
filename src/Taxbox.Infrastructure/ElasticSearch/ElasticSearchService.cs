@@ -39,13 +39,13 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         Index(indexName);
     }
 
-    public async Task<bool> AddOrUpdateBulk(IEnumerable<T> documents)
+    public async Task<BulkResponse> AddOrUpdateBulk(IEnumerable<T> documents)
     {
         var indexResponse = await _client.BulkAsync(b => b
             .Index(_indexName)
             .UpdateMany(documents, (ud, d) => ud.Doc(d).DocAsUpsert())
         );
-        return indexResponse.IsValidResponse;
+        return indexResponse;
     }
 
     // public async Task<bool> AddOrUpdate(T document)
@@ -65,6 +65,15 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         }
 
         return document;
+    }
+
+    public async Task<BulkResponse> AddBulk(IList<T> documents)
+    {
+        var resp = await _client.BulkAsync(b => b
+            .Index(_indexName)
+            .IndexMany(documents)
+        );
+        return resp;
     }
 
     public async Task<GetResponse<T>> Get(string key)
@@ -107,6 +116,13 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
     {
         var searchResponse = await _client.SearchAsync<T>(s => s.Index(_indexName).Query(predicate));
         return searchResponse;
+    }
+
+    public async Task<SearchResponse<T>?> Query(SearchRequestDescriptor<T> searchRequestDescriptor)
+    {
+        searchRequestDescriptor.Index(_indexName);
+        var searchResponse = await _client.SearchAsync(searchRequestDescriptor);
+        return searchResponse.IsValidResponse ? searchResponse : default;
     }
 
     public async Task<bool> Remove(string key)

@@ -37,19 +37,11 @@ public class Article : Entity<ArticleId>
 public class ArticleAttachment
 {
     public string File { get; set; } = null!;
-
-    //TODO: add enum and a converter to map to the string value for the enum
     public string Type { get; set; } = null!;
 }
 
 public class Metadata
 {
-    // public string? Description { get; set; }
-    // public string? Image { get; set; }
-    // public string? Keywords { get; set; }
-    // public string? Robots { get; set; }
-    // public string? Title { get; set; }
-    // public string? Url { get; set; }
     public string? Category { get; set; }
     public string? Language { get; set; }
     public int? Views { get; set; }
