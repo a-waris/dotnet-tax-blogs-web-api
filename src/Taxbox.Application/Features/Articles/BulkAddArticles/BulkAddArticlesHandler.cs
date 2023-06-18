@@ -70,9 +70,9 @@ public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Re
             int rowCount = worksheet.Dimension.Rows;
 
             bulkAddArticlesResponse.TotalRows = rowCount - 1; // -1 for header row
-
+            int fromInclusive =  rowCount > 2 ? 2 : 1;
             object lockObject = new object();
-            Parallel.ForEach(Partitioner.Create(2, rowCount), range =>
+            Parallel.ForEach(Partitioner.Create(fromInclusive, rowCount), range =>
             {
                 for (int row = range.Item1; row <= range.Item2; row++) // Assuming the data starts from row 2
                 {
