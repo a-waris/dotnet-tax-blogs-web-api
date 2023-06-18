@@ -15,6 +15,9 @@ namespace Taxbox.Application.Features.UserSubscriptions.CreateUserSubscription;
 public class
     CreateUserSubscriptionHandler : IRequestHandler<CreateUserSubscriptionRequest, Result<GetUserSubscriptionResponse>>
 {
+    private const string TrialPeriodType = "days";
+    private const int TrialPeriod = 7;
+
     private readonly IContext _context;
     private readonly IStripeService _stripeService;
 
@@ -30,17 +33,16 @@ public class
     {
         var created = request.Adapt<UserSubscription>();
 
-        var sub = await _context.Subscriptions.FirstOrDefaultAsync(x => x.Id == request.SubscriptionId,
-            cancellationToken);
-        if (sub == null)
-            return Result.NotFound("Subscription not found");
-
         if (request.TrialStartDate is not null)
         {
-            SetTrialDates(created, request.TrialStartDate.Value, sub.ValidityPeriodType, sub.ValidityPeriod);
+            SetTrialDates(created, request.TrialStartDate.Value, TrialPeriodType, TrialPeriod);
         }
         else if (request.SubscriptionStartDate is not null)
         {
+            var sub = await _context.Subscriptions.FirstOrDefaultAsync(x => x.Id == request.SubscriptionId,
+                cancellationToken);
+            if (sub == null)
+                return Result.NotFound("Subscription not found");
             SetSubscriptionDates(created, request.SubscriptionStartDate.Value, sub.ValidityPeriodType,
                 sub.ValidityPeriod);
             // await HandleCouponCode(request, created);
