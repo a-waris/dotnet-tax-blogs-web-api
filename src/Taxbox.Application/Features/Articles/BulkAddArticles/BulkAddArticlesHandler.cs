@@ -45,12 +45,6 @@ public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Re
     {
         try
         {
-            var fileExtension = Path.GetExtension(requestFile.FileName);
-            if (fileExtension != ".xlsx" && fileExtension != ".xls")
-            {
-                throw new Exception("Invalid file type");
-            }
-
             var taxboxAuthorResp = await _esServiceAuthor.Index("authors").Query(
                 new SearchRequestDescriptor<Author>()
                     .Query(q => q.RawJson("{\"term\": {\"name.raw\": {\"value\": \"Taxbox\"}}}"))

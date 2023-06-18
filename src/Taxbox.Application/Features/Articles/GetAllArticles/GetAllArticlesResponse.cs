@@ -17,7 +17,10 @@ public record GetAllArticlesResponse
     public Metadata? Metadata { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Content { get; set; } = null!;
+    public string Content { get; set; } = null!;    
+    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string HtmlContent { get; set; } = null!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IList<string> AuthorIds { get; set; } = null!;

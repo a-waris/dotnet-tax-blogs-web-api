@@ -14,6 +14,8 @@ public record GetArticleResponse
     public Metadata? Metadata { get; set; }
 
     public string Content { get; set; } = null!;
+    
+    public string? HtmlContent { get; set; } = null!;
 
     public IList<string>? AuthorIds { get; set; } = new List<string>();
     public IList<Author>? Authors { get; set; } = new List<Author>();
