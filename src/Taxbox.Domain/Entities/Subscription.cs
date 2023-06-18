@@ -9,6 +9,7 @@ public class Subscription : Entity<SubscriptionId>
 {
     public override SubscriptionId Id { get; set; } = NewId.NextGuid();
     public string Name { get; set; } = null!;
+    public string Status { get; set; } = null!;
     public string Currency { get; set; } = null!;
     public decimal Amount { get; set; }
     public string? Description { get; set; }

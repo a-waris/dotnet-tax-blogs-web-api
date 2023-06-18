@@ -23,6 +23,8 @@ public class ApplicationDbContext : DbContext, IContext
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Resource> Resources { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<Subscription> Subscriptions { get; set; } = null!;
+    public DbSet<UserSubscription> UserSubscriptions { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -48,8 +50,6 @@ public class ApplicationDbContext : DbContext, IContext
             .ApplyConfigurationsFromAssembly(typeof(ResourceConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(CategoryConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(SubscriptionConfiguration).Assembly)
-            .ApplyConfigurationsFromAssembly(typeof(BillingAddressConfiguration).Assembly)
-            .ApplyConfigurationsFromAssembly(typeof(UserPaymentMethodConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(UserSubscriptionConfiguration).Assembly);
     }
 }
