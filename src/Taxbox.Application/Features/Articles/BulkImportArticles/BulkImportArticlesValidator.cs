@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 
-namespace Taxbox.Application.Features.Articles.BulkAddArticles;
+namespace Taxbox.Application.Features.Articles.BulkImportArticles;
 
-public class BulkAddArticlesValidator : AbstractValidator<BulkAddArticlesRequest>
+public class BulkImportArticlesValidator : AbstractValidator<BulkImportArticlesRequest>
 {
     private const int FileSize = 5 * 1024 * 1024; // 2MB
 
-    public BulkAddArticlesValidator()
+    public BulkImportArticlesValidator()
     {
         RuleLevelCascadeMode = ClassLevelCascadeMode;
 

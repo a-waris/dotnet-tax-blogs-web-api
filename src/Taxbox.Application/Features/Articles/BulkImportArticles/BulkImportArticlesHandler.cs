@@ -6,7 +6,6 @@ using OfficeOpenXml;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,14 +14,14 @@ using Taxbox.Domain.ElasticSearch.Interfaces;
 using Taxbox.Domain.Entities;
 using static System.Int32;
 
-namespace Taxbox.Application.Features.Articles.BulkAddArticles;
+namespace Taxbox.Application.Features.Articles.BulkImportArticles;
 
-public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Result<BulkAddArticlesResponse>>
+public class BulkImportArticlesHandler : IRequestHandler<BulkImportArticlesRequest, Result<BulkImportArticlesResponse>>
 {
     private readonly IElasticSearchService<Article> _esService;
     private readonly IElasticSearchService<Author> _esServiceAuthor;
 
-    public BulkAddArticlesHandler(IElasticSearchService<Article> esService,
+    public BulkImportArticlesHandler(IElasticSearchService<Article> esService,
         IElasticSearchService<Author> esServiceAuthor)
     {
         _esService = esService;
@@ -30,10 +29,10 @@ public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Re
     }
 
 
-    public async Task<Result<BulkAddArticlesResponse>> Handle(BulkAddArticlesRequest request,
+    public async Task<Result<BulkImportArticlesResponse>> Handle(BulkImportArticlesRequest request,
         CancellationToken cancellationToken)
     {
-        var resp = new BulkAddArticlesResponse();
+        var resp = new BulkImportArticlesResponse();
         var articles = await ConvertExcelToArticles(request.File, resp);
         var bulkResponse = await _esService.AddBulk(articles);
         resp.SuccessfulRows = bulkResponse.Items.Count;
@@ -41,7 +40,7 @@ public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Re
     }
 
     private async Task<IList<Article>> ConvertExcelToArticles(IFormFile requestFile,
-        BulkAddArticlesResponse bulkAddArticlesResponse)
+        BulkImportArticlesResponse bulkImportArticlesResponse)
     {
         try
         {
@@ -64,7 +63,7 @@ public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Re
             worksheet.TrimLastEmptyRows();
 
             int rowCount = worksheet.Dimension.Rows;
-            bulkAddArticlesResponse.TotalRows = rowCount - 1;
+            bulkImportArticlesResponse.TotalRows = rowCount - 1;
             switch (rowCount)
             {
                 case < 2:
@@ -73,7 +72,7 @@ public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Re
                     throw new Exception("Maximum 1000 rows are allowed");
                 case 2:
                     {
-                        var article = ProcessRow(worksheet, 2, author, bulkAddArticlesResponse);
+                        var article = ProcessRow(worksheet, 2, author, bulkImportArticlesResponse);
                         if (article != null)
                         {
                             articles.Add(article);
@@ -85,7 +84,7 @@ public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Re
 
             Parallel.For(2, rowCount + 1, row =>
             {
-                var article = ProcessRow(worksheet, row, author, bulkAddArticlesResponse);
+                var article = ProcessRow(worksheet, row, author, bulkImportArticlesResponse);
                 if (article == null)
                 {
                     return;
@@ -100,9 +99,9 @@ public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Re
 
                     addedArticles.Add(article.Title, article);
                     articles.Add(article);
-                    lock (bulkAddArticlesResponse)
+                    lock (bulkImportArticlesResponse)
                     {
-                        bulkAddArticlesResponse.SuccessfulRows++;
+                        bulkImportArticlesResponse.SuccessfulRows++;
                     }
                 }
             });
@@ -117,14 +116,14 @@ public class BulkAddArticlesHandler : IRequestHandler<BulkAddArticlesRequest, Re
     }
 
     private Article? ProcessRow(ExcelWorksheet worksheet, int rowIndex, Author author,
-        BulkAddArticlesResponse bulkAddArticlesResponse)
+        BulkImportArticlesResponse bulkImportArticlesResponse)
     {
         if (string.IsNullOrEmpty(worksheet.Cells[rowIndex, 1]?.Value.ToString())
             || string.IsNullOrEmpty(worksheet.Cells[rowIndex, 2]?.Value.ToString()))
         {
-            lock (bulkAddArticlesResponse)
+            lock (bulkImportArticlesResponse)
             {
-                bulkAddArticlesResponse.InvalidRows++;
+                bulkImportArticlesResponse.InvalidRows++;
             }
 
             return null;
