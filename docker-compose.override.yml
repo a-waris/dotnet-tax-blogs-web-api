@@ -18,7 +18,7 @@ services:
       - Jaeger__AgentHost=jaeger
       - Jaeger__AgentPort=6831
       - ElasticSearchConfiguration__ClientCertificatePath=/app/certs/es01/es01.crt
-      - ElasticSearchConfiguration__DefaultIndex=articles
+      - ElasticSearchConfiguration__ArticlesIndex=articles
       - ElasticSearchConfiguration__Url=https://es01:9200
       - ElasticSearchConfiguration__User=elastic
       - ElasticSearchConfiguration__Password=es123456
