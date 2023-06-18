@@ -103,7 +103,7 @@ public class ArticleController : ControllerBase
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult> BulkAddOrUpdate(
-        [FromForm] BulkAddOrUpdateArticlesRequest request)
+        [FromBody] BulkAddOrUpdateArticlesRequest request)
     {
         return Ok(await _mediator.Send(request));
     }
@@ -121,7 +121,7 @@ public class ArticleController : ControllerBase
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult> BulkRemove(
-        [FromForm] BulkRemoveArticlesRequest request)
+        [FromBody] BulkRemoveArticlesRequest request)
     {
         return Ok(await _mediator.Send(request));
     }

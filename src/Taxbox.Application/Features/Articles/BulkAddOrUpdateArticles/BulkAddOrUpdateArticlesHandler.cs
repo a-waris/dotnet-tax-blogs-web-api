@@ -22,7 +22,7 @@ public class BulkAddOrUpdateArticlesHandler : IRequestHandler<BulkAddOrUpdateArt
     {
         var resp = new BulkAddOrUpdateArticlesResponse();
         var bulkResponse = await _esService.AddOrUpdateBulk(request.Articles);
-        resp.UpdatedArticles = bulkResponse.Items.Count;
+        resp.UpsertedArticles = bulkResponse.Items.Count;
         resp.Message = "Articles updated successfully";
 
         return resp;

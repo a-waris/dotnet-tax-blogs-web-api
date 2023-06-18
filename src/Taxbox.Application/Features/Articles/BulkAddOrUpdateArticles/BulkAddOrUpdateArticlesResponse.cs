@@ -3,5 +3,5 @@
 public record BulkAddOrUpdateArticlesResponse
 {
     public string Message { get; set; } = null!;
-    public long? UpdatedArticles { get; set; }
+    public long UpsertedArticles { get; set; }
 }
