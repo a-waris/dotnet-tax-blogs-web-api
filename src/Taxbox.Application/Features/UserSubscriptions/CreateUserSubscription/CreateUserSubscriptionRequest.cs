@@ -16,5 +16,7 @@ public record CreateUserSubscriptionRequest : IRequest<Result<GetUserSubscriptio
     public DateTime? SubscriptionStartDate { get; set; }
     public SubscriptionId SubscriptionId { get; set; }
     public UserId UserId { get; set; }
+    
+    //TODO: perhaps expose a token from the client and use that to create a charge
     public CreateCardResource? CardDetails { get; set; } = null!;
 }
