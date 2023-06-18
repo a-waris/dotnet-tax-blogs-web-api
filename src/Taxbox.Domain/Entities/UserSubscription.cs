@@ -15,8 +15,6 @@ public class UserSubscription : Entity<UserSubscriptionId>
     public bool AutoRenewal { get; set; }
     public string? CouponCode { get; set; }
     public decimal DiscountAmount { get; set; }
-    public DateTime? TrialStartDate { get; set; }
-    public DateTime? TrialEndDate { get; set; }
     public DateTime? SubscriptionStartDate { get; set; }
     public DateTime? SubscriptionEndDate { get; set; }
     public DateTime? NextBillingDate { get; set; }
@@ -26,8 +24,5 @@ public class UserSubscription : Entity<UserSubscriptionId>
     public Subscription? Subscription { get; set; }
     [ForeignKey(nameof(UserId))] public UserId UserId { get; set; }
     public User? User { get; set; }
-    
-    
     public string? CustomerId { get; set; }
-
 }

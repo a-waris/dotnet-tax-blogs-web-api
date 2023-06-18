@@ -98,10 +98,10 @@ public class ArticleController : ControllerBase
         return Ok(await _mediator.Send(new DeleteArticleRequest(Id: id)));
     }
 
-    [HttpPost("bulkAddOrUpdate")]
+    [HttpPost("bulkAdd")]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
-    public async Task<ActionResult> BulkAddOrUpdate(
+    public async Task<ActionResult> BulkAdd(
         [FromForm] BulkAddArticlesRequest request)
     {
         return Ok(await _mediator.Send(request));

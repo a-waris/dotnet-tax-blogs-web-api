@@ -14,10 +14,7 @@ public record GetUserSubscriptionResponse
     public bool AutoRenewal { get; set; }
     public string? CouponCode { get; set; }
     public decimal DiscountAmount { get; set; }
-    public DateTime TrialStartDate { get; set; }
-    public DateTime TrialEndDate { get; set; }
     public DateTime? CancellationDate { get; set; }
-
     public SubscriptionId SubscriptionId { get; set; }
     public Subscription? Subscription { get; set; }
     public UserId UserId { get; set; }

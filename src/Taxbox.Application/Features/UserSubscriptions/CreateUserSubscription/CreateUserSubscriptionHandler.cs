@@ -15,9 +15,6 @@ namespace Taxbox.Application.Features.UserSubscriptions.CreateUserSubscription;
 public class
     CreateUserSubscriptionHandler : IRequestHandler<CreateUserSubscriptionRequest, Result<GetUserSubscriptionResponse>>
 {
-    private const string TrialPeriodType = "days";
-    private const int TrialPeriod = 7;
-
     private readonly IContext _context;
     private readonly IStripeService _stripeService;
 
@@ -33,11 +30,7 @@ public class
     {
         var created = request.Adapt<UserSubscription>();
 
-        if (request.TrialStartDate is not null)
-        {
-            SetTrialDates(created, request.TrialStartDate.Value, TrialPeriodType, TrialPeriod);
-        }
-        else if (request.SubscriptionStartDate is not null)
+        if (request.SubscriptionStartDate is not null)
         {
             var sub = await _context.Subscriptions.FirstOrDefaultAsync(x => x.Id == request.SubscriptionId,
                 cancellationToken);
@@ -57,18 +50,6 @@ public class
         _context.UserSubscriptions.Add(created);
         await _context.SaveChangesAsync(cancellationToken);
         return created.Adapt<GetUserSubscriptionResponse>();
-    }
-
-    private void SetTrialDates(UserSubscription created, DateTime trialStartDate, string validityPeriodType,
-        int validityPeriod)
-    {
-        created.TrialStartDate = trialStartDate.ToUniversalTime();
-        created.TrialEndDate = validityPeriodType.ToLower() switch
-        {
-            "days" => created.TrialStartDate.Value.AddDays(validityPeriod),
-            "months" => created.TrialStartDate.Value.AddMonths(validityPeriod),
-            _ => created.TrialEndDate
-        };
     }
 
     private static void SetSubscriptionDates(UserSubscription created, DateTime subscriptionStartDate,

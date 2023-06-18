@@ -37,12 +37,6 @@ public class
             .WhereIf(request.SubscriptionId != null, x => x.SubscriptionId == request.SubscriptionId)
             .WhereIf(request.AutoRenewal != null, x => x.AutoRenewal == request.AutoRenewal)
             .WhereIf(request.CancellationDate != null, x => x.CancellationDate == request.CancellationDate)
-            .WhereIf(request.TrialEndDate != null && request.TrialStartDate == null,
-                x => x.TrialEndDate >= request.TrialEndDate && x.TrialStartDate <= request.TrialEndDate)
-            .WhereIf(request.TrialStartDate != null,
-                x => x.TrialStartDate == request.TrialStartDate)
-            .WhereIf(request.TrialEndDate != null,
-                x => x.TrialEndDate == request.TrialEndDate)
             .WhereIf(request.CouponCode != null, x => x.CouponCode == request.CouponCode)
             .WhereIf(request.NextBillingDate != null, x => x.NextBillingDate == request.NextBillingDate)
             .WhereIf(request.DiscountAmount != null, x => x.DiscountAmount == request.DiscountAmount);

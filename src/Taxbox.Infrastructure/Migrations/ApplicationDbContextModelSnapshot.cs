@@ -176,12 +176,9 @@ namespace Taxbox.Infrastructure.Migrations
                     b.Property<DateTime>("SubscriptionStartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("TrialEndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("TrialStartDate")
-                        .HasColumnType("datetime2");
-
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(max)");
+                    
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 

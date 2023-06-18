@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -29,6 +30,8 @@ public class SubscriptionValidityWorker : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             using IServiceScope scope = _serviceScopeFactory.CreateScope();
+            var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
             try
             {
                 _logger.LogInformation(
@@ -53,9 +56,20 @@ public class SubscriptionValidityWorker : BackgroundService
                 _logger.LogInformation(
                     "Finished scoped work, provider hash: {Hash}.{Nl}",
                     scope.ServiceProvider.GetHashCode(), Environment.NewLine);
-                // For testing purposes
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
-                // await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+
+                var serviceWorkerConfig = config.GetSection("ServiceWorkerConfiguration");
+                if (serviceWorkerConfig.GetValue<bool>("IsEnabled"))
+                {
+                    // For testing purposes
+                    if (serviceWorkerConfig.GetValue<bool>("IsDebugMode"))
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                    }
+                    else
+                    {
+                        await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+                    }
+                }
             }
         }
 
@@ -65,7 +79,7 @@ public class SubscriptionValidityWorker : BackgroundService
         }
     }
 
-    private async Task<List<UserSubscription>> GetActiveUserSubscriptionsAsync(IContext context,
+    private static async Task<List<UserSubscription>> GetActiveUserSubscriptionsAsync(IContext context,
         CancellationToken stoppingToken)
     {
         return await context.UserSubscriptions
@@ -81,35 +95,7 @@ public class SubscriptionValidityWorker : BackgroundService
             return false;
         }
 
-        var isTrial = userSubscription is { TrialStartDate: not null, TrialEndDate: not null };
         var isSub = userSubscription is { SubscriptionStartDate: not null, SubscriptionEndDate: not null };
-
-        // check if subscription is trial and if it has expired
-        if (!isSub && isTrial)
-        {
-            // var expiryDate = CalculateExpiryDate(userSubscription.TrialEndDate!.Value,
-            //     userSubscription.Subscription.ValidityPeriod,
-            //     userSubscription.Subscription.ValidityPeriodType);
-            // return DateTime.Now < expiryDate;
-            return DateTime.UtcNow < userSubscription.TrialEndDate!.Value;
-        }
-        else
-        {
-            // var expiryDate = CalculateExpiryDate(userSubscription.SubscriptionEndDate.Value,
-            //     userSubscription.Subscription.ValidityPeriod,
-            //     userSubscription.Subscription.ValidityPeriodType);
-            // return DateTime.Now < expiryDate;
-            return DateTime.UtcNow < userSubscription.SubscriptionEndDate!.Value;
-        }
+        return isSub && DateTime.UtcNow < userSubscription.SubscriptionEndDate!.Value;
     }
-
-    // private static DateTime CalculateExpiryDate(DateTime startDate, int validityPeriod, string validityPeriodType)
-    // {
-    //     return validityPeriodType.ToLower() switch
-    //     {
-    //         "days" => startDate.AddDays(validityPeriod),
-    //         "months" => startDate.AddMonths(validityPeriod),
-    //         _ => throw new ArgumentException("Invalid validity period type.")
-    //     };
-    // }
 }

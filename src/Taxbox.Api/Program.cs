@@ -3,6 +3,7 @@ using Ardalis.Result.AspNetCore;
 using Taxbox.Api.Common;
 using Taxbox.Api.Configurations;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -85,8 +86,11 @@ builder.Services.AddCors(options =>
         });
 });
 
-// Add Background Service Workers
-builder.Services.AddHostedService<SubscriptionValidityWorker>();
+if (builder.Configuration.GetSection("ServiceWorkerConfiguration").GetValue<bool>("IsEnabled"))
+{
+    // Add Background Service Workers
+    builder.Services.AddHostedService<SubscriptionValidityWorker>();
+}
 
 var app = builder.Build();
 

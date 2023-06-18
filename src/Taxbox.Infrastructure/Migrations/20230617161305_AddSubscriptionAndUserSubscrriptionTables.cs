@@ -41,8 +41,6 @@ namespace Taxbox.Infrastructure.Migrations
                     AutoRenewal = table.Column<bool>(type: "bit", nullable: false),
                     CouponCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DiscountAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TrialStartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TrialEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CancellationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     SubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -67,9 +65,6 @@ namespace Taxbox.Infrastructure.Migrations
                     // add a constraint to ensure that a user can only have one active subscription at a time
                     table.UniqueConstraint("AK_UserSubscriptions_UserId_IsActive", x => new { x.UserId, x.IsActive });
                     
-                    // add a constraint to ensure that either trial start date and trial end date are both null or both not null
-                    table.CheckConstraint("CK_UserSubscriptions_TrialStartDate_TrialEndDate", "((TrialStartDate IS NULL AND TrialEndDate IS NULL) OR (TrialStartDate IS NOT NULL AND TrialEndDate IS NOT NULL))");
-                    
                     // add a constraint to ensure that either subscription start date and subscription end date are both null or both not null
                     table.CheckConstraint("CK_UserSubscriptions_SubscriptionStartDate_SubscriptionEndDate", "((SubscriptionStartDate IS NULL AND SubscriptionEndDate IS NULL) OR (SubscriptionStartDate IS NOT NULL AND SubscriptionEndDate IS NOT NULL))");
                     
@@ -81,10 +76,6 @@ namespace Taxbox.Infrastructure.Migrations
                     
                     // add a constraint to ensure that subscription end date is greater than subscription start date
                     table.CheckConstraint("CK_UserSubscriptions_SubscriptionEndDate_SubscriptionStartDate", "((SubscriptionEndDate IS NULL AND SubscriptionStartDate IS NULL) OR (SubscriptionEndDate IS NOT NULL AND SubscriptionStartDate IS NOT NULL AND SubscriptionEndDate > SubscriptionStartDate))");
-                    
-                    // add a constraint to ensure that trial end date is greater than trial start date
-                    table.CheckConstraint("CK_UserSubscriptions_TrialEndDate_TrialStartDate", "((TrialEndDate IS NULL AND TrialStartDate IS NULL) OR (TrialEndDate IS NOT NULL AND TrialStartDate IS NOT NULL AND TrialEndDate > TrialStartDate))");
-                    
                 });
 
             migrationBuilder.CreateIndex(
@@ -116,6 +107,12 @@ namespace Taxbox.Infrastructure.Migrations
                 columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", },
                 values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0c"), "Platinum", "Active", "Platinum Subscription", "usd", (decimal)30, 12, "Months" }
             );
+            
+            migrationBuilder.InsertData(
+                table: "Subscriptions",
+                columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", },
+                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0d"), "Trial", "Active", "Trial Subscription", "usd", (decimal)0, 7, "Days" }
+            );
         }
 
         /// <inheritdoc />
@@ -123,12 +120,10 @@ namespace Taxbox.Infrastructure.Migrations
         {
             // remove all constraints
             migrationBuilder.DropUniqueConstraint("AK_UserSubscriptions_UserId_IsActive", "UserSubscriptions");
-            migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_TrialStartDate_TrialEndDate", "UserSubscriptions");
             migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_SubscriptionStartDate_SubscriptionEndDate", "UserSubscriptions");
             migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_NextBillingDate_SubscriptionEndDate", "UserSubscriptions");
             migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_NextBillingDate_SubscriptionStartDate_SubscriptionEndDate", "UserSubscriptions");
             migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_SubscriptionEndDate_SubscriptionStartDate", "UserSubscriptions");
-            migrationBuilder.DropCheckConstraint("CK_UserSubscriptions_TrialEndDate_TrialStartDate", "UserSubscriptions");
             
             migrationBuilder.DropTable(
                 name: "UserSubscriptions");

@@ -44,14 +44,7 @@ public class
             originalUserSubscription.AutoRenewal = (bool)request.AutoRenewal;
         }
 
-        // originalUserSubscription.UserId = request.UserId;
-        // originalUserSubscription.CouponCode = request.CouponCode;
-        // originalUserSubscription.DiscountAmount = request.DiscountAmount;
-        // originalUserSubscription.NextBillingDate = request.NextBillingDate;
-        originalUserSubscription.TrialEndDate = request.TrialEndDate;
         originalUserSubscription.CancellationDate = request.CancellationDate;
-        originalUserSubscription.TrialStartDate = request.TrialStartDate;
-
         _context.UserSubscriptions.Update(originalUserSubscription);
         await _context.SaveChangesAsync(cancellationToken);
         return originalUserSubscription.Adapt<GetUserSubscriptionResponse>();
