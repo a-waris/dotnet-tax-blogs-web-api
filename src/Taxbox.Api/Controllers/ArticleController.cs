@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Taxbox.Application.Features.Articles;
+using Taxbox.Application.Features.Articles.BulkAddOrUpdateArticles;
 using Taxbox.Application.Features.Articles.BulkImportArticles;
 using Taxbox.Application.Features.Articles.BulkRemoveArticles;
 using Taxbox.Application.Features.Articles.CreateArticle;
@@ -96,6 +97,15 @@ public class ArticleController : ControllerBase
     public async Task<ActionResult> Remove(ArticleId id)
     {
         return Ok(await _mediator.Send(new DeleteArticleRequest(Id: id)));
+    }
+
+    [HttpPost("bulkAddOrUpdate")]
+    [TranslateResultToActionResult]
+    [ExpectedFailures(ResultStatus.Invalid)]
+    public async Task<ActionResult> BulkAddOrUpdate(
+        [FromForm] BulkAddOrUpdateArticlesRequest request)
+    {
+        return Ok(await _mediator.Send(request));
     }
 
     [HttpPost("bulkImport")]

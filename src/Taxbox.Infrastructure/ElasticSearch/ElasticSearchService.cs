@@ -48,13 +48,6 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         return indexResponse;
     }
 
-    // public async Task<bool> AddOrUpdate(T document)
-    // {
-    //     var indexResponse =
-    //         await _client.IndexAsync(document, idx => idx.Index(_indexName));
-    //     return indexResponse.IsValidResponse;
-    // }
-
     public async Task<T> AddOrUpdate(T document)
     {
         var indexResponse =
