@@ -70,9 +70,6 @@ builder.Services.AddS3Setup(builder);
 // Add Stripe Services
 builder.Services.AddStripeSetup(builder);
 
-// Add Background Services
-builder.Services.AddHostedService<SubscriptionValidityWorker>();
-
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -87,6 +84,9 @@ builder.Services.AddCors(options =>
             corsPolicyBuilder.AllowAnyMethod();
         });
 });
+
+// Add Background Service Workers
+builder.Services.AddHostedService<SubscriptionValidityWorker>();
 
 var app = builder.Build();
 

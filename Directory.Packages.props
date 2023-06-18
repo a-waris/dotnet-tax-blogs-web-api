@@ -15,6 +15,7 @@
     <PackageVersion Include="Mapster" Version="7.3.0" />
     <PackageVersion Include="Mapster.EFCore" Version="5.1.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
+    <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageVersion Include="NewId" Version="4.0.1" />
     <PackageVersion Include="Stripe.net" Version="41.20.0" />
     <PackageVersion Include="StronglyTypedId" Version="1.0.0-beta06" />
