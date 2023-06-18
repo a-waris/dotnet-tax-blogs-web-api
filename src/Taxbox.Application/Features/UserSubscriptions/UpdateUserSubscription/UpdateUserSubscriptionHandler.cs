@@ -8,7 +8,8 @@ using Taxbox.Application.Common;
 
 namespace Taxbox.Application.Features.UserSubscriptions.UpdateUserSubscription;
 
-public class UpdateUserSubscriptionHandler : IRequestHandler<UpdateUserSubscriptionRequest, Result<GetUserSubscriptionResponse>>
+public class
+    UpdateUserSubscriptionHandler : IRequestHandler<UpdateUserSubscriptionRequest, Result<GetUserSubscriptionResponse>>
 {
     private readonly IContext _context;
 
@@ -26,18 +27,30 @@ public class UpdateUserSubscriptionHandler : IRequestHandler<UpdateUserSubscript
 
         // TODO: add logic to update stripe subscription
         // TODO: do not allow to update subscription id or user id
-        originalUserSubscription.SubscriptionId = request.SubscriptionId;
-        originalUserSubscription.UserId = request.UserId;
+        if (originalUserSubscription.SubscriptionId != request.SubscriptionId)
+        {
+            originalUserSubscription.SubscriptionId = request.SubscriptionId;
+        }
+
         originalUserSubscription.SubscriptionStartDate = request.SubscriptionStartDate;
         originalUserSubscription.SubscriptionEndDate = request.SubscriptionEndDate;
-        originalUserSubscription.IsActive = request.IsActive;
-        originalUserSubscription.AutoRenewal = request.AutoRenewal;
-        originalUserSubscription.CouponCode = request.CouponCode;
-        originalUserSubscription.DiscountAmount = request.DiscountAmount;
-        originalUserSubscription.TrialStartDate = request.TrialStartDate;
+        if (request.IsActive != null)
+        {
+            originalUserSubscription.IsActive = (bool)request.IsActive;
+        }
+
+        if (request.AutoRenewal != null)
+        {
+            originalUserSubscription.AutoRenewal = (bool)request.AutoRenewal;
+        }
+
+        // originalUserSubscription.UserId = request.UserId;
+        // originalUserSubscription.CouponCode = request.CouponCode;
+        // originalUserSubscription.DiscountAmount = request.DiscountAmount;
+        // originalUserSubscription.NextBillingDate = request.NextBillingDate;
         originalUserSubscription.TrialEndDate = request.TrialEndDate;
         originalUserSubscription.CancellationDate = request.CancellationDate;
-        originalUserSubscription.NextBillingDate = request.NextBillingDate;
+        originalUserSubscription.TrialStartDate = request.TrialStartDate;
 
         _context.UserSubscriptions.Update(originalUserSubscription);
         await _context.SaveChangesAsync(cancellationToken);

@@ -2,7 +2,6 @@
 using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,14 +17,12 @@ public class
 {
     private readonly IContext _context;
     private readonly IStripeService _stripeService;
-    private readonly IConfiguration _configuration;
 
 
-    public CreateUserSubscriptionHandler(IContext context, IStripeService stripeService, IConfiguration configuration)
+    public CreateUserSubscriptionHandler(IContext context, IStripeService stripeService)
     {
         _context = context;
         _stripeService = stripeService;
-        _configuration = configuration;
     }
 
     public async Task<Result<GetUserSubscriptionResponse>> Handle(CreateUserSubscriptionRequest request,
@@ -46,12 +43,13 @@ public class
         {
             SetSubscriptionDates(created, request.SubscriptionStartDate.Value, sub.ValidityPeriodType,
                 sub.ValidityPeriod);
-            await HandleCouponCode(request, created);
-            await HandleDiscount(request);
-            var user = await _context.Users.FindAsync(request.UserId);
+            // await HandleCouponCode(request, created);
+            // await HandleDiscount(request);
+            var user = await _context.Users.FindAsync(new object?[] { request.UserId },
+                cancellationToken: cancellationToken);
             if (user == null)
                 return Result.NotFound("User not found");
-            await HandlePaymentFlow(request, cancellationToken, user, created, sub);
+            await HandlePaymentFlow(request, user, created, sub, cancellationToken);
         }
 
         _context.UserSubscriptions.Add(created);
@@ -71,7 +69,7 @@ public class
         };
     }
 
-    private void SetSubscriptionDates(UserSubscription created, DateTime subscriptionStartDate,
+    private static void SetSubscriptionDates(UserSubscription created, DateTime subscriptionStartDate,
         string validityPeriodType, int validityPeriod)
     {
         created.SubscriptionStartDate = subscriptionStartDate.ToUniversalTime();
@@ -84,25 +82,25 @@ public class
         created.NextBillingDate = created.SubscriptionEndDate?.AddDays(1);
     }
 
-    private async Task HandleCouponCode(CreateUserSubscriptionRequest request, UserSubscription created)
-    {
-        if (created.CouponCode != default)
-        {
-            // TODO: Handle coupon code
-        }
-        
-    }
+    // private async Task HandleCouponCode(CreateUserSubscriptionRequest request, UserSubscription created)
+    // {
+    //     if (created.CouponCode != default)
+    //     {
+    //         // TODO: Handle coupon code
+    //     }
+    //     
+    // }
+    //
+    // private async Task HandleDiscount(CreateUserSubscriptionRequest request)
+    // {
+    //     if (request.DiscountAmount != default)
+    //     {
+    //         // TODO: Handle discount
+    //     }
+    // }
 
-    private async Task HandleDiscount(CreateUserSubscriptionRequest request)
-    {
-        if (request.DiscountAmount != default)
-        {
-            // TODO: Handle discount
-        }
-    }
-
-    private async Task HandlePaymentFlow(CreateUserSubscriptionRequest request, CancellationToken cancellationToken,
-        User user, UserSubscription created, Subscription sub)
+    private async Task HandlePaymentFlow(CreateUserSubscriptionRequest request,
+        User user, UserSubscription created, Subscription sub, CancellationToken cancellationToken)
     {
         try
         {
@@ -112,25 +110,16 @@ public class
             var createCustomerResource =
                 new CreateCustomerResource(user.Email, $"{user.FirstName} {user.LastName}", request.CardDetails);
             var customer = await _stripeService.CreateCustomer(createCustomerResource, cancellationToken);
-            
+
             // set customer id
             created.CustomerId = customer.CustomerId;
 
-            // if (_configuration.GetSection("StripeOptions")["Mode"] == "live")
-            // {
-            var charge = await _stripeService.CreateCharge(new CreateChargeResource(
+            await _stripeService.CreateCharge(new CreateChargeResource(
                 Currency: sub.Currency,
                 Amount: (long)(sub.Amount * 100),
                 Description: "Subscription charge for " + sub.Name,
                 CustomerId: customer.CustomerId,
                 ReceiptEmail: user.Email), cancellationToken);
-            // }
-            //
-            // var intent = await _stripeService.CreatePaymentIntent(new CreatePaymentIntentResource(
-            //     Currency: sub.Currency,
-            //     Amount: (long)(sub.Amount * 100),
-            //     Description: "Subscription charge for " + sub.Name,
-            //     ReceiptEmail: user.Email), cancellationToken);
         }
         catch (Exception e)
         {
