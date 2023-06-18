@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Taxbox.Application.Common.Responses;
 using Taxbox.Domain.ElasticSearch.Interfaces;
+using Taxbox.Domain.Entities;
 
 namespace Taxbox.Infrastructure.ElasticSearch;
 
@@ -21,7 +22,7 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         _indexName = clientContainer.GetIndexName();
     }
 
-    public ElasticSearchService<T> Index(string indexName)
+    public IElasticSearchService<T> Index(string indexName)
     {
         _indexName = indexName;
         return this;
@@ -38,13 +39,13 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         Index(indexName);
     }
 
-    public async Task<bool> AddOrUpdateBulk(IEnumerable<T> documents)
+    public async Task<BulkResponse> AddOrUpdateBulk(IEnumerable<T> documents)
     {
         var indexResponse = await _client.BulkAsync(b => b
             .Index(_indexName)
             .UpdateMany(documents, (ud, d) => ud.Doc(d).DocAsUpsert())
         );
-        return indexResponse.IsValidResponse;
+        return indexResponse;
     }
 
     // public async Task<bool> AddOrUpdate(T document)
@@ -59,10 +60,20 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         var indexResponse =
             await _client.IndexAsync(document, idx => idx.Index(_indexName));
         if (!indexResponse.IsValidResponse)
-        {   
+        {
             throw new Exception(indexResponse.DebugInformation);
         }
+
         return document;
+    }
+
+    public async Task<BulkResponse> AddBulk(IList<T> documents)
+    {
+        var resp = await _client.BulkAsync(b => b
+            .Index(_indexName)
+            .IndexMany(documents)
+        );
+        return resp;
     }
 
     public async Task<GetResponse<T>> Get(string key)
@@ -76,19 +87,42 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         return searchResponse.IsValidResponse ? searchResponse.Documents.ToList() : default;
     }
 
-    public async Task<SearchResponse<T>?> GetAllPaginated(QueryDescriptor<T> predicate, int currentPage, int pageSize)
+    public async Task<SearchResponse<T>?> GetAllPaginated(QueryDescriptor<T> predicate, int currentPage, int pageSize,
+        string[]? sourceFields = null, SortOptionsDescriptor<T>? sortDescriptor = null)
 
     {
-        // return await searchRequest.ToPaginatedListAsync(_client, currentPage, pageSize);
-        var searchResponse = await _client.SearchAsync<T>(s =>
-            s.Index(_indexName).From((currentPage - 1) * pageSize).Size(pageSize).Query(predicate));
+        var searchRequestDescriptor = new SearchRequestDescriptor<T>();
+        searchRequestDescriptor.Query(predicate);
+        searchRequestDescriptor.Index(_indexName);
+        searchRequestDescriptor.From((currentPage - 1) * pageSize);
+        searchRequestDescriptor.Size(pageSize);
+
+        if (sortDescriptor != null)
+        {
+            searchRequestDescriptor.Sort(sortDescriptor);
+        }
+
+
+        if (sourceFields != null && sourceFields.Any())
+        {
+            searchRequestDescriptor.SourceIncludes(sourceFields);
+        }
+
+        var searchResponse = await _client.SearchAsync(searchRequestDescriptor);
         return searchResponse.IsValidResponse ? searchResponse : default;
     }
 
-    public async Task<List<T>?> Query(QueryDescriptor<T> predicate)
+    public async Task<SearchResponse<T>> Query(QueryDescriptor<T> predicate)
     {
         var searchResponse = await _client.SearchAsync<T>(s => s.Index(_indexName).Query(predicate));
-        return searchResponse.IsValidResponse ? searchResponse.Documents.ToList() : default;
+        return searchResponse;
+    }
+
+    public async Task<SearchResponse<T>?> Query(SearchRequestDescriptor<T> searchRequestDescriptor)
+    {
+        searchRequestDescriptor.Index(_indexName);
+        var searchResponse = await _client.SearchAsync(searchRequestDescriptor);
+        return searchResponse.IsValidResponse ? searchResponse : default;
     }
 
     public async Task<bool> Remove(string key)
@@ -97,13 +131,12 @@ public class ElasticSearchService<T> : IElasticSearchService<T> where T : class
         return response.IsValidResponse;
     }
 
-    public async Task<long> RemoveAll()
+    public async Task<DeleteByQueryResponse> BulkRemove(QueryDescriptor<T> queryDescriptor)
     {
         var response = await _client.DeleteByQueryAsync<T>(_indexName, q => q.Query(
-            qd => qd.MatchAll()
+            queryDescriptor
         ));
-
-        return (long)(response.IsValidResponse ? response.Deleted! : 0);
+        return response;
     }
 
     public Task<bool> RemoveIndex(string indexName)

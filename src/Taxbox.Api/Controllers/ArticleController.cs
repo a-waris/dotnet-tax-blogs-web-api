@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using Taxbox.Application.Features.Articles;
+using Taxbox.Application.Features.Articles.BulkImportArticles;
+using Taxbox.Application.Features.Articles.BulkRemoveArticles;
 using Taxbox.Application.Features.Articles.CreateArticle;
 using Taxbox.Application.Features.Articles.DeleteArticle;
 using Taxbox.Application.Features.Articles.GetAllArticles;
@@ -37,6 +39,16 @@ public class ArticleController : ControllerBase
     }
 
     [HttpGet]
+    [Route("public/{id}")]
+    [AllowAnonymous]
+    [TranslateResultToActionResult]
+    [ExpectedFailures(ResultStatus.Invalid)]
+    public async Task<ActionResult<GetArticleResponse>> GetByIdPublic(ArticleId id)
+    {
+        return Ok(await _mediator.Send(new GetArticleByIdRequest(Id: id, IsPublic: true)));
+    }
+
+    [HttpGet]
     [Route("list")]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
@@ -44,16 +56,17 @@ public class ArticleController : ControllerBase
         [FromQuery] GetAllArticlesRequest request)
     {
         return Ok(await _mediator.Send(request));
-    }    
-    
+    }
+
     [HttpGet]
     [Route("public/list")]
     [AllowAnonymous]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
-    public async Task<ActionResult<IEnumerable<GetArticleResponse>>> GetListPublic()
+    public async Task<ActionResult<IEnumerable<GetArticleResponse>>> GetListPublic(
+        [FromQuery] GetAllArticlesPublicRequest request)
     {
-        return Ok(await _mediator.Send(new GetAllArticlesRequest{ IsPublic = true }));
+        return Ok(await _mediator.Send(request));
     }
 
     [HttpPost]
@@ -83,5 +96,23 @@ public class ArticleController : ControllerBase
     public async Task<ActionResult> Remove(ArticleId id)
     {
         return Ok(await _mediator.Send(new DeleteArticleRequest(Id: id)));
+    }
+
+    [HttpPost("bulkImport")]
+    [TranslateResultToActionResult]
+    [ExpectedFailures(ResultStatus.Invalid)]
+    public async Task<ActionResult> BulkImport(
+        [FromForm] BulkImportArticlesRequest request)
+    {
+        return Ok(await _mediator.Send(request));
+    }
+
+    [HttpPost("bulkRemove")]
+    [TranslateResultToActionResult]
+    [ExpectedFailures(ResultStatus.Invalid)]
+    public async Task<ActionResult> BulkRemove(
+        [FromForm] BulkRemoveArticlesRequest request)
+    {
+        return Ok(await _mediator.Send(request));
     }
 }

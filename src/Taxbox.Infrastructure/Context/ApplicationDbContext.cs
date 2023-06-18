@@ -21,13 +21,17 @@ public class ApplicationDbContext : DbContext, IContext
     }
 
     public DbSet<User> Users { get; set; } = null!;
+    public DbSet<Resource> Resources { get; set; } = null!;
+    public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<Subscription> Subscriptions { get; set; } = null!;
+    public DbSet<UserSubscription> UserSubscriptions { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            // var cx = _configuration?.GetConnectionString("DefaultConnection");
-            var cx = "Server=EC2AMAZ-R7QCMS9\\SQLEXPRESS;Database=TaxboxDB;User Id=admin;Password=1234;TrustServerCertificate=true";
+            var cx = _configuration?.GetConnectionString("DefaultConnection");
+            // var cx = "Server=DESKTOP-KI6EKBL;Database=TaxboxDB;User=root;Password=1234;TrustServerCertificate=True";
 
             optionsBuilder.UseSqlServer(cx, builder =>
             {
@@ -42,6 +46,10 @@ public class ApplicationDbContext : DbContext, IContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly)
+            .ApplyConfigurationsFromAssembly(typeof(ResourceConfiguration).Assembly)
+            .ApplyConfigurationsFromAssembly(typeof(CategoryConfiguration).Assembly)
+            .ApplyConfigurationsFromAssembly(typeof(SubscriptionConfiguration).Assembly)
+            .ApplyConfigurationsFromAssembly(typeof(UserSubscriptionConfiguration).Assembly);
     }
 }

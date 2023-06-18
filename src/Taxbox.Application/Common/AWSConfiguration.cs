@@ -10,4 +10,5 @@ public class AWSConfiguration
 
     public string S3BucketKeyForProfilePictures { get; init; } = null!;
     public string S3BucketKeyForArticleIndex { get; init; } = null!;
+    public string S3BucketKeyForResources { get; init; } = null!;
 }

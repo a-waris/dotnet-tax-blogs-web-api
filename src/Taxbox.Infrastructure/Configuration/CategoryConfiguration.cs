@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Taxbox.Infrastructure.Configuration;
 
-public class HeroConfiguration : IEntityTypeConfiguration<Hero>
+public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
-    public void Configure(EntityTypeBuilder<Hero> builder)
+    public void Configure(EntityTypeBuilder<Category> builder)
     {
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Id)
-            .HasConversion<HeroId.EfCoreValueConverter>();
+            .HasConversion<CategoryId.EfCoreValueConverter>();
     }
 }

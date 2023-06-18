@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Taxbox.Application.Features.Auth.Authenticate;
 
-public record AuthenticateRequest : IRequest<Result<Jwt>>
+public record AuthenticateRequest : IRequest<Result<AuthenticateResponse>>
 {
     public string Email { get; init; } = null!;
 

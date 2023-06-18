@@ -13,7 +13,7 @@ using Taxbox.Domain.Entities;
 
 namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
-public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, PaginatedList<GetArticleResponse>>
+public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, PaginatedList<GetAllArticlesResponse>>
 {
     private readonly IElasticSearchService<Article> _eSservice;
 
@@ -22,7 +22,7 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
         _eSservice = eSservice;
     }
 
-    public async Task<PaginatedList<GetArticleResponse>> Handle(GetAllArticlesRequest request,
+    public async Task<PaginatedList<GetAllArticlesResponse>> Handle(GetAllArticlesRequest request,
         CancellationToken cancellationToken)
     {
         var qd = new QueryDescriptor<Article>();
@@ -35,9 +35,23 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             qd = BuildQueryDescriptor(request);
         }
 
-        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize);
+        if (request.CurrentPage <= 0)
+        {
+            request.CurrentPage = 1;
+        }
 
-        var list = new List<GetArticleResponse>();
+        if (request.PageSize <= 0)
+        {
+            request.PageSize = 10;
+        }
+
+        var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
+
+        var sort = new SortOptionsDescriptor<Article>().Field(article => article.UpdatedAt!, descriptor => descriptor.Order(SortOrder.Desc));
+
+        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields, sort);
+
+        var list = new List<GetAllArticlesResponse>();
         if (resp?.Hits != null)
         {
             foreach (var hit in resp.Hits)
@@ -45,14 +59,14 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
                 if (hit.Source == null) continue;
 
                 hit.Source.Id = Guid.Parse(hit.Id);
-                list.Add(hit.Source.Adapt<GetArticleResponse>());
+                list.Add(hit.Source.Adapt<GetAllArticlesResponse>());
             }
 
-            return new PaginatedList<GetArticleResponse>(list,
+            return new PaginatedList<GetAllArticlesResponse>(list,
                 (int)resp!.Total, request.CurrentPage, request.PageSize);
         }
 
-        return new PaginatedList<GetArticleResponse>();
+        return new PaginatedList<GetAllArticlesResponse>();
     }
 
     private QueryDescriptor<Article> BuildQueryDescriptor(GetAllArticlesRequest request)
@@ -68,9 +82,10 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             qd = qd.Match(m => m.Field(f => f.Content).Query(request.Content));
         }
 
-        if (!string.IsNullOrEmpty(request.Author))
+        if (request.AuthorIds is { Count: > 0 })
         {
-            qd = qd.Match(m => m.Field(f => f.Author).Query(request.Author));
+            var terms = new TermsQueryField(request.AuthorIds.Select(FieldValue.String).ToArray());
+            qd = qd.Terms(t => t.Field(f => f.AuthorIds).Terms(terms));
         }
 
         if (request.Tags is { Count: > 0 })
@@ -96,6 +111,11 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
         if (request.IsPublic != null)
         {
             qd = qd.Term(t => t.Field(f => f.IsPublic).Value((bool)request.IsPublic));
+        }
+
+        if (request.IsPublished != null)
+        {
+            qd = qd.Term(t => t.Field(f => f.IsPublished).Value((bool)request.IsPublished));
         }
 
         return qd;

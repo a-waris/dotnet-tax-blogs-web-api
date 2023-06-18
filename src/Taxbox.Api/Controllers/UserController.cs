@@ -43,10 +43,10 @@ public class UserController : ControllerBase
     [AllowAnonymous]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
-    public async Task<Result<Jwt>> Authenticate([FromBody] AuthenticateRequest request)
+    public async Task<Result<AuthenticateResponse>> Authenticate([FromBody] AuthenticateRequest request)
     {
-        var jwt = await _mediator.Send(request);
-        return jwt;
+        var res = await _mediator.Send(request);
+        return res;
     }
 
 
@@ -89,7 +89,7 @@ public class UserController : ControllerBase
         var result = await _mediator.Send(request);
         return result;
     }
-    
+
     [HttpPost("Signup")]
     [AllowAnonymous]
     [TranslateResultToActionResult]
@@ -104,7 +104,7 @@ public class UserController : ControllerBase
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.NotFound, ResultStatus.Invalid)]
     public async Task<Result> UpdatePassword([FromBody] UpdatePasswordRequest request)
-    {            
+    {
         var result = await _mediator.Send(request with { Id = _session.UserId });
         return result;
     }

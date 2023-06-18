@@ -13,6 +13,7 @@
     <PackageReference Include="AWSSDK.S3" />
     <PackageReference Include="BCrypt.Net-Next" />
     <PackageReference Include="Elastic.Clients.Elasticsearch" />
+    <PackageReference Include="EPPlus" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="Mapster" />
     <PackageReference Include="Mapster.EFCore" />

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using Taxbox.Infrastructure.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +68,9 @@ builder.AddOpenTemeletrySetup();
 // Add S3 client
 builder.Services.AddS3Setup(builder);
 
+// Add Stripe Services
+builder.Services.AddStripeSetup(builder);
+
 // Add CORS
 builder.Services.AddCors(options =>
 {
@@ -74,13 +78,19 @@ builder.Services.AddCors(options =>
         corsPolicyBuilder =>
         {
             corsPolicyBuilder.WithOrigins(
-                "http://*"
+                "*"
                 // TODO: LIVE https URL OF FRONT END HERE
             );
             corsPolicyBuilder.AllowAnyHeader();
             corsPolicyBuilder.AllowAnyMethod();
         });
 });
+
+if (builder.Configuration.GetSection("ServiceWorkerConfiguration").GetValue<bool>("IsEnabled"))
+{
+    // Add Background Service Workers
+    builder.Services.AddHostedService<SubscriptionValidityWorker>();
+}
 
 var app = builder.Build();
 
