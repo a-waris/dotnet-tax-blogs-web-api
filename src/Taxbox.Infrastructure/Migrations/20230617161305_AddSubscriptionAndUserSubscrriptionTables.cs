@@ -22,7 +22,8 @@ namespace Taxbox.Infrastructure.Migrations
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ValidityPeriod = table.Column<int>(type: "int", nullable: false),
-                    ValidityPeriodType = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ValidityPeriodType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VAT = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -92,26 +93,21 @@ namespace Taxbox.Infrastructure.Migrations
             
             migrationBuilder.InsertData(
                 table: "Subscriptions",
-                columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", },
-                values: new object[]  { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0a"), "Standard", "Active", "Standard Subscription", "usd", (decimal)10, 30, "Days" }
+                columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", "VAT" },
+                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0b"), "Gold", "Active", "AED 390 + 5% VAT", "aed", (decimal)390, 6, "Months",(decimal)0.05  }
             );      
                 
             migrationBuilder.InsertData(
                 table: "Subscriptions",
-                columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", },
-                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0b"), "Gold", "Active", "Gold Subscription", "usd", (decimal)20, 6, "Months" }
-            );      
-                
-            migrationBuilder.InsertData(
-                table: "Subscriptions",
-                columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", },
-                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0c"), "Platinum", "Active", "Platinum Subscription", "usd", (decimal)30, 12, "Months" }
+                columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", "VAT" },
+                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0c"), "Platinum", "Active", "AED 590 + 5% VAT", "aed", (decimal)590, 12, "Months", (decimal)0.05 }
             );
             
             migrationBuilder.InsertData(
                 table: "Subscriptions",
-                columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", },
-                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0d"), "Trial", "Active", "Trial Subscription", "usd", (decimal)0, 7, "Days" }
+                columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", "VAT" },
+                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0d"), "Free", "Active", "Free Subscription", "aed", (decimal)0, 7, "Days",
+                    (decimal)0 }
             );
         }
 

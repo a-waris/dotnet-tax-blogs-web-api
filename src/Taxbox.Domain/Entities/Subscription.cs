@@ -15,4 +15,5 @@ public class Subscription : Entity<SubscriptionId>
     public string? Description { get; set; }
     public int ValidityPeriod { get; set; } // 1, 2, 3, etc.
     public string ValidityPeriodType { get; set; } = null!; // Monthly, Yearly, etc.
+    public decimal VAT { get; set; }
 }
