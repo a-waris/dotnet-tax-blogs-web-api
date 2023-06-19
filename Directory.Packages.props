@@ -10,12 +10,14 @@
     <PackageVersion Include="Ardalis.Result.FluentValidation" Version="7.1.0" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.7" />
     <PackageVersion Include="AWSSDK.S3" Version="3.7.106" />
+    <PackageVersion Include="Elasticsearch.Net" Version="7.17.5" />
     <PackageVersion Include="EPPlus" Version="6.2.6" />
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
     <PackageVersion Include="Mapster" Version="7.3.0" />
     <PackageVersion Include="Mapster.EFCore" Version="5.1.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageVersion Include="NEST" Version="7.17.5" />
     <PackageVersion Include="NewId" Version="4.0.1" />
     <PackageVersion Include="Stripe.net" Version="41.20.0" />
     <PackageVersion Include="StronglyTypedId" Version="1.0.0-beta06" />
@@ -57,6 +59,5 @@
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Filters" Version="7.0.6" />
     <PackageVersion Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.1.1" />
   </ItemGroup>
 </Project>

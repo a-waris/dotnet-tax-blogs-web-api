@@ -4,4 +4,4 @@ using Taxbox.Domain.Entities.Common;
 
 namespace Taxbox.Application.Features.Authors.DeleteAuthor;
 
-public record DeleteAuthorRequest(AuthorId Id) : IRequest<Result>;
+public record DeleteAuthorRequest(string Id) : IRequest<Result>;

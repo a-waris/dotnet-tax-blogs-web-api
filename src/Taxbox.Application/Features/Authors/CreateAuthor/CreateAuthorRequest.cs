@@ -1,14 +1,11 @@
 ﻿using Ardalis.Result;
-using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Mapping;
-using MediatR;
+using Nest;
 using System;
 using Taxbox.Domain.Entities;
-using Taxbox.Domain.Entities.Common;
 
 namespace Taxbox.Application.Features.Authors.CreateAuthor;
 
-public record CreateAuthorRequest : IRequest<Result<GetAuthorResponse>>
+public record CreateAuthorRequest : MediatR.IRequest<Result<GetAuthorResponse>>
 {
     
     public string Name { get; set; } = null!;

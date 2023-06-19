@@ -49,7 +49,7 @@ public class UpdateResourceHandler : IRequestHandler<UpdateResourceRequest, Resu
                 }
             }
 
-            var resourceUrl = await S3Utils.UploadImage(_s3Service, request.File, originalResource.Id,
+            var resourceUrl = await S3Utils.UploadImage(_s3Service, request.File, originalResource.Id.ToString(),
                 _appSettings.Value.S3BucketName,
                 _appSettings.Value.S3BucketKeyForResources, cancellationToken);
             originalResource.FileUrl = $"{_appSettings.Value.S3BucketUrl}/{resourceUrl}";

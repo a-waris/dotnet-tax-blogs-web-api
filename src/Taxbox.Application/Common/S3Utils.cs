@@ -9,7 +9,7 @@ namespace Taxbox.Application.Common;
 
 public static class S3Utils
 {
-    public static async Task<string?> UploadImage(IS3Service s3Service, IFormFile file, IGuid id
+    public static async Task<string?> UploadImage(IS3Service s3Service, IFormFile file, string id
         , string bucketName, string folderName,
         CancellationToken cancellationToken)
     {
@@ -43,7 +43,7 @@ public static class S3Utils
         }
     }
 
-    public static string GetUploadKey(IFormFile file, IGuid id, string folderName)
+    public static string GetUploadKey(IFormFile file, string id, string folderName)
     {
         var extension = file.FileName.Split('.')[1];
         var timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();

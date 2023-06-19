@@ -8,7 +8,7 @@ namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
 public record GetAllArticlesResponse
 {
-    public ArticleId Id { get; init; }
+    public string Id { get; init; } = null!;
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Title { get; set; } = null!;
@@ -22,8 +22,8 @@ public record GetAllArticlesResponse
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string HtmlContent { get; set; } = null!;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IList<string> AuthorIds { get; set; } = null!;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public IList<string> AuthorIds { get; set; } = new List<string>();
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTime? CreatedAt { get; set; }
@@ -37,14 +37,11 @@ public record GetAllArticlesResponse
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IList<string>? Tags { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public bool IsPublic { get; set; } = false;
+    public bool IsPublic { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public bool IsPublished { get; set; } = false;    
+    public bool IsPublished { get; set; }
     
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public bool IsDraft { get; set; } = false;
+    public bool IsDraft { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? CoverImage { get; set; }

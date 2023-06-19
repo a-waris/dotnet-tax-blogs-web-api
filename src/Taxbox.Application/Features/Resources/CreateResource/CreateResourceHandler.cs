@@ -40,7 +40,7 @@ public class CreateResourceHandler : IRequestHandler<CreateResourceRequest, Resu
         else
             created.ResourceType = ResourceType.Other;
         
-        var resourceUrl = await S3Utils.UploadImage(_s3Service, request.File, created.Id,
+        var resourceUrl = await S3Utils.UploadImage(_s3Service, request.File, created.Id.ToString(),
             _appSettings.Value.S3BucketName,
             _appSettings.Value.S3BucketKeyForResources, cancellationToken);
         created.FileUrl = $"{_appSettings.Value.S3BucketUrl}/{resourceUrl}";

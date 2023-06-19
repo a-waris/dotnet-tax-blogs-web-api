@@ -1,21 +1,11 @@
-﻿using Taxbox.Domain.Entities.Common;
-using MassTransit;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Taxbox.Domain.Entities;
 
-public class Article : Entity<ArticleId>
+public class Article
 {
-    public override ArticleId Id { get; set; } = NewId.NextGuid();
-
-    public ArticleId ArticleId
-    {
-        get => Id;
-
-        set => Id = value;
-    }
-
+    public string Id { get; set; } = null!;
     public string Title { get; set; } = null!;
     public Metadata? Metadata { get; set; }
     public string? HtmlContent { get; set; }

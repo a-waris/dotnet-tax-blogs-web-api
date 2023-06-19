@@ -21,7 +21,6 @@ public class DeleteArticleHandler : IRequestHandler<DeleteArticleRequest, Result
     public async Task<Result> Handle(DeleteArticleRequest request, CancellationToken cancellationToken)
     {
         var article = await _esService.Get(request.Id.ToString()!);
-        if (article is null) return Result.NotFound();
 
         var deleted = await _esService.Remove(request.Id.ToString()!);
         if (!deleted) return Result.Error("Failed to delete article");

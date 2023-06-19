@@ -1,5 +1,4 @@
-﻿using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Mapping;
+﻿using Nest;
 using System;
 using Taxbox.Domain.Entities;
 using Taxbox.Domain.Entities.Common;
@@ -8,7 +7,7 @@ namespace Taxbox.Application.Features.Authors;
 
 public record GetAuthorResponse
 {
-    public AuthorId AuthorId { get; init; }
+    public string AuthorId { get; init; } = null!;
     public string Name { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string Bio { get; set; } = null!;

@@ -1,8 +1,7 @@
 using Ardalis.Result;
-using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.QueryDsl;
 using Mapster;
 using MediatR;
+using Nest;
 using System;
 using System.Linq;
 using System.Threading;
@@ -15,37 +14,40 @@ namespace Taxbox.Application.Features.Articles.GetArticleById;
 
 public class GetArticleByIdHandler : IRequestHandler<GetArticleByIdRequest, Result<GetArticleResponse>>
 {
-    private readonly IElasticSearchService<Article> _eSservice;
-    private readonly IElasticSearchService<Author> _eSserviceAuthor;
+    private readonly IElasticSearchService<Article> _esService;
+    private readonly IElasticSearchService<Author> _esServiceAuthor;
 
-    public GetArticleByIdHandler(IElasticSearchService<Article> eSservice,
-        IElasticSearchService<Author> eSserviceAuthor)
+    public GetArticleByIdHandler(IElasticSearchService<Article> esService,
+        IElasticSearchService<Author> esServiceAuthor)
     {
-        _eSservice = eSservice;
-        _eSserviceAuthor = eSserviceAuthor;
+        _esService = esService;
+        _esServiceAuthor = esServiceAuthor;
     }
 
 
     public async Task<Result<GetArticleResponse>> Handle(GetArticleByIdRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await _eSservice.Get(request.Id.ToString()!);
+        var result = await _esService.Get(request.Id.ToString()!);
         if (result.Source == null)
         {
             return Result.NotFound();
         }
 
-        result.Source.Id = Guid.Parse(result.Id);
+        result.Source.Id = result.Id;
         //get all authors for this article
         if (result.Source.AuthorIds == null)
         {
             return result.Source.Adapt<GetArticleResponse>();
         }
 
-        var terms = new TermsQueryField(result.Source.AuthorIds.Select(FieldValue.String).ToArray());
-        var qd = new QueryDescriptor<Author>().Terms(t => t.Field(f => f.AuthorId).Terms(terms));
-        var authorsResp = await _eSserviceAuthor.Index("authors").Query(qd);
-        if (authorsResp.IsValidResponse && authorsResp.Documents.Any())
+        var sd = new SearchDescriptor<Author>()
+            .Query(q => q.Term(t => t.Field(f => f.Id.Suffix("keyword")).Value("taxbox")));
+        var taxboxAuthorResp = await _esServiceAuthor.Index("authors").Query(sd);
+
+        var authorsResp = await _esServiceAuthor.Index("authors").Query(new SearchDescriptor<Author>()
+            .Query(q => q.Terms(t => t.Field(f => f.Id).Terms(result.Source.AuthorIds))));
+        if (authorsResp is { IsValid: true } && authorsResp.Documents.Any())
         {
             result.Source.Authors = authorsResp.Documents.ToList();
         }

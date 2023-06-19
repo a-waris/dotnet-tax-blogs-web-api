@@ -34,7 +34,7 @@ public class ArticleController : ControllerBase
     [Route("{id}")]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
-    public async Task<ActionResult<GetArticleResponse>> GetById(ArticleId id)
+    public async Task<ActionResult<GetArticleResponse>> GetById(string id)
     {
         return Ok(await _mediator.Send(new GetArticleByIdRequest(id)));
     }
@@ -44,7 +44,7 @@ public class ArticleController : ControllerBase
     [AllowAnonymous]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
-    public async Task<ActionResult<GetArticleResponse>> GetByIdPublic(ArticleId id)
+    public async Task<ActionResult<GetArticleResponse>> GetByIdPublic(string id)
     {
         return Ok(await _mediator.Send(new GetArticleByIdRequest(Id: id, IsPublic: true)));
     }
@@ -84,7 +84,7 @@ public class ArticleController : ControllerBase
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult<GetArticleResponse>> Update(
-        ArticleId id,
+        string id,
         [FromBody] UpdateArticleRequest request)
     {
         return Ok(await _mediator.Send(request with { Id = id }));
@@ -94,7 +94,7 @@ public class ArticleController : ControllerBase
     [Route("{id}")]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
-    public async Task<ActionResult> Remove(ArticleId id)
+    public async Task<ActionResult> Remove(string id)
     {
         return Ok(await _mediator.Send(new DeleteArticleRequest(Id: id)));
     }

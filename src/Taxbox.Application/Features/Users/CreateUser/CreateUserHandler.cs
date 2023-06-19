@@ -36,7 +36,7 @@ public class CreateUserHandler : IRequestHandler<CreateUserRequest, Result<GetUs
             // Upload display picture to S3
             if (request.DisplayPicture != null)
             {
-                created.DisplayPicture = S3Utils.UploadImage(_s3Service, request.DisplayPicture, created.Id,
+                created.DisplayPicture = S3Utils.UploadImage(_s3Service, request.DisplayPicture, created.Id.ToString(),
                     _appSettings.Value.S3BucketName,
                     _appSettings.Value.S3BucketKeyForProfilePictures, cancellationToken).Result;
             }

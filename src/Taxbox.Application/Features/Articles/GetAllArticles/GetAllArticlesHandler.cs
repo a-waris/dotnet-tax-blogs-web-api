@@ -1,7 +1,6 @@
-using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.QueryDsl;
 using Mapster;
 using MediatR;
+using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,10 +24,10 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
     public async Task<PaginatedList<GetAllArticlesResponse>> Handle(GetAllArticlesRequest request,
         CancellationToken cancellationToken)
     {
-        var qd = new QueryDescriptor<Article>();
+        QueryContainer qd;
         if (string.IsNullOrEmpty(request.ToString()) || string.IsNullOrWhiteSpace(request.ToString()))
         {
-            qd.MatchAll();
+            qd = new QueryContainerDescriptor<Article>().MatchAll();
         }
         else
         {
@@ -47,11 +46,14 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
 
         var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
 
-        var sort = new SortOptionsDescriptor<Article>().Field(article => article.UpdatedAt!,
-            descriptor => descriptor.Order(SortOrder.Desc));
-
-        var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields, sort);
-
+        var sd = new SearchDescriptor<Article>()
+                .Query(q => qd)
+                .Sort(s => s.Descending(a => a.UpdatedAt))
+                .From((request.CurrentPage - 1) * request.PageSize)
+                .Size(request.PageSize)
+                .Source(s => s.Includes(i => i.Fields(fields)))
+            ;
+        var resp = await _eSservice.Query(sd);
         var list = new List<GetAllArticlesResponse>();
         if (resp?.Hits != null)
         {
@@ -59,7 +61,7 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             {
                 if (hit.Source == null) continue;
 
-                hit.Source.Id = Guid.Parse(hit.Id);
+                hit.Source.Id = hit.Id;
                 list.Add(hit.Source.Adapt<GetAllArticlesResponse>());
             }
 
@@ -70,56 +72,89 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
         return new PaginatedList<GetAllArticlesResponse>();
     }
 
-    private QueryDescriptor<Article> BuildQueryDescriptor(GetAllArticlesRequest request)
+    private QueryContainer BuildQueryDescriptor(GetAllArticlesRequest request)
     {
-        var qd = new QueryDescriptor<Article>();
+        var should = new QueryContainer();
+        var must = new QueryContainer();
+
+        if (!string.IsNullOrEmpty(request.FreeTextSearch))
+        {
+            should = should || new MatchQuery
+            {
+                Field = Infer.Field<Article>(f => f.Title), Query = request.FreeTextSearch, Boost = 2
+            };
+            should = should || new MatchQuery
+            {
+                Field = Infer.Field<Article>(f => f.Content), Query = request.FreeTextSearch, Boost = 1
+            };
+            should = should || new BoolQuery { MinimumShouldMatch = 1 };
+        }
+
         if (!string.IsNullOrEmpty(request.Title))
         {
-            qd = qd.Match(m => m.Field(f => f.Title).Query(request.Title));
+            must = must && new MatchQuery
+            {
+                Field = Infer.Field<Article>(f => f.Title), Query = request.Title, Boost = 2
+            };
         }
 
         if (!string.IsNullOrEmpty(request.Content))
         {
-            qd = qd.Match(m => m.Field(f => f.Content).Query(request.Content));
+            must = must && new MatchQuery
+            {
+                Field = Infer.Field<Article>(f => f.Content), Query = request.Content, Boost = 1
+            };
         }
 
         if (request.AuthorIds is { Count: > 0 })
         {
-            var terms = new TermsQueryField(request.AuthorIds.Select(FieldValue.String).ToArray());
-            qd = qd.Terms(t => t.Field(f => f.AuthorIds).Terms(terms));
+            must = must && new TermsQuery
+            {
+                Field = Infer.Field<Article>(f => f.AuthorIds), Terms = request.AuthorIds
+            };
         }
 
         if (request.Tags is { Count: > 0 })
         {
-            var terms = new TermsQueryField(request.Tags.Select(FieldValue.String).ToArray());
-            qd = qd.Terms(t => t.Field(f => f.Tags).Terms(terms));
+            must = must && new TermsQuery { Field = Infer.Field<Article>(f => f.Tags), Terms = request.Tags };
         }
 
         if (request.CreatedAt != null)
         {
-            qd = qd.Range(
-                q => q.DateRange(dateRangeQueryDescriptor => dateRangeQueryDescriptor.Field(f => f.CreatedAt)
-                    .Gte(request.CreatedAt).Lte(request.CreatedAt)));
+            must = must && new DateRangeQuery
+            {
+                Field = Infer.Field<Article>(f => f.CreatedAt),
+                GreaterThanOrEqualTo = request.CreatedAt,
+                LessThanOrEqualTo = request.CreatedAt
+            };
         }
 
         if (request.UpdatedAt != null)
         {
-            qd = qd.Range(
-                q => q.DateRange(dateRangeQueryDescriptor => dateRangeQueryDescriptor.Field(f => f.UpdatedAt)
-                    .Gte(request.UpdatedAt).Lte(request.UpdatedAt)));
-        }
-
-        if (request.IsPublic != null)
-        {
-            qd = qd.Exists(t => t.Field(f => f.IsPublic))
-                .Term(t => t.Field(f => f.IsPublic).Value((bool)request.IsPublic));
+            must = must && new DateRangeQuery
+            {
+                Field = Infer.Field<Article>(f => f.UpdatedAt),
+                GreaterThanOrEqualTo = request.UpdatedAt,
+                LessThanOrEqualTo = request.UpdatedAt
+            };
         }
 
         if (request.IsPublished != null)
         {
-            qd = qd.Term(t => t.Field(f => f.IsPublished).Value((bool)request.IsPublished));
+            must = must && new TermQuery
+            {
+                Field = Infer.Field<Article>(f => f.IsPublished), Value = (bool)request.IsPublished
+            };
         }
 
-        return qd;
+        if (request.IsPublic != null)
+        {
+            must = must && new TermQuery
+            {
+                Field = Infer.Field<Article>(f => f.IsPublic), Value = (bool)request.IsPublic
+            };
+        }
+
+        return should && must;
     }
 }

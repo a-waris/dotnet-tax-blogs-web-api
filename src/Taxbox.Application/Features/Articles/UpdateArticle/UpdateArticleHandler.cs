@@ -122,7 +122,7 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Result
                             _appSettings.Value.S3BucketName,
                             $"{_appSettings.Value.S3BucketKeyForArticleIndex}/attachments", cancellationToken);
                         if (attachmentUrl == null) continue;
-                        attachments.Add(new ArticleAttachment { File =  $"{_appSettings.Value.S3BucketUrl}/{attachmentUrl}", Type = attachment.Type });
+                        attachments.Add(new ArticleAttachment() { File =  $"{_appSettings.Value.S3BucketUrl}/{attachmentUrl}", Type = attachment.Type });
                     }
                     catch (Exception e)
                     {

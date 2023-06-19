@@ -33,7 +33,7 @@ public class GetAuthorByIdHandler : IRequestHandler<GetAuthorByIdRequest, Result
             return Result.NotFound();
         }
 
-        result.Source.Id = Guid.Parse(result.Id);
+        result.Source.Id = result.Id;
         return result.Source.Adapt<GetAuthorResponse>();
 
     }

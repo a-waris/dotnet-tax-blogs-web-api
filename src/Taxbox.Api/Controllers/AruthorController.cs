@@ -31,7 +31,7 @@ public class AuthorController : ControllerBase
     [Route("{id}")]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
-    public async Task<ActionResult<GetAuthorResponse>> GetById(AuthorId id)
+    public async Task<ActionResult<GetAuthorResponse>> GetById(string id)
     {
         return Ok(await _mediator.Send(new GetAuthorByIdRequest(id)));
     }
@@ -60,7 +60,7 @@ public class AuthorController : ControllerBase
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult<GetAuthorResponse>> Update(
-        AuthorId id,
+        string id,
         [FromBody] UpdateAuthorRequest request)
     {
         return Ok(await _mediator.Send(request with { Id = id }));
@@ -70,7 +70,7 @@ public class AuthorController : ControllerBase
     [Route("{id}")]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.Invalid)]
-    public async Task<ActionResult> Remove(AuthorId id)
+    public async Task<ActionResult> Remove(string id)
     {
         return Ok(await _mediator.Send(new DeleteAuthorRequest(Id: id)));
     }

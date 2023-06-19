@@ -1,9 +1,9 @@
-using Elastic.Clients.Elasticsearch;
+using Nest;
 
 namespace Taxbox.Domain.ElasticSearch.Interfaces;
 
 public interface IElasticClientContainer
 {
-    ElasticsearchClient GetElasticClient();
+    ElasticClient GetElasticClient();
     string GetIndexName();
 }
