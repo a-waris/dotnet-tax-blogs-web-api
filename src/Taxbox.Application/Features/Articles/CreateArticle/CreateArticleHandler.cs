@@ -35,6 +35,12 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleRequest, Result
         article.CreatedAt = DateTime.UtcNow;
         article.UpdatedAt = DateTime.UtcNow;
 
+        if (article.IsPublished)
+        {
+            article.PublishedAt = DateTime.UtcNow;
+        }
+
+
         if (request.CoverImage != null || request.ThumbnailImage != null || request.Attachments is { Count: > 0 })
         {
             if (request.CoverImage != null)
