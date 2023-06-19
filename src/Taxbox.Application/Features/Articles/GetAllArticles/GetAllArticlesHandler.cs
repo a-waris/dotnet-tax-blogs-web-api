@@ -47,7 +47,8 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
 
         var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
 
-        var sort = new SortOptionsDescriptor<Article>().Field(article => article.UpdatedAt!, descriptor => descriptor.Order(SortOrder.Desc));
+        var sort = new SortOptionsDescriptor<Article>().Field(article => article.UpdatedAt!,
+            descriptor => descriptor.Order(SortOrder.Desc));
 
         var resp = await _eSservice.GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields, sort);
 
@@ -110,7 +111,8 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
 
         if (request.IsPublic != null)
         {
-            qd = qd.Term(t => t.Field(f => f.IsPublic).Value((bool)request.IsPublic));
+            qd = qd.Exists(t => t.Field(f => f.IsPublic))
+                .Term(t => t.Field(f => f.IsPublic).Value((bool)request.IsPublic));
         }
 
         if (request.IsPublished != null)
