@@ -1,7 +1,7 @@
 ﻿using Ardalis.Result;
-using Elastic.Clients.Elasticsearch;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Nest;
 using OfficeOpenXml;
 using System;
 using System.Collections.Concurrent;
@@ -44,10 +44,9 @@ public class BulkImportArticlesHandler : IRequestHandler<BulkImportArticlesReque
     {
         try
         {
-            var taxboxAuthorResp = await _esServiceAuthor.Index("authors").Query(
-                new SearchRequestDescriptor<Author>()
-                    .Query(q => q.RawJson("{\"term\": {\"name.raw\": {\"value\": \"Taxbox\"}}}"))
-                    .Size(1));
+            var sd = new SearchDescriptor<Author>()
+                .Query(q => q.Term(t => t.Field(f => f.Id.Suffix("keyword")).Value("taxbox")));
+            var taxboxAuthorResp = await _esServiceAuthor.Index("authors").Query(sd);
 
             var author = taxboxAuthorResp?.Documents.FirstOrDefault();
             if (author == null)

@@ -1,8 +1,6 @@
 ﻿using Ardalis.Result;
-using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.QueryDsl;
 using MediatR;
-using System.Linq;
+using Nest;
 using System.Threading;
 using System.Threading.Tasks;
 using Taxbox.Domain.ElasticSearch.Interfaces;
@@ -24,10 +22,14 @@ public class BulkRemoveArticlesHandler : IRequestHandler<BulkRemoveArticlesReque
         CancellationToken cancellationToken)
     {
         var resp = new BulkRemoveArticlesResponse();
-        var qd = new QueryDescriptor<Article>();
-        var terms = new TermsQueryField(request.ArticleIds.Select(FieldValue.String).ToArray());
-        qd.Terms(article => article.Field("_id").Terms(terms));
-        var bulkResponse = await _esService.BulkRemove(qd);
+        
+        var deleteQuery = new DeleteByQueryRequest<Article>("articles") { Query = new TermsQuery
+            {
+                Field = "_id",
+                Terms = request.ArticleIds
+            }
+        };
+        var bulkResponse = await _esService.BulkRemove(deleteQuery);
         resp.RemovedArticles = bulkResponse.Deleted;
         resp.TotalArticlesFound = bulkResponse.Total;
         resp.ArticlesNotFound = bulkResponse.Noops;

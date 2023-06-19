@@ -1,21 +1,13 @@
-﻿using Elastic.Clients.Elasticsearch;
-using Taxbox.Domain.Entities.Common;
+﻿using Taxbox.Domain.Entities.Common;
 using MassTransit;
+using Nest;
 using System;
 
 namespace Taxbox.Domain.Entities;
 
-public class Author : Entity<AuthorId>
+public class Author
 {
-    public override AuthorId Id { get; set; } = NewId.NextGuid();
-
-    public AuthorId AuthorId
-    {
-        get => Id;
-
-        set => Id = value;
-    }
-
+    public string Id { get; set; } = NewId.NextGuid().ToString();
     public string Name { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string Bio { get; set; } = null!;

@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Elastic.Clients.Elasticsearch" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="NEST" />
     <PackageReference Include="NewId" />
     <PackageReference Include="Stripe.net" />
     <PackageReference Include="StronglyTypedId" />

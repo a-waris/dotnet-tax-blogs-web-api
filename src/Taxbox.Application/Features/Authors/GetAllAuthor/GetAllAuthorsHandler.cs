@@ -1,8 +1,7 @@
-using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.QueryDsl;
 using Mapster;
 using MediatR;
 using Microsoft.Extensions.Options;
+using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,10 +29,10 @@ public class GetAllAuthorsHandler : IRequestHandler<GetAllAuthorsRequest, Pagina
     public async Task<PaginatedList<GetAuthorResponse>> Handle(GetAllAuthorsRequest request,
         CancellationToken cancellationToken)
     {
-        var qd = new QueryDescriptor<Author>();
+        var qd = new QueryContainer();
         if (string.IsNullOrEmpty(request.ToString()) || string.IsNullOrWhiteSpace(request.ToString()))
         {
-            qd.MatchAll();
+            qd = new MatchAllQuery();
         }
         else
         {
@@ -52,9 +51,14 @@ public class GetAllAuthorsHandler : IRequestHandler<GetAllAuthorsRequest, Pagina
 
         var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
 
-
-        var resp = await _eSservice.Index(_appSettings.Value.AuthorsIndex)
-            .GetAllPaginated(qd, request.CurrentPage, request.PageSize, fields);
+        var sd = new SearchDescriptor<Author>()
+                .Query(q => qd)
+                .Sort(s => s.Descending(a => a.JoinDate))
+                .From((request.CurrentPage - 1) * request.PageSize)
+                .Size(request.PageSize)
+                .Source(s => s.Includes(i => i.Fields(fields)))
+            ;
+        var resp = await _eSservice.Query(sd);
 
         var list = new List<GetAuthorResponse>();
         if (resp?.Hits != null)
@@ -63,7 +67,7 @@ public class GetAllAuthorsHandler : IRequestHandler<GetAllAuthorsRequest, Pagina
             {
                 if (hit.Source == null) continue;
 
-                hit.Source.Id = Guid.Parse(hit.Id);
+                hit.Source.Id = hit.Id;
                 list.Add(hit.Source.Adapt<GetAuthorResponse>());
             }
 
@@ -74,34 +78,38 @@ public class GetAllAuthorsHandler : IRequestHandler<GetAllAuthorsRequest, Pagina
         return new PaginatedList<GetAuthorResponse>();
     }
 
-    private QueryDescriptor<Author> BuildQueryDescriptor(GetAllAuthorsRequest request)
+    private QueryContainer BuildQueryDescriptor(GetAllAuthorsRequest request)
     {
-        var qd = new QueryDescriptor<Author>();
+        var qd = new QueryContainer();
         if (!string.IsNullOrEmpty(request.Name))
         {
-            qd = qd.Match(m => m.Field(f => f.Name).Query(request.Name));
+            qd = qd && new MatchQuery { Field = Infer.Field<Author>(f => f.Name), Query = request.Name };
         }
 
         if (!string.IsNullOrEmpty(request.Bio))
         {
-            qd = qd.Match(m => m.Field(f => f.Bio).Query(request.Bio));
+            qd = qd && new MatchQuery { Field = Infer.Field<Author>(f => f.Bio), Query = request.Bio };
         }
 
         if (!string.IsNullOrEmpty(request.Email))
         {
-            qd = qd.Term(m => m.Field(f => f.Email).Value(request.Email));
+            qd = qd && new MatchQuery { Field = Infer.Field<Author>(f => f.Email), Query = request.Email };
         }
 
         if (request.JoinDate != null)
         {
-            qd = qd.Range(
-                q => q.DateRange(dateRangeQueryDescriptor => dateRangeQueryDescriptor.Field(f => f.JoinDate)
-                    .Gte(request.JoinDate).Lte(request.JoinDate)));
+            qd = qd && new DateRangeQuery
+            {
+                Field = Infer.Field<Author>(f => f.JoinDate), GreaterThan = request.JoinDate
+            };
         }
 
         if (request.BoundingBox != null)
         {
-            qd = qd.GeoBoundingBox(g => g.Field(f => f.Location).BoundingBox(request.BoundingBox));
+            qd = qd && new GeoBoundingBoxQuery
+            {
+                Field = Infer.Field<Author>(f => f.Location), BoundingBox = request.BoundingBox
+            };
         }
 
         // if (request.SocialMedia != null)

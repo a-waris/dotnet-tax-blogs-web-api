@@ -7,7 +7,7 @@ namespace Taxbox.Application.Features.Articles;
 
 public record GetArticleResponse
 {
-    public ArticleId ArticleId { get; init; }
+    public string Id { get; init; } = null!;
 
     public string Title { get; set; } = null!;
 

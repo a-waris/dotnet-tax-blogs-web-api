@@ -1,21 +1,15 @@
 using Ardalis.Result;
-using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.Mapping;
-using MediatR;
-using Microsoft.AspNetCore.Http;
+using Nest;
 using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Taxbox.Application.Features.Articles;
-using Taxbox.Application.Features.Articles.CreateArticle;
 using Taxbox.Domain.Entities;
 using Taxbox.Domain.Entities.Common;
 
 namespace Taxbox.Application.Features.Authors.UpdateAuthor;
 
-public record UpdateAuthorRequest : IRequest<Result<GetAuthorResponse>>
+public record UpdateAuthorRequest : MediatR.IRequest<Result<GetAuthorResponse>>
 {
-    [JsonIgnore] public AuthorId Id { get; init; }
+    [JsonIgnore] public string Id { get; init; } = null!;
 
     public string Name { get; set; } = null!;
     public string Email { get; set; } = null!;

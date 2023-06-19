@@ -1,20 +1,20 @@
-using Elastic.Clients.Elasticsearch;
+using Nest;
 using Taxbox.Domain.ElasticSearch.Interfaces;
 
 namespace Taxbox.Infrastructure.ElasticSearch;
 
 public class ElasticClientContainer : IElasticClientContainer
 {
-    private ElasticsearchClient _client;
-    private string _indexName;
+    private readonly ElasticClient _client;
+    private readonly string _indexName;
 
-    public ElasticClientContainer(IElasticsearchClientSettings settings, string indexName)
+    public ElasticClientContainer(ElasticClient client, string indexName)
     {
-        _client = new ElasticsearchClient(settings);
+        _client = client;
         _indexName = indexName;
     }
 
-    public ElasticsearchClient GetElasticClient()
+    public ElasticClient GetElasticClient()
     {
         return _client;
     }
