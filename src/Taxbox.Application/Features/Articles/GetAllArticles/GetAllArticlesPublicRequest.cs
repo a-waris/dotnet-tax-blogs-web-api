@@ -1,4 +1,5 @@
 using MediatR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using Taxbox.Application.Common.Requests;
@@ -9,7 +10,7 @@ namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
 public record GetAllArticlesPublicRequest : PaginatedRequest, IRequest<PaginatedList<GetAllArticlesResponse>>
 {
-    private const bool IsPublic = true;
+    [JsonIgnore] private bool IsPublic { get; } = true;
     public string? Title { get; set; }
     public Metadata? Metadata { get; set; }
     public string? Content { get; set; }
