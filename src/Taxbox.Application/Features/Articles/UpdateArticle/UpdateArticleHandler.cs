@@ -39,7 +39,7 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleRequest, Result
             return Result.NotFound();
         }
 
-        article.UpdatedAt = DateTime.Now.Date;
+        article.UpdatedAt = DateTime.UtcNow;
 
 
         if (request.CoverImage != null || request.ThumbnailImage != null || request.Attachments is { Count: > 0 })

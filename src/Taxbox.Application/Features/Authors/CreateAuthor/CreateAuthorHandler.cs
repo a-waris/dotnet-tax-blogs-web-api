@@ -28,7 +28,7 @@ public class CreateAuthorHandler : IRequestHandler<CreateAuthorRequest, Result<G
         CancellationToken cancellationToken)
     {
         var author = request.Adapt<Author>();
-        author.JoinDate = DateTime.Now.Date;
+        author.JoinDate = DateTime.UtcNow;
 
         var created = await _esService.Index(_appSettings.Value.AuthorsIndex).AddOrUpdate(author);
         return created.Adapt<GetAuthorResponse>();

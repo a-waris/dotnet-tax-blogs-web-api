@@ -18,7 +18,7 @@ public record UpdateArticleRequest : IRequest<Result<GetArticleResponse>>
     public string? HtmlContent { get; set; }
     public string? Content { get; set; }
     public string? Author { get; set; }
-    public DateTime? UpdatedAt { get; set; } = DateTime.Now;
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     public IList<string>? Tags { get; set; }
     public bool? IsPublic { get; set; } = false;
     public bool? IsPublished { get; set; } = false;

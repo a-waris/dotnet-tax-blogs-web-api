@@ -35,7 +35,7 @@ public class UpdateAuthorHandler : IRequestHandler<UpdateAuthorRequest, Result<G
             return Result.NotFound();
         }
 
-        article.JoinDate = DateTime.Now.Date;
+        article.JoinDate = DateTime.UtcNow;
 
 
         var result = await _eSservice.Index(_appSettings.Value.AuthorsIndex)

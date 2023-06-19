@@ -148,7 +148,7 @@ public class BulkImportArticlesHandler : IRequestHandler<BulkImportArticlesReque
             AuthorIds = new List<string> { worksheet.Cells[rowIndex, 7].Value?.ToString() ?? author.Id.ToString() },
             PublishedAt = worksheet.Cells[rowIndex, 8].Value?.ToString() != null
                 ? Convert.ToDateTime(worksheet.Cells[rowIndex, 8].Value)
-                : DateTime.Now.Date,
+                : DateTime.UtcNow,
             Tags = worksheet.Cells[rowIndex, 9].Value?.ToString()?.Split(',').ToList(),
             IsDraft = worksheet.Cells[rowIndex, 10].Value?.ToString()?.ToLower() == "true"
                       || worksheet.Cells[rowIndex, 10].Value?.ToString() == "1",
@@ -158,8 +158,8 @@ public class BulkImportArticlesHandler : IRequestHandler<BulkImportArticlesReque
                           || worksheet.Cells[rowIndex, 12].Value?.ToString() == "1",
             CoverImage = worksheet.Cells[rowIndex, 13].Value?.ToString(),
             ThumbnailImage = worksheet.Cells[rowIndex, 14].Value?.ToString(),
-            CreatedAt = DateTime.Now.Date,
-            UpdatedAt = DateTime.Now.Date
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         return article;

@@ -14,8 +14,8 @@ public record CreateArticleRequest : IRequest<Result<GetArticleResponse>>
     public string? HtmlContent { get; set; } = null!;
     public string? Content { get; set; } = null!;
     public IList<string> AuthorIds { get; set; } = new List<string>();
-    public DateTime? CreatedAt { get; set; } = DateTime.Now;
-    public DateTime? UpdatedAt { get; set; } = DateTime.Now;
+    public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     public IList<string>? Tags { get; set; }
     public bool IsPublic { get; set; } = false;
     public bool IsPublished { get; set; } = false;
