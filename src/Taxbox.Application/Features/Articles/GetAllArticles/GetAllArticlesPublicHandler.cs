@@ -80,7 +80,9 @@ public class
 
     private QueryDescriptor<Article> BuildQueryDescriptor(GetAllArticlesPublicRequest request)
     {
-        var qd = new QueryDescriptor<Article>().Term(t => t.Field(f => f.IsPublic).Value(true));
+        var qd = new QueryDescriptor<Article>()
+            .Exists(t => t.Field(f => f.IsPublic))
+            .Term(t => t.Field(f => f.IsPublic).Value(true));
 
         if (!string.IsNullOrEmpty(request.FreeTextSearch))
         {
@@ -134,7 +136,6 @@ public class
         {
             qd = qd.Term(t => t.Field(f => f.IsPublished).Value((bool)request.IsPublished));
         }
-
 
         return qd;
     }
