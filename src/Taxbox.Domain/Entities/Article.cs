@@ -1,11 +1,12 @@
-﻿using System;
+﻿using MassTransit;
+using System;
 using System.Collections.Generic;
 
 namespace Taxbox.Domain.Entities;
 
 public class Article
 {
-    public string Id { get; set; } = null!;
+    public string Id { get; set; } = NewId.NextGuid().ToString();
     public string Title { get; set; } = null!;
     public Metadata? Metadata { get; set; }
     public string? HtmlContent { get; set; }
