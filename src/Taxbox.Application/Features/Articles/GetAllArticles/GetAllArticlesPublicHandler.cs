@@ -144,6 +144,11 @@ public class
             };
         }
         
-        return should && must;
+        var termIsPublic = new TermQuery
+        {
+            Field = Infer.Field<Article>(f => f.IsPublic), Value = true
+        };
+
+        return should && must && termIsPublic;
     }
 }
