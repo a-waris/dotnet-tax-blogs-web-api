@@ -13,8 +13,11 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
 
         builder.Property(x => x.Id)
             .HasConversion<SubscriptionId.EfCoreValueConverter>();
-        
+
         builder.Property(x => x.Amount)
+            .HasColumnType("decimal(18,2)");
+
+        builder.Property(x => x.VAT)
             .HasColumnType("decimal(18,2)");
     }
 }

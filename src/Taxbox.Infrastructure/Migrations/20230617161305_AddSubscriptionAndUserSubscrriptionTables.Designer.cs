@@ -78,8 +78,14 @@ namespace Taxbox.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Amount")
+                        .IsRequired()
                         .HasColumnType("decimal(18,2)");
-
+                    
+                    b.Property<decimal>("VAT")
+                        .IsRequired()
+                        .HasPrecision(18,2)
+                        .HasColumnType("decimal(18,2)");
+                    
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

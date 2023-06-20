@@ -94,19 +94,19 @@ namespace Taxbox.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "Subscriptions",
                 columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", "VAT" },
-                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0b"), "Gold", "Active", "AED 390 + 5% VAT", "aed", (decimal)390, 6, "Months",(decimal)0.05  }
+                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0b"), "Gold", "Active", "AED 390 + 5% VAT", "aed", (decimal)390, 30, "Days",(decimal)0.05  }
             );      
                 
             migrationBuilder.InsertData(
                 table: "Subscriptions",
                 columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", "VAT" },
-                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0c"), "Platinum", "Active", "AED 590 + 5% VAT", "aed", (decimal)590, 12, "Months", (decimal)0.05 }
+                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0c"), "Platinum", "Active", "AED 590 + 5% VAT", "aed", (decimal)590, 30, "Days", (decimal)0.05 }
             );
             
             migrationBuilder.InsertData(
                 table: "Subscriptions",
                 columns: new[] { "Id", "Name", "Status", "Description", "Currency",  "Amount", "ValidityPeriod", "ValidityPeriodType", "VAT" },
-                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0d"), "Free", "Active", "Free Subscription", "aed", (decimal)0, 7, "Days",
+                values: new object[] { new Guid("b1b9b6a0-0b9a-4b1e-9b0a-0b9a4b1e9b0d"), "Free", "Active", "Free Subscription", "aed", (decimal)0, 30, "Days",
                     (decimal)0 }
             );
         }

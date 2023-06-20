@@ -144,7 +144,7 @@ public class BulkImportArticlesHandler : IRequestHandler<BulkImportArticlesReque
                 Language = worksheet.Cells[rowIndex, 5].Value?.ToString(),
                 Views = views
             },
-            AuthorIds = new List<string> { worksheet.Cells[rowIndex, 7].Value?.ToString() ?? author.Id.ToString() },
+            AuthorIds = new List<string> { worksheet.Cells[rowIndex, 7].Value?.ToString() ?? author.Id },
             PublishedAt = worksheet.Cells[rowIndex, 8].Value?.ToString() != null
                 ? Convert.ToDateTime(worksheet.Cells[rowIndex, 8].Value)
                 : DateTime.UtcNow,
