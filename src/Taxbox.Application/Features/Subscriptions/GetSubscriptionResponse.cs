@@ -12,4 +12,5 @@ public record GetSubscriptionResponse
     public string? Description { get; set; }
     public int ValidityPeriod { get; set; }
     public string ValidityPeriodType { get; set; } = null!;
+    public string VAT { get; set; } = null!;
 }
