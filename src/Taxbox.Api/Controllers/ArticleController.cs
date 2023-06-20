@@ -85,7 +85,7 @@ public class ArticleController : ControllerBase
     [ExpectedFailures(ResultStatus.Invalid)]
     public async Task<ActionResult<GetArticleResponse>> Update(
         string id,
-        [FromBody] UpdateArticleRequest request)
+        [FromForm] UpdateArticleRequest request)
     {
         return Ok(await _mediator.Send(request with { Id = id }));
     }
