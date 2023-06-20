@@ -45,7 +45,7 @@ public class BulkImportArticlesHandler : IRequestHandler<BulkImportArticlesReque
         try
         {
             var sd = new SearchDescriptor<Author>()
-                .Query(q => q.Term(t => t.Field(f => f.Name.Suffix("raw")).Value("taxbox")));
+                .Query(q => q.Term(t => t.Field(f => f.Name.Suffix("raw")).Value("Taxbox")));
             var taxboxAuthorResp = await _esServiceAuthor.Index("authors").Query(sd);
 
             var author = taxboxAuthorResp?.Documents.FirstOrDefault();
