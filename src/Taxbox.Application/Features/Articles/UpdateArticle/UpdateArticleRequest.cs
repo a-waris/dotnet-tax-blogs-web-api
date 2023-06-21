@@ -22,7 +22,14 @@ public record UpdateArticleRequest : IRequest<Result<GetArticleResponse>>
     public IList<string>? Tags { get; set; }
     public bool? IsPublic { get; set; } = false;
     public bool? IsPublished { get; set; } = false;
+    public bool? IsDraft { get; set; } = false;
+    public DateTime? PublishedAt { get; set; }
+
+    public IList<string>? AuthorIds { get; set; } = new List<string>();
     public IFormFile? CoverImage { get; set; }
     public IFormFile? ThumbnailImage { get; set; }
     public IList<ArticleAttachmentRequest>? Attachments { get; set; }
+
+    public string? Category { get; set; }
+    public string? Slug { get; set; }
 }

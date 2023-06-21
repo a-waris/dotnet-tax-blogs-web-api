@@ -32,6 +32,7 @@ public partial struct UserId : IGuid
     }
 }
 
+
 [StronglyTypedId]
 public partial struct ResourceId : IGuid
 {
@@ -65,5 +66,14 @@ public partial struct SubscriptionId : IGuid
     public static implicit operator SubscriptionId(Guid guid)
     {
         return new SubscriptionId(guid);
+    }
+}
+
+[StronglyTypedId]
+public partial struct PageId : IGuid
+{
+    public static implicit operator PageId(Guid guid)
+    {
+        return new PageId(guid);
     }
 }

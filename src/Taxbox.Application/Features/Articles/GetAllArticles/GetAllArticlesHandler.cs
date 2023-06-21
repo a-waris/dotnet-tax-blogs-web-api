@@ -14,11 +14,11 @@ namespace Taxbox.Application.Features.Articles.GetAllArticles;
 
 public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, PaginatedList<GetAllArticlesResponse>>
 {
-    private readonly IElasticSearchService<Article> _eSservice;
+    private readonly IElasticSearchService<Article> _esService;
 
-    public GetAllArticlesHandler(IElasticSearchService<Article> eSservice)
+    public GetAllArticlesHandler(IElasticSearchService<Article> esService)
     {
-        _eSservice = eSservice;
+        _esService = esService;
     }
 
     public async Task<PaginatedList<GetAllArticlesResponse>> Handle(GetAllArticlesRequest request,
@@ -44,16 +44,32 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             request.PageSize = 10;
         }
 
+        var availableFields = typeof(Article).GetProperties().Select(p => p.Name);
+        if (!availableFields.Contains(request.SortBy, StringComparer.OrdinalIgnoreCase))
+        {
+            request.SortBy = GetAllArticlesRequestConstants.DefaultSortBy;
+        }
+
+        if (request.SortOrder != GetAllArticlesRequestConstants.Ascending &&
+            request.SortOrder != GetAllArticlesRequestConstants.Descending)
+        {
+            request.SortOrder = GetAllArticlesRequestConstants.Descending;
+        }
+
         var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
+        var validFields = fields.Intersect(availableFields, StringComparer.OrdinalIgnoreCase);
+        var sort = new SortDescriptor<Article>().Field(request.SortBy,
+            request.SortOrder == "asc" ? SortOrder.Ascending : SortOrder.Descending);
 
         var sd = new SearchDescriptor<Article>()
                 .Query(q => qd)
-                .Sort(s => s.Descending(a => a.UpdatedAt))
+                .Sort(_s => sort)
                 .From((request.CurrentPage - 1) * request.PageSize)
                 .Size(request.PageSize)
-                .Source(s => s.Includes(i => i.Fields(fields)))
+                .Source(s => s.Includes(i => i.Fields(validFields.ToArray())))
             ;
-        var resp = await _eSservice.Query(sd);
+
+        var resp = await _esService.Query(sd);
         var list = new List<GetAllArticlesResponse>();
         if (resp?.Hits != null)
         {
@@ -82,26 +98,20 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             // write a wildcard query
             should = should || new WildcardQuery
             {
-                Field = Infer.Field<Article>(f => f.Title), Value = $"*{request.FreeTextSearch}*",
+                Field = Infer.Field<Article>(f => f.Title),
+                Value = $"*{request.FreeTextSearch}*",
                 Boost = 2,
                 CaseInsensitive = true
             };
 
             should = should || new WildcardQuery
             {
-                Field = Infer.Field<Article>(f => f.Content), Value = $"*{request.FreeTextSearch}*",
+                Field = Infer.Field<Article>(f => f.Content),
+                Value = $"*{request.FreeTextSearch}*",
                 Boost = 1,
                 CaseInsensitive = true
             };
 
-            // should = should || new MatchQuery
-            // {
-            //     Field = Infer.Field<Article>(f => f.Title), Query = request.FreeTextSearch, Boost = 2
-            // };
-            // should = should || new MatchQuery
-            // {
-            //     Field = Infer.Field<Article>(f => f.Content), Query = request.FreeTextSearch, Boost = 1
-            // };
             should = should || new BoolQuery { MinimumShouldMatch = 1 };
         }
 
@@ -123,10 +133,7 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
 
         if (request.AuthorIds is { Count: > 0 })
         {
-            must = must && new TermsQuery
-            {
-                Field = Infer.Field<Article>(f => f.AuthorIds), Terms = request.AuthorIds
-            };
+            must = must && new TermsQuery { Field = Infer.Field<Article>(f => f.AuthorIds), Terms = request.AuthorIds };
         }
 
         if (request.Tags is { Count: > 0 })
@@ -169,6 +176,17 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
                 Field = Infer.Field<Article>(f => f.IsPublic), Value = (bool)request.IsPublic
             };
         }
+
+        if (request.Category != null)
+        {
+            must = must && new MatchQuery { Field = Infer.Field<Article>(f => f.Category), Query = request.Category };
+        }
+
+        if (request.Slug != null)
+        {
+            must = must && new TermQuery { Field = Infer.Field<Article>(f => f.Category), Value = request.Category };
+        }
+
 
         return should && must;
     }

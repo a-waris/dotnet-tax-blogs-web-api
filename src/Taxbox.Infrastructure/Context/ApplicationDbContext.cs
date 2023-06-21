@@ -3,6 +3,8 @@ using Taxbox.Domain.Entities;
 using Taxbox.Infrastructure.Configuration;
 using EntityFramework.Exceptions.SqlServer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using System;
 
@@ -25,6 +27,7 @@ public class ApplicationDbContext : DbContext, IContext
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<Subscription> Subscriptions { get; set; } = null!;
     public DbSet<UserSubscription> UserSubscriptions { get; set; } = null!;
+    public DbSet<Page> Pages { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -46,10 +49,26 @@ public class ApplicationDbContext : DbContext, IContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDbFunction(
+            typeof(Database).GetMethod(nameof(JsonValue))!
+        ).HasName("JSON_VALUE").IsBuiltIn();
+
+        modelBuilder.HasDbFunction(
+            typeof(Database).GetMethod(nameof(JsonQuery))!
+        ).HasName("JSON_QUERY").IsBuiltIn();
+
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(ResourceConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(CategoryConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(SubscriptionConfiguration).Assembly)
+            .ApplyConfigurationsFromAssembly(typeof(UserSubscriptionConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(UserSubscriptionConfiguration).Assembly);
     }
+
+    public static string JsonValue(string column, [NotParameterized] string path)
+        => throw new NotSupportedException();
+
+    public static string JsonQuery(string column, [NotParameterized] string path) =>
+        throw new NotSupportedException();
 }

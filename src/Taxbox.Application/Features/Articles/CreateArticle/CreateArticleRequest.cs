@@ -22,14 +22,12 @@ public record CreateArticleRequest : IRequest<Result<GetArticleResponse>>
     public IFormFile? CoverImage { get; set; }
     public IFormFile? ThumbnailImage { get; set; }
     public IList<ArticleAttachmentRequest>? Attachments { get; set; }
+    public string? Category { get; set; }
+    public string? Slug { get; set; }
 }
 
 public record ArticleAttachmentRequest
 {
     public IFormFile File { get; set; } = null!;
     public string Type { get; set; } = null!;
-}
-
-public enum AttachmentType
-{
 }

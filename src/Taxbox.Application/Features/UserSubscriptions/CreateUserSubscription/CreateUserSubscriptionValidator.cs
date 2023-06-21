@@ -28,10 +28,10 @@ public class CreateUserSubscriptionValidator : AbstractValidator<CreateUserSubsc
             .WithMessage("User already has a subscription");
 
 
-        // check if subscription start date is in the future - only compare date part
-        RuleFor(x => x.SubscriptionStartDate)
-            .Must((request, startDate) => startDate == default || startDate > DateTime.UtcNow.Date)
-            .WithMessage("SubscriptionStartDate cannot be in the past");
+        // // check if subscription start date is in the future - only compare date part
+        // RuleFor(x => x.SubscriptionStartDate)
+        //     .Must((request, startDate) => startDate == default || startDate > DateTime.UtcNow.Date)
+        //     .WithMessage("SubscriptionStartDate cannot be in the past");
 
         // check if subscription start date is set then card details are required
         RuleFor(x => x.CardDetails)

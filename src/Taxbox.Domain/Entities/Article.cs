@@ -23,6 +23,9 @@ public class Article
     public string? CoverImage { get; set; }
     public string? ThumbnailImage { get; set; }
     public IList<ArticleAttachment>? Attachments { get; set; }
+    
+    public string? Category { get; set; }
+    public string? Slug { get; set; }
 }
 
 public class ArticleAttachment

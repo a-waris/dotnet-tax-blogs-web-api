@@ -16,6 +16,7 @@ public interface IContext : IAsyncDisposable, IDisposable
     public DbSet<Category> Categories { get; }
     public DbSet<Subscription> Subscriptions { get; }
     public DbSet<UserSubscription> UserSubscriptions { get; }
+    public DbSet<Page> Pages { get; }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
