@@ -79,14 +79,29 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
 
         if (!string.IsNullOrEmpty(request.FreeTextSearch))
         {
-            should = should || new MatchQuery
+            // write a wildcard query
+            should = should || new WildcardQuery
             {
-                Field = Infer.Field<Article>(f => f.Title), Query = request.FreeTextSearch, Boost = 2
+                Field = Infer.Field<Article>(f => f.Title), Value = $"{request.FreeTextSearch}*",
+                Boost = 2,
+                CaseInsensitive = true
             };
-            should = should || new MatchQuery
+
+            should = should || new WildcardQuery
             {
-                Field = Infer.Field<Article>(f => f.Content), Query = request.FreeTextSearch, Boost = 1
+                Field = Infer.Field<Article>(f => f.Content), Value = $"{request.FreeTextSearch}*",
+                Boost = 1,
+                CaseInsensitive = true
             };
+
+            // should = should || new MatchQuery
+            // {
+            //     Field = Infer.Field<Article>(f => f.Title), Query = request.FreeTextSearch, Boost = 2
+            // };
+            // should = should || new MatchQuery
+            // {
+            //     Field = Infer.Field<Article>(f => f.Content), Query = request.FreeTextSearch, Boost = 1
+            // };
             should = should || new BoolQuery { MinimumShouldMatch = 1 };
         }
 
