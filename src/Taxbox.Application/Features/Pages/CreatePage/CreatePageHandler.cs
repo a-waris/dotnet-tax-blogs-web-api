@@ -22,11 +22,6 @@ public class CreatePageHandler : IRequestHandler<CreatePageRequest, Result<GetPa
         CancellationToken cancellationToken)
     {
         var created = request.Adapt<Domain.Entities.Page>();
-        
-        // parse the Metadata field to a json string 
-        // and save it to the database
-        created.MetadataJson = JsonSerializer.Serialize(request.Metadata);
-
         _context.Pages.Add(created);
         await _context.SaveChangesAsync(cancellationToken);
         return created.Adapt<GetPageResponse>();

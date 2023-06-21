@@ -3,9 +3,11 @@ using Mapster;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Taxbox.Application.Common;
+using Taxbox.Domain.Entities;
 
 namespace Taxbox.Application.Features.Pages.UpdatePage;
 
@@ -47,10 +49,30 @@ public class UpdatePageHandler : IRequestHandler<UpdatePageRequest, Result<GetPa
 
         if (request.Metadata != null)
         {
-            originalPage.Metadata = request.Metadata;
+            if (originalPage.MetadataJson is "{}" or "{ }" or null)
+            {
+                var metadata = new Metadata()
+                {
+                    Category = request.Metadata.Category,
+                    Language = request.Metadata.Language,
+                    Views = request.Metadata.Views ?? 0
+                };
+
+                originalPage.MetadataJson = JsonSerializer.Serialize(metadata);
+            }
+            else
+            {
+                var metadata = JsonSerializer.Deserialize<Metadata>(originalPage.MetadataJson);
+                if (metadata != null)
+                {
+                    metadata.Category = request.Metadata.Category;
+                    metadata.Language = request.Metadata.Language;
+                    metadata.Views = request.Metadata.Views ?? 0;
+                    originalPage.MetadataJson = JsonSerializer.Serialize(metadata);
+                }
+            }
         }
 
-        originalPage.Metadata = request.Metadata;
         originalPage.UpdatedAt = DateTime.UtcNow;
 
         _context.Pages.Update(originalPage);
