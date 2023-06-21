@@ -23,9 +23,15 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryRequest, Resu
         var originalCategory = await _context.Categories
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
         if (originalCategory == null) return Result.NotFound();
+        if (!string.IsNullOrEmpty(request.Name))
+        {
+            originalCategory.Name = request.Name;
+        }
 
-        originalCategory.Name = request.Name;
-        originalCategory.Description = request.Description;
+        if (!string.IsNullOrEmpty(request.Description))
+        {
+            originalCategory.Description = request.Description;
+        }
 
         _context.Categories.Update(originalCategory);
         await _context.SaveChangesAsync(cancellationToken);

@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Taxbox.Application.Common;
 using Taxbox.Domain.ElasticSearch.Interfaces;
+using Taxbox.Domain.Entities.Common;
+using Taxbox.Domain.Entities.Enums;
 
 namespace Taxbox.Application.Features.Resources.UpdateResource;
 
@@ -30,9 +32,22 @@ public class UpdateResourceHandler : IRequestHandler<UpdateResourceRequest, Resu
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
         if (originalResource == null) return Result.NotFound();
 
-        originalResource.DisplayName = request.DisplayName;
-        originalResource.ResourceType = request.ResourceType;
-        originalResource.CategoryId = request.CategoryId;
+        if (!string.IsNullOrEmpty(request.DisplayName))
+        {
+            originalResource.DisplayName = request.DisplayName;
+        }
+
+
+        if (request.ResourceType != null)
+        {
+            originalResource.ResourceType = (ResourceType)request.ResourceType;
+        }
+
+        if (request.CategoryId != null)
+        {
+            originalResource.CategoryId = (CategoryId)request.CategoryId;
+        }
+
 
         if (request.File != null)
         {

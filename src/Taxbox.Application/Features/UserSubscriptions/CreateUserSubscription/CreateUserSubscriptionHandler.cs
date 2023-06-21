@@ -31,22 +31,19 @@ public class
         var created = request.Adapt<UserSubscription>();
         created.SubscriptionStartDate = DateTime.UtcNow;
 
-        // if (request.SubscriptionStartDate is not null)
-        // {
-            var sub = await _context.Subscriptions.FirstOrDefaultAsync(x => x.Id == request.SubscriptionId,
-                cancellationToken);
-            if (sub == null)
-                return Result.NotFound("Subscription not found");
-            SetSubscriptionDates(created, created.SubscriptionStartDate.Value, sub.ValidityPeriodType,
-                sub.ValidityPeriod);
-            // await HandleCouponCode(request, created);
-            // await HandleDiscount(request);
-            var user = await _context.Users.FindAsync(new object?[] { request.UserId },
-                cancellationToken: cancellationToken);
-            if (user == null)
-                return Result.NotFound("User not found");
-            await HandlePaymentFlow(request, user, created, sub, cancellationToken);
-        // }
+        var sub = await _context.Subscriptions.FirstOrDefaultAsync(x => x.Id == request.SubscriptionId,
+            cancellationToken);
+        if (sub == null)
+            return Result.NotFound("Subscription not found");
+        SetSubscriptionDates(created, created.SubscriptionStartDate.Value, sub.ValidityPeriodType,
+            sub.ValidityPeriod);
+        // await HandleCouponCode(request, created);
+        // await HandleDiscount(request);
+        var user = await _context.Users.FindAsync(new object?[] { request.UserId },
+            cancellationToken: cancellationToken);
+        if (user == null)
+            return Result.NotFound("User not found");
+        // await HandlePaymentFlow(request, user, created, sub, cancellationToken);
 
         _context.UserSubscriptions.Add(created);
         await _context.SaveChangesAsync(cancellationToken);

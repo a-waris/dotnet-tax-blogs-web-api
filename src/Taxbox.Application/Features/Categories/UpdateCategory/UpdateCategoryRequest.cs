@@ -8,7 +8,7 @@ namespace Taxbox.Application.Features.Categories.UpdateCategory;
 public record UpdateCategoryRequest : IRequest<Result<GetCategoryResponse>>
 {
     [JsonIgnore] public CategoryId Id { get; set; }
-    public string Name { get; set; } = null!;
-    public string Description { get; set; } = null!;
-    public bool Status { get; set; } = true;
+    public string? Name { get; set; }
+    public string? Description { get; set; }
+    public bool? Status { get; set; } = true;
 }
