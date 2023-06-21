@@ -82,14 +82,14 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             // write a wildcard query
             should = should || new WildcardQuery
             {
-                Field = Infer.Field<Article>(f => f.Title), Value = $"{request.FreeTextSearch}*",
+                Field = Infer.Field<Article>(f => f.Title), Value = $"*{request.FreeTextSearch}*",
                 Boost = 2,
                 CaseInsensitive = true
             };
 
             should = should || new WildcardQuery
             {
-                Field = Infer.Field<Article>(f => f.Content), Value = $"{request.FreeTextSearch}*",
+                Field = Infer.Field<Article>(f => f.Content), Value = $"*{request.FreeTextSearch}*",
                 Boost = 1,
                 CaseInsensitive = true
             };
