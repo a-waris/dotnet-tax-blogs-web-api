@@ -25,10 +25,31 @@ public class UpdatePageHandler : IRequestHandler<UpdatePageRequest, Result<GetPa
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
         if (originalPage == null) return Result.NotFound();
 
-        originalPage.Label = request.Label;
-        originalPage.Slug = request.Slug;
-        originalPage.HtmlContent = request.HtmlContent;
-        originalPage.ParentName = request.ParentName;
+        if (!string.IsNullOrEmpty(request.Label))
+        {
+            originalPage.Label = request.Label;
+        }
+
+        if (!string.IsNullOrEmpty(request.Slug))
+        {
+            originalPage.Slug = request.Slug;
+        }
+
+        if (!string.IsNullOrEmpty(request.HtmlContent))
+        {
+            originalPage.HtmlContent = request.HtmlContent;
+        }
+
+        if (!string.IsNullOrEmpty(request.ParentName))
+        {
+            originalPage.ParentName = request.ParentName;
+        }
+
+        if (request.Metadata != null)
+        {
+            originalPage.Metadata = request.Metadata;
+        }
+
         originalPage.Metadata = request.Metadata;
         originalPage.UpdatedAt = DateTime.UtcNow;
 

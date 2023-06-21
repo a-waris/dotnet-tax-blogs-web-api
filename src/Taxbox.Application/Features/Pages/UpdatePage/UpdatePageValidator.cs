@@ -8,13 +8,5 @@ public class UpdatePageValidator : AbstractValidator<UpdatePageRequest>
     {
         RuleFor(x => x.Id)
             .NotEmpty();
-        RuleFor(x => x.Label)
-            .NotEmpty();
-        RuleFor(x => x.Slug)
-            .NotEmpty();
-        RuleFor(x => x.ParentName)
-            .NotEmpty();
-        RuleFor(x => x.HtmlContent)
-            .NotEmpty();
     }
 }
