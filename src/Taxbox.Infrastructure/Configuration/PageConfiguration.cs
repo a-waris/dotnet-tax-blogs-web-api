@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Taxbox.Infrastructure.Configuration;
 
-public class PageConfiguration : IEntityTypeConfiguration<UserSubscription>
+public class PageConfiguration : IEntityTypeConfiguration<Page>
 {
-    public void Configure(EntityTypeBuilder<UserSubscription> builder)
+    public void Configure(EntityTypeBuilder<Page> builder)
     {
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id)
-            .HasConversion<UserSubscriptionId.EfCoreValueConverter>();
+            .HasConversion<PageId.EfCoreValueConverter>();
     }
 }

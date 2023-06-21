@@ -50,11 +50,11 @@ public class ApplicationDbContext : DbContext, IContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDbFunction(
-            typeof(Database).GetMethod(nameof(JsonValue))!
+            typeof(ApplicationDbContext).GetMethod(nameof(JsonValue))!
         ).HasName("JSON_VALUE").IsBuiltIn();
 
         modelBuilder.HasDbFunction(
-            typeof(Database).GetMethod(nameof(JsonQuery))!
+            typeof(ApplicationDbContext).GetMethod(nameof(JsonQuery))!
         ).HasName("JSON_QUERY").IsBuiltIn();
 
 
