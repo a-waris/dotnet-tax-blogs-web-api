@@ -39,30 +39,37 @@ public class
 
         var availableFields = typeof(Article).GetProperties().Select(p => p.Name);
         IEnumerable<string> enumerable = availableFields as string[] ?? availableFields.ToArray();
-        if (!enumerable.Contains(request.SortBy, StringComparer.OrdinalIgnoreCase))
-        {
-            request.SortBy = GetAllArticlesRequestConstants.DefaultSortBy;
-        }
-
-        if (request.SortOrder != GetAllArticlesRequestConstants.Ascending &&
-            request.SortOrder != GetAllArticlesRequestConstants.Descending)
-        {
-            request.SortOrder = GetAllArticlesRequestConstants.Descending;
-        }
 
         var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
         var validFields = fields.Intersect(enumerable, StringComparer.OrdinalIgnoreCase);
-        var sort = new SortDescriptor<Article>().Field(request.SortBy,
-            request.SortOrder == "asc" ? SortOrder.Ascending : SortOrder.Descending);
 
         var sd = new SearchDescriptor<Article>()
                 .Index("articles")
                 .Query(_ => qd)
-                .Sort(_ => sort)
                 .From((request.CurrentPage - 1) * request.PageSize)
                 .Size(request.PageSize)
                 .Source(s => s.Includes(i => i.Fields(validFields.ToArray())))
             ;
+
+        if (!string.IsNullOrEmpty(request.SortBy) && !string.IsNullOrWhiteSpace(request.SortBy))
+        {
+            if (!enumerable.Contains(request.SortBy, StringComparer.OrdinalIgnoreCase))
+            {
+                request.SortBy = GetAllArticlesRequestConstants.DefaultSortBy;
+            }
+
+            if (request.SortOrder != GetAllArticlesRequestConstants.Ascending &&
+                request.SortOrder != GetAllArticlesRequestConstants.Descending)
+            {
+                request.SortOrder = GetAllArticlesRequestConstants.Descending;
+            }
+
+            var sort = new SortDescriptor<Article>().Field(request.SortBy,
+                request.SortOrder == "asc" ? SortOrder.Ascending : SortOrder.Descending);
+
+            sd.Sort(_ => sort);
+        }
+
         var resp = await _esService.Query(sd);
 
         var list = new List<GetAllArticlesResponse>();
@@ -82,13 +89,27 @@ public class
         return new PaginatedList<GetAllArticlesResponse>();
     }
 
-    public static QueryContainer BuildQueryDescriptor(GetAllArticlesPublicRequest request)
+    private static QueryContainer BuildQueryDescriptor(GetAllArticlesPublicRequest request)
     {
         var should = new QueryContainer();
         var must = new QueryContainer();
 
         if (!string.IsNullOrEmpty(request.FreeTextSearch))
         {
+            should = should || new MatchPhraseQuery()
+            {
+                Field = Infer.Field<Article>(f => f.Title),
+                Query = request.FreeTextSearch,
+                Boost = 3,
+            };
+
+            should = should || new MatchPhraseQuery()
+            {
+                Field = Infer.Field<Article>(f => f.Content),
+                Query = request.FreeTextSearch,
+                Boost = 1,
+            };
+
             should = should || new WildcardQuery
             {
                 Field = Infer.Field<Article>(f => f.Title),
@@ -105,7 +126,7 @@ public class
                 CaseInsensitive = true
             };
 
-            should = should || new BoolQuery { MinimumShouldMatch = 1 };
+            should = should && new BoolQuery { MinimumShouldMatch = 1 };
         }
 
         if (!string.IsNullOrEmpty(request.Title))
@@ -172,7 +193,7 @@ public class
         {
             must = must && new TermQuery { Field = Infer.Field<Article>(f => f.Category), Value = request.Category };
         }
-        
+
         var termIsPublic = new TermQuery { Field = Infer.Field<Article>(f => f.IsPublic), Value = true };
 
 

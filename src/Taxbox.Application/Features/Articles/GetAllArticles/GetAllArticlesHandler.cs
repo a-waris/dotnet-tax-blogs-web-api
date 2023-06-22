@@ -45,29 +45,37 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
         }
 
         var availableFields = typeof(Article).GetProperties().Select(p => p.Name);
-        if (!availableFields.Contains(request.SortBy, StringComparer.OrdinalIgnoreCase))
-        {
-            request.SortBy = GetAllArticlesRequestConstants.DefaultSortBy;
-        }
-
-        if (request.SortOrder != GetAllArticlesRequestConstants.Ascending &&
-            request.SortOrder != GetAllArticlesRequestConstants.Descending)
-        {
-            request.SortOrder = GetAllArticlesRequestConstants.Descending;
-        }
+        IEnumerable<string> enumerable = availableFields as string[] ?? availableFields.ToArray();
 
         var fields = request.SourceFields?.Split(',').ToArray() ?? Array.Empty<string>();
-        var validFields = fields.Intersect(availableFields, StringComparer.OrdinalIgnoreCase);
-        var sort = new SortDescriptor<Article>().Field(request.SortBy,
-            request.SortOrder == "asc" ? SortOrder.Ascending : SortOrder.Descending);
+        var validFields = fields.Intersect(enumerable, StringComparer.OrdinalIgnoreCase);
 
         var sd = new SearchDescriptor<Article>()
-                .Query(q => qd)
-                .Sort(_s => sort)
+                .Index("articles")
+                .Query(_ => qd)
                 .From((request.CurrentPage - 1) * request.PageSize)
                 .Size(request.PageSize)
                 .Source(s => s.Includes(i => i.Fields(validFields.ToArray())))
             ;
+
+        if (!string.IsNullOrEmpty(request.SortBy) && !string.IsNullOrWhiteSpace(request.SortBy))
+        {
+            if (!enumerable.Contains(request.SortBy, StringComparer.OrdinalIgnoreCase))
+            {
+                request.SortBy = GetAllArticlesRequestConstants.DefaultSortBy;
+            }
+
+            if (request.SortOrder != GetAllArticlesRequestConstants.Ascending &&
+                request.SortOrder != GetAllArticlesRequestConstants.Descending)
+            {
+                request.SortOrder = GetAllArticlesRequestConstants.Descending;
+            }
+
+            var sort = new SortDescriptor<Article>().Field(request.SortBy,
+                request.SortOrder == "asc" ? SortOrder.Ascending : SortOrder.Descending);
+
+            sd.Sort(_ => sort);
+        }
 
         var resp = await _esService.Query(sd);
         var list = new List<GetAllArticlesResponse>();
@@ -82,7 +90,7 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
             }
 
             return new PaginatedList<GetAllArticlesResponse>(list,
-                (int)resp!.Total, request.CurrentPage, request.PageSize);
+                (int)resp.Total, request.CurrentPage, request.PageSize);
         }
 
         return new PaginatedList<GetAllArticlesResponse>();
@@ -95,12 +103,21 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
 
         if (!string.IsNullOrEmpty(request.FreeTextSearch))
         {
-            // write a wildcard query
+            should = should || new MatchPhraseQuery()
+            {
+                Field = Infer.Field<Article>(f => f.Title), Query = request.FreeTextSearch, Boost = 3,
+            };
+
+            should = should || new MatchPhraseQuery()
+            {
+                Field = Infer.Field<Article>(f => f.Content), Query = request.FreeTextSearch, Boost = 1,
+            };
+
             should = should || new WildcardQuery
             {
                 Field = Infer.Field<Article>(f => f.Title),
                 Value = $"*{request.FreeTextSearch}*",
-                Boost = 2,
+                Boost = 1,
                 CaseInsensitive = true
             };
 
@@ -112,7 +129,7 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
                 CaseInsensitive = true
             };
 
-            should = should || new BoolQuery { MinimumShouldMatch = 1 };
+            should = should && new BoolQuery { MinimumShouldMatch = 1 };
         }
 
         if (!string.IsNullOrEmpty(request.Title))
