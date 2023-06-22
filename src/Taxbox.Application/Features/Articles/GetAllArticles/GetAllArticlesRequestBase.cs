@@ -8,7 +8,7 @@ namespace Taxbox.Application.Features.Articles.GetAllArticles;
 public static class GetAllArticlesRequestConstants {
     public const string Ascending = "asc";
     public const string Descending = "desc";
-    public const string DefaultSortBy = "UpdatedAt";
+    public const string DefaultSortBy = "updatedAt";
 }
 
 public record GetAllArticlesRequestBase
