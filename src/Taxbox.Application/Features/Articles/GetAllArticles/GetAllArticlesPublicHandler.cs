@@ -1,11 +1,13 @@
 using Mapster;
 using MediatR;
+using Microsoft.Extensions.Options;
 using Nest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Taxbox.Application.Common;
 using Taxbox.Application.Common.Responses;
 using Taxbox.Domain.ElasticSearch.Interfaces;
 using Taxbox.Domain.Entities;
@@ -16,10 +18,13 @@ public class
     GetAllArticlesPublicHandler : IRequestHandler<GetAllArticlesPublicRequest, PaginatedList<GetAllArticlesResponse>>
 {
     private readonly IElasticSearchService<Article> _esService;
+    private readonly IOptions<ElasticSearchConfiguration> _appSettings;
 
-    public GetAllArticlesPublicHandler(IElasticSearchService<Article> esService)
+    public GetAllArticlesPublicHandler(IElasticSearchService<Article> esService,
+        IOptions<ElasticSearchConfiguration> appSettings)
     {
         _esService = esService;
+        _appSettings = appSettings;
     }
 
     public async Task<PaginatedList<GetAllArticlesResponse>> Handle(GetAllArticlesPublicRequest request,
@@ -44,7 +49,7 @@ public class
         var validFields = fields.Intersect(enumerable, StringComparer.OrdinalIgnoreCase);
 
         var sd = new SearchDescriptor<Article>()
-                .Index("articles")
+                .Index(_appSettings.Value.ArticlesIndex)
                 .Query(_ => qd)
                 .From((request.CurrentPage - 1) * request.PageSize)
                 .Size(request.PageSize)
@@ -98,17 +103,13 @@ public class
         {
             should = should || new MatchPhraseQuery()
             {
-                Field = Infer.Field<Article>(f => f.Title),
-                Query = request.FreeTextSearch,
-                Boost = 3,
+                Field = Infer.Field<Article>(f => f.Title), Query = request.FreeTextSearch, Boost = 3,
             };
 
-            should = should || new MatchPhraseQuery()
-            {
-                Field = Infer.Field<Article>(f => f.Content),
-                Query = request.FreeTextSearch,
-                Boost = 1,
-            };
+            // should = should || new MatchPhraseQuery()
+            // {
+            //     Field = Infer.Field<Article>(f => f.Content), Query = request.FreeTextSearch, Boost = 1,
+            // };
 
             should = should || new WildcardQuery
             {
@@ -118,13 +119,31 @@ public class
                 CaseInsensitive = true
             };
 
-            should = should || new WildcardQuery
+            // should = should || new WildcardQuery
+            // {
+            //     Field = Infer.Field<Article>(f => f.Content),
+            //     Value = $"*{request.FreeTextSearch}*",
+            //     Boost = 1,
+            //     CaseInsensitive = true
+            // };
+            
+            should = should || new MatchQuery
             {
-                Field = Infer.Field<Article>(f => f.Content),
-                Value = $"*{request.FreeTextSearch}*",
-                Boost = 1,
-                CaseInsensitive = true
+                Field = Infer.Field<Article>(f => f.Title),
+                Query = request.FreeTextSearch,
+                Boost = 2,
+                Fuzziness = Fuzziness.Auto,
+                Operator = Operator.Or
             };
+            
+            // should = should || new MatchQuery
+            // {
+            //     Field = Infer.Field<Article>(f => f.Content),
+            //     Query = request.FreeTextSearch,
+            //     Boost = 2,
+            //     Fuzziness = Fuzziness.Auto,
+            //     Operator = Operator.And
+            // };
 
             should = should && new BoolQuery { MinimumShouldMatch = 1 };
         }

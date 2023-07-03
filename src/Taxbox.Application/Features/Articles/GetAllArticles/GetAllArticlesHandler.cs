@@ -108,10 +108,10 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
                 Field = Infer.Field<Article>(f => f.Title), Query = request.FreeTextSearch, Boost = 3,
             };
 
-            should = should || new MatchPhraseQuery()
-            {
-                Field = Infer.Field<Article>(f => f.Content), Query = request.FreeTextSearch, Boost = 1,
-            };
+            // should = should || new MatchPhraseQuery()
+            // {
+            //     Field = Infer.Field<Article>(f => f.Content), Query = request.FreeTextSearch, Boost = 1,
+            // };
 
             should = should || new WildcardQuery
             {
@@ -121,12 +121,21 @@ public class GetAllArticlesHandler : IRequestHandler<GetAllArticlesRequest, Pagi
                 CaseInsensitive = true
             };
 
-            should = should || new WildcardQuery
+            // should = should || new WildcardQuery
+            // {
+            //     Field = Infer.Field<Article>(f => f.Content),
+            //     Value = $"*{request.FreeTextSearch}*",
+            //     Boost = 1,
+            //     CaseInsensitive = true
+            // };
+            
+            should = should || new MatchQuery
             {
-                Field = Infer.Field<Article>(f => f.Content),
-                Value = $"*{request.FreeTextSearch}*",
-                Boost = 1,
-                CaseInsensitive = true
+                Field = Infer.Field<Article>(f => f.Title),
+                Query = request.FreeTextSearch,
+                Boost = 2,
+                Fuzziness = Fuzziness.Auto,
+                Operator = Operator.Or
             };
 
             should = should && new BoolQuery { MinimumShouldMatch = 1 };
