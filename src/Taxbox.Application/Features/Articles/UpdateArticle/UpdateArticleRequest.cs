@@ -12,7 +12,7 @@ namespace Taxbox.Application.Features.Articles.UpdateArticle;
 
 public record UpdateArticleRequest : IRequest<Result<GetArticleResponse>>
 {
-    [JsonIgnore] public string Id { get; init; }
+    [JsonIgnore] public string Id { get; init; } = string.Empty;
     public string? Title { get; set; }
     public Metadata? Metadata { get; set; }
     public string? HtmlContent { get; set; }
