@@ -14,4 +14,8 @@ public record GetUserResponse
     public string LastName { get; init; } = null!;
 
     public string? DisplayPicture { get; init; }
+
+    public string? MetadataJson { get; init; }
+    
+    public string? StripeCustomerToken { get; init; }
 }

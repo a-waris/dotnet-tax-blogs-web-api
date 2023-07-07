@@ -1,6 +1,5 @@
 ﻿using Taxbox.Domain.Entities.Common;
 using MassTransit;
-using Microsoft.AspNetCore.Http;
 
 namespace Taxbox.Domain.Entities;
 
@@ -15,4 +14,8 @@ public class User : Entity<UserId>
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string? DisplayPicture { get; set; }
+    
+    // TODO: need to deserialize this to an object?
+    public string? MetadataJson { get; set; }
+    public string? StripeCustomerToken { get; set; }
 }
