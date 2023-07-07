@@ -15,6 +15,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Taxbox.Application.Features.Users.UpdateUser;
 using ISession = Taxbox.Domain.Auth.Interfaces.ISession;
 
 namespace Taxbox.Api.Controllers;
@@ -100,10 +101,19 @@ public class UserController : ControllerBase
         return result;
     }
 
-    [HttpPatch("password")]
+    [HttpPatch("Password")]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.NotFound, ResultStatus.Invalid)]
     public async Task<Result> UpdatePassword([FromBody] UpdatePasswordRequest request)
+    {
+        var result = await _mediator.Send(request with { Id = _session.UserId });
+        return result;
+    }
+
+    [HttpPut]
+    [TranslateResultToActionResult]
+    [ExpectedFailures(ResultStatus.NotFound, ResultStatus.Invalid)]
+    public async Task<Result> UpdateUser([FromBody] UpdateUserRequest request)
     {
         var result = await _mediator.Send(request with { Id = _session.UserId });
         return result;
