@@ -113,7 +113,7 @@ public class UserController : ControllerBase
     [HttpPut]
     [TranslateResultToActionResult]
     [ExpectedFailures(ResultStatus.NotFound, ResultStatus.Invalid)]
-    public async Task<Result> UpdateUser([FromBody] UpdateUserRequest request)
+    public async Task<Result> UpdateUser([FromForm] UpdateUserRequest request)
     {
         var result = await _mediator.Send(request with { Id = _session.UserId });
         return result;
