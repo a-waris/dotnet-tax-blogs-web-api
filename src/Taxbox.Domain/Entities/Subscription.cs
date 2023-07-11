@@ -1,4 +1,5 @@
 using MassTransit;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Taxbox.Domain.Entities.Common;
 
@@ -16,4 +17,6 @@ public class Subscription : Entity<SubscriptionId>
     public int ValidityPeriod { get; set; } // 1, 2, 3, etc.
     public string ValidityPeriodType { get; set; } = null!; // Monthly, Yearly, etc.
     public decimal VAT { get; set; }
+    [InverseProperty(nameof(Subscription))]
+    public virtual ICollection<Ticket>? Tickets { get; set; }
 }

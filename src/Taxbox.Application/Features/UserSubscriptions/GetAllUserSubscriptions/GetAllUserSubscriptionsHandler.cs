@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,7 +40,9 @@ public class
             .WhereIf(request.CancellationDate != null, x => x.CancellationDate == request.CancellationDate)
             .WhereIf(request.CouponCode != null, x => x.CouponCode == request.CouponCode)
             .WhereIf(request.NextBillingDate != null, x => x.NextBillingDate == request.NextBillingDate)
-            .WhereIf(request.DiscountAmount != null, x => x.DiscountAmount == request.DiscountAmount);
+            .WhereIf(request.DiscountAmount != null, x => x.DiscountAmount == request.DiscountAmount)
+            .Include(x => x.Subscription)
+            .ThenInclude(x => x.Tickets);
 
 
         return await userSubs.ProjectToType<GetUserSubscriptionResponse>()

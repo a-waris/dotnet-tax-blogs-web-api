@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using System.Text.Json.Serialization;
 using Taxbox.Infrastructure.BackgroundServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,11 @@ builder.Services
                     .For("POST", HttpStatusCode.Created)
                     .For("DELETE", HttpStatusCode.NoContent));
         });
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.WriteIndented = true;
     })
     .AddValidationSetup();
 

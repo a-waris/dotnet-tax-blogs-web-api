@@ -19,5 +19,9 @@ public class SubscriptionConfiguration : IEntityTypeConfiguration<Subscription>
 
         builder.Property(x => x.VAT)
             .HasColumnType("decimal(18,2)");
+
+        builder.HasMany(x => x.Tickets)
+            .WithOne(x => x.Subscription)
+            .HasForeignKey(x => x.SubscriptionId);
     }
 }

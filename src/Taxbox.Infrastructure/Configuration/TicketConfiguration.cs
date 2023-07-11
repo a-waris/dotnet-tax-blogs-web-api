@@ -14,5 +14,10 @@ public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
             .HasConversion<TicketId.EfCoreValueConverter>();
         builder.Property(x => x.SubscriptionId)
             .HasConversion<SubscriptionId.EfCoreValueConverter>();
+
+        builder.HasOne(x => x.Subscription)
+            .WithMany(x => x.Tickets)
+            .HasForeignKey(x => x.SubscriptionId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }
