@@ -4,7 +4,6 @@ using Taxbox.Infrastructure.Configuration;
 using EntityFramework.Exceptions.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using System;
 
@@ -28,6 +27,7 @@ public class ApplicationDbContext : DbContext, IContext
     public DbSet<Subscription> Subscriptions { get; set; } = null!;
     public DbSet<UserSubscription> UserSubscriptions { get; set; } = null!;
     public DbSet<Page> Pages { get; set; } = null!;
+    public DbSet<Ticket> Tickets { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -63,7 +63,8 @@ public class ApplicationDbContext : DbContext, IContext
             .ApplyConfigurationsFromAssembly(typeof(CategoryConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(SubscriptionConfiguration).Assembly)
             .ApplyConfigurationsFromAssembly(typeof(UserSubscriptionConfiguration).Assembly)
-            .ApplyConfigurationsFromAssembly(typeof(UserSubscriptionConfiguration).Assembly);
+            .ApplyConfigurationsFromAssembly(typeof(UserSubscriptionConfiguration).Assembly)
+            .ApplyConfigurationsFromAssembly(typeof(TicketConfiguration).Assembly);
     }
 
     public static string JsonValue(string column, [NotParameterized] string path)

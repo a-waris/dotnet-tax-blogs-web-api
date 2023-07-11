@@ -77,3 +77,12 @@ public partial struct PageId : IGuid
         return new PageId(guid);
     }
 }
+
+[StronglyTypedId]
+public partial struct TicketId : IGuid
+{
+    public static implicit operator TicketId(Guid guid)
+    {
+        return new TicketId(guid);
+    }
+}
