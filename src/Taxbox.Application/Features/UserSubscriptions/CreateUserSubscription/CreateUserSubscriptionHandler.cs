@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Taxbox.Application.Common;
 using Taxbox.Domain.Entities;
-using Taxbox.Domain.Entities.PaymentGatewayResources.Stripe;
+// using Taxbox.Domain.Entities.PaymentGatewayResources.Stripe;
 using Taxbox.Domain.PaymentGateway.Interfaces;
 
 namespace Taxbox.Application.Features.UserSubscriptions.CreateUserSubscription;
@@ -35,16 +35,18 @@ public class
             cancellationToken);
         if (sub == null)
             return Result.NotFound("Subscription not found");
-        SetSubscriptionDates(created, created.SubscriptionStartDate.Value, sub.ValidityPeriodType,
-            sub.ValidityPeriod);
-        // await HandleCouponCode(request, created);
-        // await HandleDiscount(request);
         var user = await _context.Users.FindAsync(new object?[] { request.UserId },
             cancellationToken: cancellationToken);
         if (user == null)
             return Result.NotFound("User not found");
-        // await HandlePaymentFlow(request, user, created, sub, cancellationToken);
 
+        SetSubscriptionDates(created, created.SubscriptionStartDate.Value, sub.ValidityPeriodType,
+            sub.ValidityPeriod);
+
+        // await HandleCouponCode(request, created);
+        // await HandleDiscount(request);
+        // await HandlePaymentFlow(request, user, created, sub, cancellationToken);
+        
         _context.UserSubscriptions.Add(created);
         await _context.SaveChangesAsync(cancellationToken);
         return created.Adapt<GetUserSubscriptionResponse>();
@@ -80,32 +82,32 @@ public class
     //     }
     // }
 
-    private async Task HandlePaymentFlow(CreateUserSubscriptionRequest request,
-        User user, UserSubscription created, Subscription sub, CancellationToken cancellationToken)
-    {
-        try
-        {
-            if (request.CardDetails == null)
-                throw new Exception("Card details not provided");
-
-            var createCustomerResource =
-                new CreateCustomerResource(user.Email, $"{user.FirstName} {user.LastName}", request.CardDetails);
-            var customer = await _stripeService.CreateCustomer(createCustomerResource, cancellationToken);
-
-            // set customer id
-            created.CustomerId = customer.CustomerId;
-
-            await _stripeService.CreateCharge(new CreateChargeResource(
-                Currency: sub.Currency,
-                Amount: (long)(sub.Amount * 100),
-                Description: "Subscription charge for " + sub.Name,
-                CustomerId: customer.CustomerId,
-                ReceiptEmail: user.Email), cancellationToken);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
+    // private async Task HandlePaymentFlow(CreateUserSubscriptionRequest request,
+    //     User user, UserSubscription created, Subscription sub, CancellationToken cancellationToken)
+    // {
+    //     try
+    //     {
+    //         if (request.CardDetails == null)
+    //             throw new Exception("Card details not provided");
+    //
+    //         var createCustomerResource =
+    //             new CreateCustomerResource(user.Email, $"{user.FirstName} {user.LastName}", request.CardDetails);
+    //         var customer = await _stripeService.CreateCustomer(createCustomerResource, cancellationToken);
+    //
+    //         // set customer id
+    //         created.CustomerId = customer.CustomerId;
+    //
+    //         await _stripeService.CreateCharge(new CreateChargeResource(
+    //             Currency: sub.Currency,
+    //             Amount: (long)(sub.Amount * 100),
+    //             Description: "Subscription charge for " + sub.Name,
+    //             CustomerId: customer.CustomerId,
+    //             ReceiptEmail: user.Email), cancellationToken);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine(e);
+    //         throw;
+    //     }
+    // }
 }
