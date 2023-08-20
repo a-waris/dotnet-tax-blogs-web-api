@@ -11,6 +11,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Taxbox.Domain.ElasticSearch.Interfaces;
 using Taxbox.Domain.Entities;
+using BasicAuthenticationCredentials = Elasticsearch.Net.BasicAuthenticationCredentials;
 
 namespace Taxbox.Api.Configurations;
 
@@ -35,6 +36,8 @@ public static class ElasticSearchSetup
         services.AddSingleton<IElasticClient>(esClient);
         services.AddScoped(typeof(IElasticSearchService<>), typeof(ElasticSearchService<>));
 
+        CreateIndexIfNotExists(esClient, index);
+
         return services;
     }
 
@@ -42,15 +45,30 @@ public static class ElasticSearchSetup
     {
         // var auth = new BasicAuthentication(esConfig.User, esConfig.Password);
         var auth = new BasicAuthenticationCredentials(esConfig.User, esConfig.Password);
-        // if (esConfig.UseLocalEs)
-        // {
-        //     var nodes = new Uri[] { new(esConfig.Url) };
-        //     var pool = new StaticNodePool(nodes);
-        //     return new ElasticsearchClientSettings(pool)
-        //         .CertificateFingerprint(GetSha2Thumbprint(new X509Certificate2(esConfig.ClientCertificatePath)))
-        //         .Authentication(auth)
-        //         .DefaultIndex(esConfig.ArticlesIndex);
-        // }
+        if (esConfig.UseLocalEs)
+        {
+            var uris = new Uri[] { new(esConfig.Url) };
+            var pool = new StaticConnectionPool(uris);
+            var settings = new ConnectionSettings(pool)
+                    .BasicAuthentication(esConfig.User, esConfig.Password)
+                    .CertificateFingerprint(GetSha2Thumbprint(new X509Certificate2(esConfig.ClientCertificatePath)))
+                    .DefaultIndex(esConfig.ArticlesIndex)
+                    .DefaultMappingFor<Article>(i => i
+                        .IndexName(esConfig.ArticlesIndex)
+                        .IdProperty(p => p.Id)
+                    )
+                    .DefaultMappingFor<Author>(i => i
+                        .IndexName(esConfig.AuthorsIndex)
+                        .IdProperty(p => p.Id))
+                    .EnableApiVersioningHeader()
+                    .DisableDirectStreaming()
+                    .EnableDebugMode()
+                // .RequestTimeout(TimeSpan.FromMinutes(2))
+                ;
+
+
+            return new ElasticClient(settings);
+        }
 
         var connectionSettings = new ConnectionSettings(esConfig.CloudId, auth)
             .DefaultIndex(esConfig.ArticlesIndex)
@@ -66,7 +84,7 @@ public static class ElasticSearchSetup
             .RequestTimeout(TimeSpan.FromMinutes(2));
         if (esConfig.EnableDebugMode)
         {
-            // connectionSettings.EnableDebugMode();
+            connectionSettings.EnableDebugMode();
         }
 
         return new ElasticClient(connectionSettings);
@@ -75,26 +93,30 @@ public static class ElasticSearchSetup
         //     .DefaultIndex(esConfig.ArticlesIndex);
     }
 
-    private static async void IndexExistsCheck(IElasticClient client, string indexName)
+    private static async void CreateIndexIfNotExists(IElasticClient client, string indexName)
     {
-        var indexExists = await client.Indices.ExistsAsync(indexName);
-
-        if (!indexExists.Exists)
+        try
         {
-            throw new Exception("Index does not exist");
+            var indexExists = await client.Indices.ExistsAsync(indexName);
+
+            if (!indexExists.Exists)
+            {
+                var resp = await client.Indices.CreateAsync(indexName, c => c
+                    .Map<Article>(m => m.AutoMap())
+                );
+
+                if (!resp.IsValid)
+                {
+                    Console.WriteLine(resp.DebugInformation);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
     }
-
-    // private static async void CreateIndex(IElasticClientContainer clientContainer, string indexName)
-    // {
-    //     var client = clientContainer.GetElasticClient();
-    //     var indexExists = await client.Indices.ExistsAsync(indexName);
-    //
-    //     if (!indexExists.Exists)
-    //     {
-    //         throw new Exception("Index does not exist");
-    //     }
-    // }
 
 
     private static string GetSha2Thumbprint(X509Certificate2 cert)
