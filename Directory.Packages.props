@@ -14,7 +14,7 @@
     <PackageVersion Include="EPPlus" Version="6.2.6" />
     <PackageVersion Include="FastExpressionCompiler" Version="3.3.4" />
     <PackageVersion Include="Mapster" Version="7.3.0" />
-    <PackageVersion Include="Mapster.EFCore" Version="5.1.0" />
+    <PackageVersion Include="Mapster.EFCore" Version="5.1.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageVersion Include="NEST" Version="7.17.5" />
