@@ -19,7 +19,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageVersion Include="NEST" Version="7.17.5" />
     <PackageVersion Include="NewId" Version="4.0.1" />
-    <PackageVersion Include="Stripe.net" Version="41.20.0" />
+    <PackageVersion Include="Stripe.net" Version="42.6.0" />
     <PackageVersion Include="StronglyTypedId" Version="1.0.0-beta06" />
     <PackageVersion Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageVersion Include="FluentValidation" Version="11.5.2" />
